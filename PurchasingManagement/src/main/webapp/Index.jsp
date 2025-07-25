@@ -7,6 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-테스트 화면입니다.
+상품 등록 화면입니다.
+
+
 </body>
 </html>
