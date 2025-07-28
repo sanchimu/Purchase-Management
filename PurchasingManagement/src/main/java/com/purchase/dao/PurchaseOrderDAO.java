@@ -1,11 +1,18 @@
 // PurchaseOrderDAO.java
 package com.purchase.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import com.purchase.vo.*;
+
 import com.purchase.util.DBConnection;
+import com.purchase.vo.OrderSheet;
+import com.purchase.vo.Product;
+import com.purchase.vo.PurchaseRequest;
+import com.purchase.vo.PurchaseRequestItem;
 
 public class PurchaseOrderDAO {
     
@@ -49,11 +56,11 @@ public class PurchaseOrderDAO {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO order_sheet (order_id, request_id, supplier_id, order_date, order_status) VALUES (?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, order.getOrderId());
-            pstmt.setString(2, order.getRequestId());
-            pstmt.setString(3, order.getSupplierId());
-            pstmt.setDate(4, new java.sql.Date(order.getOrderDate().getTime()));
-            pstmt.setString(5, order.getOrderStatus());
+            pstmt.setString(1, order.getOrder_id());
+            pstmt.setString(2, order.getRequest_id());
+            pstmt.setString(3, order.getSupplier_id());
+            pstmt.setDate(4, new java.sql.Date(order.getOrder_date().getTime()));
+            pstmt.setString(5, order.getOrder_status());
             
             int rowsAffected = pstmt.executeUpdate();
             result = rowsAffected > 0;
@@ -111,11 +118,11 @@ public class PurchaseOrderDAO {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO product (product_id, product_name, category, price, supplier_id) VALUES (?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, product.getProductId());
-            pstmt.setString(2, product.getProductName());
+            pstmt.setString(1, product.getProduct_id());;
+            pstmt.setString(2, product.getProduct_name());
             pstmt.setString(3, product.getCategory());
             pstmt.setDouble(4, product.getPrice());
-            pstmt.setString(5, product.getSupplierId());
+            pstmt.setString(5, product.getSupplier_id());
             
             int rowsAffected = pstmt.executeUpdate();
             result = rowsAffected > 0;
@@ -181,11 +188,11 @@ public class PurchaseOrderDAO {
             
             while (rs.next()) {
                 OrderSheet order = new OrderSheet();
-                order.setOrderId(rs.getString("order_id"));
-                order.setRequestId(rs.getString("request_id"));
-                order.setSupplierId(rs.getString("supplier_id"));
-                order.setOrderDate(rs.getDate("order_date"));
-                order.setOrderStatus(rs.getString("order_status"));
+                order.setOrder_id(rs.getString("order_id"));
+                order.setRequest_id(rs.getString("request_id"));
+                order.setSupplier_id(rs.getString("supplier_id"));
+                order.setOrder_date(rs.getDate("order_date"));
+                order.setOrder_status(rs.getString("order_status"));
                 orders.add(order);
             }
             

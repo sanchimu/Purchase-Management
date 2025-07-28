@@ -3,8 +3,12 @@ package com.purchase.service;
 
 import java.util.Date;
 import java.util.List;
+
 import com.purchase.dao.PurchaseOrderDAO;
-import com.purchase.vo.*;
+import com.purchase.vo.OrderSheet;
+import com.purchase.vo.Product;
+import com.purchase.vo.PurchaseRequest;
+import com.purchase.vo.PurchaseRequestItem;
 
 public class PurchaseOrderService {
     private PurchaseOrderDAO dao;
@@ -20,7 +24,7 @@ public class PurchaseOrderService {
         try {
             // 1. 발주 요청 등록
             String requestId = dao.generateRequestId();
-            PurchaseRequest request = new PurchaseRequest(requestId, requesterName, requestDate);
+            PurchaseRequest request = new PurchaseRequest(requestId, requesterName, 0, requestDate, requestId);
             
             if (!dao.insertPurchaseRequest(request)) {
                 return false;
