@@ -55,4 +55,11 @@ public class ProductDao {
 			// TODO: handle exception
 		}
 	}
+	public int delete(Connection conn, String pno) throws SQLException{
+		try(PreparedStatement pstmt = conn.prepareStatement("delete from product where product_id = ?")){
+			pstmt.setString(1, pno);
+			return pstmt.executeUpdate();
+		}
+	}
+	
 }
