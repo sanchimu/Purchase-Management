@@ -2,6 +2,7 @@ package com.purchase.service.product;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.purchase.dao.product.ProductDao;
 import com.purchase.vo.Product;
@@ -19,11 +20,21 @@ public class ProductService {
 		}
 	}
 	
-	public void deleteProduct(String pno) {
+	public void deleteProduct(String[] productIds) {
 		try(Connection conn = ConnectionProvider.getConnection()){
-			
+			for (String id : productIds) {
+	            productDao.delete(conn, id);
+	        }
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public List<Product> getAllProducts() {
+	    try (Connection conn = ConnectionProvider.getConnection()) {
+	        return productDao.selectAll(conn);
+	    } catch (SQLException e) {
+	        throw new RuntimeException(e);
+	    }
 	}
 }

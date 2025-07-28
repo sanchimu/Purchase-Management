@@ -5,23 +5,28 @@ import java.io.StringReader;
 import java.sql.DriverManager;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.tomcat.dbcp.dbcp2.ConnectionFactory;
-import org.apache.tomcat.dbcp.dbcp2.DriverManagerConnectionFactory;
-import org.apache.tomcat.dbcp.dbcp2.PoolableConnection;
-import org.apache.tomcat.dbcp.dbcp2.PoolableConnectionFactory;
-import org.apache.tomcat.dbcp.dbcp2.PoolingDriver;
-import org.apache.tomcat.dbcp.pool2.impl.GenericObjectPool;
-import org.apache.tomcat.dbcp.pool2.impl.GenericObjectPoolConfig;
+import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
+import org.apache.commons.dbcp2.PoolableConnection;
+import org.apache.commons.dbcp2.PoolableConnectionFactory;
+import org.apache.commons.dbcp2.PoolingDriver;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 public class DBCPInitListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		// TODO Auto-generated method stub
+		System.out.println("✅ DBCPInitListener 실행 시작");
+		ServletContext sc = sce.getServletContext();
+		
 		String poolConfig = sce.getServletContext().getInitParameter("poolConfig");
+		System.out.println("✅ context-param poolConfig 값: " + poolConfig);
 		Properties prop = new Properties();
 		try {
 			prop.load(new StringReader(poolConfig));

@@ -36,6 +36,23 @@
   </filter-mapping>
   
   
+  <servlet>
+  	<servlet-name>ControllerUsingURI</servlet-name>
+  	<servlet-class>mvc.controller.ControllerUsingURI</servlet-class>
+  	<init-param>
+  		<param-name>configFile</param-name>
+  		<param-value>/WEB-INF/commandHandlerURI.properties</param-value>
+  	</init-param>
+  	<load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+  	<servlet-name>ControllerUsingURI</servlet-name>
+  	<url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  
+  
+  
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.jsp</welcome-file>

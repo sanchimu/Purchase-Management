@@ -1,5 +1,7 @@
 package com.purchase.command.product;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,21 +10,16 @@ import com.purchase.vo.Product;
 
 import mvc.command.CommandHandler;
 
-public class AddProductHandler implements CommandHandler {
+public class ListProductHandler implements CommandHandler {
 
 	private ProductService productService = new ProductService();
-
+	
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
-		String productName = req.getParameter("product_name");
-		String category = req.getParameter("category");
-		int price = Integer.parseInt(req.getParameter("price"));
-		String supplierId = req.getParameter(req.getParameter("supplier_id"));
-
-		Product product = new Product(null, productName, category, price, supplierId);
-		productService.addProduct(product);
-
-		return "/WEB-INF/view/addSuccess.jsp";
+        List<Product> productList = productService.getAllProducts();
+        req.setAttribute("productList", productList);
+        return "/WEB-INF/view/productList.jsp";
 	}
+
 }

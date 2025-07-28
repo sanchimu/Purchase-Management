@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.purchase.vo.Product;
 
@@ -57,10 +59,28 @@ public class ProductDao {
 		}
 	}
 	public int delete(Connection conn, String pno) throws SQLException{
-		try(PreparedStatement pstmt = conn.prepareStatement("delete from product where product_id = ?")){
+		try(PreparedStatement pstmt = conn.prepareStatement("delete from product where PRODUCT_ID = ?")){
 			pstmt.setString(1, pno);
 			return pstmt.executeUpdate();
 		}
+	}
+	
+	public List<Product> selectAll(Connection conn) throws SQLException {
+	    String sql = "SELECT * FROM product ORDER BY product_id";
+	    List<Product> list = new ArrayList<>();
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql);
+	         ResultSet rs = pstmt.executeQuery()) {
+	        while (rs.next()) {
+	            Product p = new Product(
+	                rs.getString("product_id"),
+	                rs.getString("product_name"),
+	                rs.getString("category"),
+	                rs.getInt("price"),
+	                rs.getString("supplier_id"));
+	            list.add(p);
+	        }
+	    }
+	    return list;
 	}
 	
 }
