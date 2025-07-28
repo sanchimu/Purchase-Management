@@ -1,4 +1,4 @@
-package vo;
+package com.purchase.vo;
 
 public class SupplierInfo {
 	String supplier_id;

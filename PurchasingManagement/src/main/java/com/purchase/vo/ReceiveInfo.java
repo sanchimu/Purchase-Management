@@ -1,4 +1,4 @@
-package vo;
+package com.purchase.vo;
 
 import java.util.Date;
 

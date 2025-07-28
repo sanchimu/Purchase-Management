@@ -19,9 +19,9 @@ public class PurchaseOrderDAO {
             conn = DBConnection.getConnection();
             String sql = "INSERT INTO purchase_request (request_id, requester_name, request_date) VALUES (?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, request.getRequestId());
-            pstmt.setString(2, request.getRequesterName());
-            pstmt.setDate(3, new java.sql.Date(request.getRequestDate().getTime()));
+            pstmt.setString(1, request.getRequest_id());
+            pstmt.setString(2, request.getRequester_name());
+            pstmt.setDate(3, new java.sql.Date(request.getRequest_date().getTime()));
             
             int rowsAffected = pstmt.executeUpdate();
             result = rowsAffected > 0;

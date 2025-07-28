@@ -3,37 +3,64 @@ package com.purchase.vo;
 import java.util.Date;
 
 public class OrderSheet {
-    private String orderId;
-    private String requestId;
-    private String supplierId;
-    private Date orderDate;
-    private String orderStatus;
-    
-    // 기본 생성자
-    public OrderSheet() {}
-    
-    // 매개변수 생성자
-    public OrderSheet(String orderId, String requestId, String supplierId, Date orderDate, String orderStatus) {
-        this.orderId = orderId;
-        this.requestId = requestId;
-        this.supplierId = supplierId;
-        this.orderDate = orderDate;
-        this.orderStatus = orderStatus;
-    }
-    
-    // Getter/Setter
-    public String getOrderId() { return orderId; }
-    public void setOrderId(String orderId) { this.orderId = orderId; }
-    
-    public String getRequestId() { return requestId; }
-    public void setRequestId(String requestId) { this.requestId = requestId; }
-    
-    public String getSupplierId() { return supplierId; }
-    public void setSupplierId(String supplierId) { this.supplierId = supplierId; }
-    
-    public Date getOrderDate() { return orderDate; }
-    public void setOrderDate(Date orderDate) { this.orderDate = orderDate; }
-    
-    public String getOrderStatus() { return orderStatus; }
-    public void setOrderStatus(String orderStatus) { this.orderStatus = orderStatus; }
+	String order_id;
+	String request_id;
+	String supplier_id;
+	Date order_date;
+	String order_status;
+
+	public OrderSheet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public OrderSheet(String order_id, String request_id, String supplier_id, Date order_date, String order_status) {
+		super();
+		this.order_id = order_id;
+		this.request_id = request_id;
+		this.supplier_id = supplier_id;
+		this.order_date = order_date;
+		this.order_status = order_status;
+	}
+
+	public String getOrder_id() {
+		return order_id;
+	}
+
+	public void setOrder_id(String order_id) {
+		this.order_id = order_id;
+	}
+
+	public String getRequest_id() {
+		return request_id;
+	}
+
+	public void setRequest_id(String request_id) {
+		this.request_id = request_id;
+	}
+
+	public String getSupplier_id() {
+		return supplier_id;
+	}
+
+	public void setSupplier_id(String supplier_id) {
+		this.supplier_id = supplier_id;
+	}
+
+	public Date getOrder_date() {
+		return order_date;
+	}
+
+	public void setOrder_date(Date order_date) {
+		this.order_date = order_date;
+	}
+
+	public String getOrder_status() {
+		return order_status;
+	}
+
+	public void setOrder_status(String order_status) {
+		this.order_status = order_status;
+	}
+
 }

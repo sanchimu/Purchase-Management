@@ -1,37 +1,63 @@
 package com.purchase.vo;
 
 public class Product {
-    private String productId;
-    private String productName;
-    private String category;
-    private double price;
-    private String supplierId;
-    
-    // 기본 생성자
-    public Product() {}
-    
-    // 매개변수 생성자
-    public Product(String productId, String productName, String category, double price, String supplierId) {
-        this.productId = productId;
-        this.productName = productName;
-        this.category = category;
-        this.price = price;
-        this.supplierId = supplierId;
-    }
-    
-    // Getter/Setter
-    public String getProductId() { return productId; }
-    public void setProductId(String productId) { this.productId = productId; }
-    
-    public String getProductName() { return productName; }
-    public void setProductName(String productName) { this.productName = productName; }
-    
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-    
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
-    
-    public String getSupplierId() { return supplierId; }
-    public void setSupplierId(String supplierId) { this.supplierId = supplierId; }
+	String product_id;
+	String product_name;
+	String category;
+	int price;
+	String supplier_id;
+
+	public Product() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Product(String product_id, String product_name, String category, int price, String supplier_id) {
+		super();
+		this.product_id = product_id;
+		this.product_name = product_name;
+		this.category = category;
+		this.price = price;
+		this.supplier_id = supplier_id;
+	}
+
+	public String getProduct_id() {
+		return product_id;
+	}
+
+	public void setProduct_id(String product_id) {
+		this.product_id = product_id;
+	}
+
+	public String getProduct_name() {
+		return product_name;
+	}
+
+	public void setProduct_name(String product_name) {
+		this.product_name = product_name;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
+	public String getSupplier_id() {
+		return supplier_id;
+	}
+
+	public void setSupplier_id(String supplier_id) {
+		this.supplier_id = supplier_id;
+	}
 }

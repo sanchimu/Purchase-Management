@@ -6,8 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.purchase.vo.Product;
+
 import jdbc.JdbcUtil;
-import vo.Product;
 
 public class ProductDao {
 	public Product insert(Connection conn, Product product) throws SQLException {
