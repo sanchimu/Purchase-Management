@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>상품 추가</title>
+<title>Insert title here</title>
 </head>
 <body>
-
+사실상 이거 뜨면 안되긴함
 </body>
 </html>

@@ -21,5 +21,4 @@ public class ListProductHandler implements CommandHandler {
         req.setAttribute("productList", productList);
         return "/WEB-INF/view/productList.jsp";
 	}
-
 }

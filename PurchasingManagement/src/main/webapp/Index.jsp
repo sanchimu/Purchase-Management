@@ -8,7 +8,5 @@
 </head>
 <body>
 상품 등록 화면입니다.
-
-
 </body>
 </html>
