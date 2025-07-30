@@ -15,14 +15,30 @@ public class AddProductHandler implements CommandHandler {
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
+	    String priceStr = req.getParameter("price");
+
+	    if (priceStr == null || priceStr.trim().isEmpty()) {
+	        // price 값이 없으면 입력 폼 보여주기 (초기 진입 시)
+	        return "/WEB-INF/view/AddProduct.jsp";
+	    }
+		
 		String productName = req.getParameter("product_name");
 		String category = req.getParameter("category");
-		int price = Integer.parseInt(req.getParameter("price"));
-		String supplierId = req.getParameter(req.getParameter("supplier_id"));
+		String supplierId = req.getParameter("supplier_id");
 
+		if(priceStr == null || priceStr.trim().isEmpty()) {
+		    // 예외 처리 또는 기본값 지정
+		    throw new IllegalArgumentException("가격 정보가 없습니다.");
+		}
+
+		int price = Integer.parseInt(priceStr);
+		
 		Product product = new Product(null, productName, category, price, supplierId);
 		productService.addProduct(product);
 
-		return "/WEB-INF/view/addSuccess.jsp";
+	    req.setAttribute("success", true);
+
+	    // 다시 addProduct.jsp 보여주기
+	    return "/WEB-INF/view/AddProduct.jsp";
 	}
 }

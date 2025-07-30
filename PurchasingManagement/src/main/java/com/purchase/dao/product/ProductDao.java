@@ -30,6 +30,7 @@ public class ProductDao {
 
 			// product_id 만들기: "P" + 3자리 숫자 (ex. P001)
 			String productId = String.format("P%03d", seqNum);
+			product.setProduct_id(productId);
 
 			pstmt = conn.prepareStatement("insert into product values (?,?,?,?,?)");
 			pstmt.setString(1, product.getProduct_id());
@@ -37,7 +38,6 @@ public class ProductDao {
 			pstmt.setString(3, product.getCategory());
 			pstmt.setInt(4, product.getPrice());
 			pstmt.setString(5, product.getSupplier_id());
-			pstmt.executeUpdate();
 			int insertedCount = pstmt.executeUpdate();
 
 			if (insertedCount > 0) {
@@ -45,7 +45,7 @@ public class ProductDao {
 				rs = stmt.executeQuery(
 						"select * from (select product_id from product order by product_id desc) where rownum = 1");
 				if (rs.next()) {
-					int newId = rs.getInt("product_id");
+					String newId = rs.getString("product_id");
 					return new Product(product.getProduct_id(), product.getProduct_name(), product.getCategory(),
 							product.getPrice(), product.getSupplier_id());
 				}
