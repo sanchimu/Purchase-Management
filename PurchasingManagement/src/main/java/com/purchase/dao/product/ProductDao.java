@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.purchase.vo.Product;
 
@@ -81,6 +82,48 @@ public class ProductDao {
 	        }
 	    }
 	    return list;
+	}
+	
+	public List<Product> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
+	    StringBuilder sql = new StringBuilder("SELECT * FROM product WHERE 1=1");
+	    List<Object> params = new ArrayList<>();
+
+	    if (conditions.get("product_id") != null) {
+	        sql.append(" AND product_id = ?");
+	        params.add(conditions.get("product_id"));
+	    }
+	    if (conditions.get("product_name") != null) {
+	        sql.append(" AND product_name LIKE ?");
+	        params.add("%" + conditions.get("product_name") + "%");
+	    }
+	    if (conditions.get("category") != null) {
+	        sql.append(" AND category = ?");
+	        params.add(conditions.get("category"));
+	    }
+	    if (conditions.get("supplier_id") != null) {
+	        sql.append(" AND supplier_id = ?");
+	        params.add(conditions.get("supplier_id"));
+	    }
+	    sql.append(" ORDER BY product_id");
+
+	    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+	        for (int i = 0; i < params.size(); i++) {
+	            pstmt.setObject(i + 1, params.get(i));
+	        }
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            List<Product> list = new ArrayList<>();
+	            while (rs.next()) {
+	                Product p = new Product(
+	                    rs.getString("product_id"),
+	                    rs.getString("product_name"),
+	                    rs.getString("category"),
+	                    rs.getInt("price"),
+	                    rs.getString("supplier_id"));
+	                list.add(p);
+	            }
+	            return list;
+	        }
+	    }
 	}
 	
 }

@@ -7,6 +7,9 @@
 <head>
 <meta charset="UTF-8">
 <title>상품 목록</title>
+
+
+
 <script>
 // 폼 제출 전 체크박스 선택 여부 확인
 function validateForm() {
@@ -20,6 +23,19 @@ function validateForm() {
 </script>
 </head>
 <body>
+    <h2>상품 조회</h2>
+     <form action="productList.do" method="get">
+	상품 ID : <input type = "text" name="product_id" value="${param.product_id}">
+	상품명 : <input type = "text" name="product_name" value="${param.product_name}">
+	<br>
+	카테고리 : <input type = "text" name="category" value="${param.category}">
+	공급업체 ID  : <input type = "text" name="supplier_id" value="${param.supplier_id}">
+	<br>
+
+        <input type="submit" value="상품 조회">
+	
+	</form>
+
     <h2>상품 목록</h2>
      <form action="deleteProducts.do" method="post" onsubmit="return validateForm();">
         <table border="1">
@@ -33,6 +49,7 @@ function validateForm() {
             </tr>
             <%
                 List<Product> productList = (List<Product>) request.getAttribute("productList");
+            if(productList != null){
                 for (Product p : productList) {
             %>
             <tr>
@@ -43,8 +60,33 @@ function validateForm() {
                 <td><%= p.getPrice() %></td>
                 <td><%= p.getSupplier_id() %></td>
             </tr>
+            <%
+                }
+                } else {
+            %><tr><td colspan="6">조회된 상품이 없습니다..</td></tr>
             <% } %>
         </table>
+        
+        	<%
+    
+    			String productId = request.getParameter("product_id");
+			    String productName = request.getParameter("product_name");
+			    String category = request.getParameter("category");
+			    String supplierId = request.getParameter("supplier_id");
+			
+			    boolean noResult = (productList == null || productList.isEmpty());
+			    boolean allConditionsEmpty = ( (productId == null || productId.trim().isEmpty()) &&
+                                  (productName == null || productName.trim().isEmpty()) &&
+                                  (category == null || category.trim().isEmpty()) &&
+                                  (supplierId == null || supplierId.trim().isEmpty()) );
+			%>
+	
+		<% if (noResult && !allConditionsEmpty) { %>
+			<script>
+    			alert('조회된 상품이 없습니다.');
+			</script>
+		<% } %>
+        
         <br>
         <input type="submit" value="선택 항목 삭제">
     </form>
