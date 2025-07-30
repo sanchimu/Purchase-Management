@@ -35,7 +35,7 @@ window.onload = function() {
 </p>
 <p>
 	<input type = "submit" value="상품 추가">
-	<input type="button" value="뒤로 가기" onclick="history.back()">
+	<input type="button" value="뒤로 가기" onclick="location.href='listProducts.do'">
 </p>
 </body>
 </html>
