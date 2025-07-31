@@ -46,7 +46,6 @@ public class ProductDao {
 				rs = stmt.executeQuery(
 						"select * from (select product_id from product order by product_id desc) where rownum = 1");
 				if (rs.next()) {
-					String newId = rs.getString("product_id");
 					return new Product(product.getProduct_id(), product.getProduct_name(), product.getCategory(),
 							product.getPrice(), product.getSupplier_id());
 				}
