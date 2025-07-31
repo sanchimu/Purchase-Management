@@ -7,8 +7,6 @@
 <title>메인</title>
 </head>
 <body>
-
-
 <div style="text-align: center;">
 	<!-- <img src="/PurchasingManagement/images/images.jpg" alt="Example Image" width="500" /> -->
 	<img src="/PurchasingManagement/images/image2.gif" alt="Example GIF" width="500" />
