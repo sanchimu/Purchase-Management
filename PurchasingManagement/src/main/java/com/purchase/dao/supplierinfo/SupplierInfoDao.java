@@ -13,7 +13,7 @@ import jdbc.JdbcUtil;
 
 public class SupplierInfoDao {
 
-  
+    // 등록
     public void insert(Connection conn, SupplierInfo supplier) throws SQLException {
         PreparedStatement pstmt = null;
         try {
@@ -24,14 +24,13 @@ public class SupplierInfoDao {
             pstmt.setString(2, supplier.getSupplier_name());
             pstmt.setString(3, supplier.getContact_number());
             pstmt.setString(4, supplier.getAddress()); 
-
             pstmt.executeUpdate();
         } finally {
             JdbcUtil.close(pstmt);
         }
     }
 
-   
+    // 삭제
     public void delete(Connection conn, String supplierId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
@@ -39,14 +38,13 @@ public class SupplierInfoDao {
                 "DELETE FROM supplier_info WHERE supplier_id = ?"
             );
             pstmt.setString(1, supplierId);
-
             pstmt.executeUpdate();
         } finally {
             JdbcUtil.close(pstmt);
         }
     }
 
-   
+    // 검색
     public List<SupplierInfo> selectByName(Connection conn, String name) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -65,6 +63,33 @@ public class SupplierInfoDao {
                     rs.getString("supplier_name"),
                     rs.getString("contact_number"),
                     rs.getString("adress") 
+                );
+                list.add(supplier);
+            }
+        } finally {
+            JdbcUtil.close(rs);
+            JdbcUtil.close(pstmt);
+        }
+
+        return list;
+    }
+
+    // 전체 목록 
+    public List<SupplierInfo> selectAll(Connection conn) throws SQLException {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<SupplierInfo> list = new ArrayList<>();
+
+        try {
+            pstmt = conn.prepareStatement("SELECT * FROM supplier_info ORDER BY supplier_id");
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                SupplierInfo supplier = new SupplierInfo(
+                    rs.getString("supplier_id"),
+                    rs.getString("supplier_name"),
+                    rs.getString("contact_number"),
+                    rs.getString("adress")
                 );
                 list.add(supplier);
             }
