@@ -71,7 +71,7 @@
   <a href="requestList.do" class="Menu" target="mainFrame">👺 구매 요청</a>
   <a href="orderList.do" class="Menu" target="mainFrame">😎 발주서</a>
   <a href="listReceiveInfos.do" class="Menu" target="mainFrame">😢 입고 관리</a>
-  <a href="returnList.do" class="Menu" target="mainFrame">🥱 반품 관리</a>
+  <a href="returnInfoList.do" class="Menu" target="mainFrame">🥱 반품 관리</a>
 </div>
 
 <!-- 아래 콘텐츠 영역 -->
