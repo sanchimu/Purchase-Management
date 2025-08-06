@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.purchase.dao.ReceiveInfo.ReturnInfoDao;
+import com.purchase.dao.returnInfo.ReturnInfoDao;
 import com.purchase.vo.ReturnInfo;
 
 import jdbc.connection.ConnectionProvider;

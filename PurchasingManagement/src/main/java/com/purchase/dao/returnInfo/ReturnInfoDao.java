@@ -1,4 +1,4 @@
-package com.purchase.dao.ReceiveInfo;
+package com.purchase.dao.returnInfo;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.purchase.vo.Product;
 import com.purchase.vo.ReturnInfo;
 
 import jdbc.JdbcUtil;
