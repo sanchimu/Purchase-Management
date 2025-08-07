@@ -85,14 +85,14 @@ function validateForm() {
 	
 		<% if (noResult && !allConditionsEmpty) { %>
 			<script>
-    			alert('조회된 상품이 없습니다.');
+    			alert('조회된 요청이 없습니다.');
 			</script>
 		<% } %>
         
         <br>
-        <input type="submit" value="선택 항목 삭제">
+        <input type="submit" value="선택 항목 반품 취소">
     </form>
            <br>
-   <!--  <a href="addProduct.do">상품 반품하기</a> -->
+   <a href="addReturnInfos.do">상품 반품하기</a>
 </body>
 </html>
