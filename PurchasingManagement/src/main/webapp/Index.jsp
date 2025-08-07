@@ -67,7 +67,7 @@
 <div class="header">
   <div class="BigTitle">🎶😊 구 매 관 리 😊🎶</div>
   <a href="listProducts.do" class="Menu" target="mainFrame">❤️ 상품 관리</a>
-  <a href="supplierList.do" class="Menu" target="mainFrame">😉 공급 업체</a>
+  <a href="listsupplier.do" class="Menu" target="mainFrame">😉 공급 업체</a>
   <a href="requestList.do" class="Menu" target="mainFrame">👺 구매 요청</a>
   <a href="orderList.do" class="Menu" target="mainFrame">😎 발주서</a>
   <a href="listReceiveInfos.do" class="Menu" target="mainFrame">😢 입고 관리</a>
