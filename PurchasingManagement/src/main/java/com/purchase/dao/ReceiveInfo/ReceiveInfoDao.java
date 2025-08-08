@@ -7,16 +7,16 @@ import java.util.List;
 
 public class ReceiveInfoDao {
 
-	public int insert(Connection conn, ReceiveInfo vo) throws SQLException {
-	    String sql = "INSERT INTO receive_info (receive_id, order_id, product_id, quantity, receive_date) "
-	               + "VALUES ('RI' || LPAD(receive_info_seq.NEXTVAL, 4, '0'), ?, ?, ?, SYSDATE)";
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        pstmt.setString(1, vo.getOrderId());
-	        pstmt.setString(2, vo.getProductId());
-	        pstmt.setInt(3, vo.getQuantity());
-	        return pstmt.executeUpdate();
-	    }
-	}
+    public int insert(Connection conn, ReceiveInfo vo) throws SQLException {
+        String sql = "INSERT INTO receive_info (receive_id, order_id, product_id, quantity, receive_date) "
+                   + "VALUES ('RI' || LPAD(receive_info_seq.NEXTVAL, 4, '0'), ?, ?, ?, SYSDATE)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, vo.getOrder_id());  
+            pstmt.setString(2, vo.getProduct_id()); 
+            pstmt.setInt(3, vo.getQuantity());
+            return pstmt.executeUpdate();
+        }
+    }
 
     public List<ReceiveInfo> selectAll(Connection conn) throws SQLException {
         String sql = "SELECT * FROM receive_info ORDER BY receive_date DESC";
@@ -25,11 +25,11 @@ public class ReceiveInfoDao {
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 ReceiveInfo vo = new ReceiveInfo();
-                vo.setReceiveId(rs.getString("receive_id"));
-                vo.setOrderId(rs.getString("order_id"));
-                vo.setProductId(rs.getString("product_id"));
+                vo.setReceive_id(rs.getString("receive_id"));
+                vo.setOrder_id(rs.getString("order_id"));   
+                vo.setProduct_id(rs.getString("product_id")); 
                 vo.setQuantity(rs.getInt("quantity"));
-                vo.setReceiveDate(rs.getDate("receive_date"));
+                vo.setReceive_date(rs.getDate("receive_date")); 
                 list.add(vo);
             }
         }
