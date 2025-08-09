@@ -8,7 +8,7 @@
 <body>
 <h2>입고 등록</h2>
 
-<form action="${pageContext.request.contextPath}/receiveInfo.do" method="post">
+<form action="${pageContext.request.contextPath}/listReceiveInfos.do" method="post">
     주문 ID: <input type="text" name="order_id" required><br>
     상품 ID: <input type="text" name="product_id" required><br>
     수량: <input type="number" name="quantity" required><br>

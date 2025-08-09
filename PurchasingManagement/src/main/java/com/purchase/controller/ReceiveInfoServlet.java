@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 
-@WebServlet("/receiveInfo.do")  // ✅ URL 매핑을 .do 형식으로 변경
+@WebServlet("/receiveInfo.do")  // ✅ URL 매핑
 public class ReceiveInfoServlet extends HttpServlet {
     private ReceiveInfoService service = new ReceiveInfoService();
 
@@ -23,8 +23,8 @@ public class ReceiveInfoServlet extends HttpServlet {
 
         // VO 객체 생성
         ReceiveInfo vo = new ReceiveInfo();
-        vo.setOrderId(orderId);
-        vo.setProductId(productId);
+        vo.setOrder_id(orderId);      // ✅ 메서드명 수정
+        vo.setProduct_id(productId);  // ✅ 메서드명 수정
         vo.setQuantity(quantity);
 
         try {
@@ -32,7 +32,7 @@ public class ReceiveInfoServlet extends HttpServlet {
             service.addReceiveInfo(vo);
 
             // 등록 성공 시 목록 페이지로 리다이렉트
-            res.sendRedirect("receiveInfoList.do"); // ✅ 목록도 .do로 리다이렉트
+            res.sendRedirect("receiveInfoList.do");
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "DB 저장 중 오류가 발생했습니다.");

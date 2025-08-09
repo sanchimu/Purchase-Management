@@ -33,22 +33,22 @@
                 if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
                     for (ReceiveInfo info : receiveInfoList) {
             %>
-            <tr>
-                <td><input type="checkbox" name="receiveIds" value="<%= info.getReceiveId() %>"></td>
-                <td><%= info.getReceiveId() %></td>
-                <td><%= info.getOrderId() %></td>
-                <td><%= info.getProductId() %></td>
-                <td><%= info.getQuantity() %></td>
-                <td><%= info.getReceiveDate() != null ? sdf.format(info.getReceiveDate()) : "" %></td>
-            </tr>
+                  <td><%= info.getReceive_id() %></td>
+						<td><%= info.getOrder_id() %></td>
+						<td><%= info.getProduct_id() %></td>
+						<td><%= info.getQuantity() %></td>
+					<td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td>
+
             <%
                     }
                 } else {
             %>
-            <tr>
-                <td colspan="6">조회된 입고 정보가 없습니다.</td>
-            </tr>
-            <% } %>
+                        <tr>
+                            <td colspan="6">조회된 입고 정보가 없습니다.</td>
+                        </tr>
+            <%
+                }
+            %>
         </table>
 
         <br>
@@ -75,12 +75,13 @@
         String successMsg = (String) session.getAttribute("successMsg");
         if (successMsg != null) {
     %>
-    <script>
-        alert('<%= successMsg %>');
-    </script>
+            <script>
+                alert('<%= successMsg %>');
+            </script>
     <%
             session.removeAttribute("successMsg");
         }
     %>
 </body>
 </html>
+

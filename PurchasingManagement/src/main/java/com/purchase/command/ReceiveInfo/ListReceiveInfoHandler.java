@@ -18,6 +18,6 @@ public class ListReceiveInfoHandler implements CommandHandler {
         List<ReceiveInfo> list = service.getAllReceiveInfos();
 
         req.setAttribute("receiveInfoList", list);
-        return "/WEB-INF/view/receiveInfoList.jsp";
+        return "/WEB-INF/view/receiveInfoForm.jsp";
     }
 }
