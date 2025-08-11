@@ -125,4 +125,32 @@ public class ProductDao {
 	    }
 	}
 	
+	public List<String> getCategoryList(){
+
+		
+		List<String> categoryList = new ArrayList<>();
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try{
+			pstmt = conn.prepareStatement("SELECT DISTINCT category FROM product ORDER BY category");
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				categoryList.add(rs.getString("category"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			JdbcUtil.close(conn);
+			JdbcUtil.close(pstmt);
+			JdbcUtil.close(rs);
+		}
+		return categoryList;
+		
+		
+	}
+	
+	
 }
