@@ -2,8 +2,19 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.purchase.vo.Product" %>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+
+<c:choose>
+  <c:when test="${empty categoryList}">
+    <p style="color:red;">categoryList가 없습니다.</p>
+  </c:when>
+  <c:otherwise>
+    <p>categoryList 크기: ${fn:length(categoryList)}</p>
+  </c:otherwise>
+</c:choose>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,6 +33,8 @@ function validateForm() {
     }
     return true; // 제출 허용
 }
+
+
 </script>
 </head>
 <body>
@@ -35,7 +48,7 @@ function validateForm() {
     <option value="">-- 선택 --</option>
     <c:forEach items="${categoryList}" var="category">
         <option value="${category}" 
-            <c:if test="${param.category == category}">selected</c:if>>
+            <c:if test="${selectedCategory == category}">selected</c:if>>
             ${category}
         </option>
     </c:forEach>
