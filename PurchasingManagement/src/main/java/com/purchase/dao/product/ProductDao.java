@@ -58,99 +58,77 @@ public class ProductDao {
 			// TODO: handle exception
 		}
 	}
-	public int delete(Connection conn, String pno) throws SQLException{
-		try(PreparedStatement pstmt = conn.prepareStatement("delete from product where PRODUCT_ID = ?")){
+
+	public int delete(Connection conn, String pno) throws SQLException {
+		try (PreparedStatement pstmt = conn.prepareStatement("delete from product where PRODUCT_ID = ?")) {
 			pstmt.setString(1, pno);
 			return pstmt.executeUpdate();
 		}
 	}
-	
+
 	public List<Product> selectAll(Connection conn) throws SQLException {
-	    String sql = "SELECT * FROM product ORDER BY product_id";
-	    List<Product> list = new ArrayList<>();
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql);
-	         ResultSet rs = pstmt.executeQuery()) {
-	        while (rs.next()) {
-	            Product p = new Product(
-	                rs.getString("product_id"),
-	                rs.getString("product_name"),
-	                rs.getString("category"),
-	                rs.getInt("price"),
-	                rs.getString("supplier_id"));
-	            list.add(p);
-	        }
-	    }
-	    return list;
-	}
-	
-	public List<Product> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
-	    StringBuilder sql = new StringBuilder("SELECT * FROM product WHERE 1=1");
-	    List<Object> params = new ArrayList<>();
-
-	    if (conditions.get("product_id") != null) {
-	        sql.append(" AND product_id = ?");
-	        params.add(conditions.get("product_id"));
-	    }
-	    if (conditions.get("product_name") != null) {
-	        sql.append(" AND product_name LIKE ?");
-	        params.add("%" + conditions.get("product_name") + "%");
-	    }
-	    if (conditions.get("category") != null) {
-	        sql.append(" AND category = ?");
-	        params.add(conditions.get("category"));
-	    }
-	    if (conditions.get("supplier_id") != null) {
-	        sql.append(" AND supplier_id = ?");
-	        params.add(conditions.get("supplier_id"));
-	    }
-	    sql.append(" ORDER BY product_id");
-
-	    try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-	        for (int i = 0; i < params.size(); i++) {
-	            pstmt.setObject(i + 1, params.get(i));
-	        }
-	        try (ResultSet rs = pstmt.executeQuery()) {
-	            List<Product> list = new ArrayList<>();
-	            while (rs.next()) {
-	                Product p = new Product(
-	                    rs.getString("product_id"),
-	                    rs.getString("product_name"),
-	                    rs.getString("category"),
-	                    rs.getInt("price"),
-	                    rs.getString("supplier_id"));
-	                list.add(p);
-	            }
-	            return list;
-	        }
-	    }
-	}
-	
-	public List<String> getCategoryList(){
-
-		
-		List<String> categoryList = new ArrayList<>();
-		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try{
-			pstmt = conn.prepareStatement("SELECT DISTINCT category FROM product ORDER BY category");
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				categoryList.add(rs.getString("category"));
+		String sql = "SELECT * FROM product ORDER BY product_id";
+		List<Product> list = new ArrayList<>();
+		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				Product p = new Product(rs.getString("product_id"), rs.getString("product_name"),
+						rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"));
+				list.add(p);
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			JdbcUtil.close(conn);
-			JdbcUtil.close(pstmt);
-			JdbcUtil.close(rs);
 		}
-		return categoryList;
-		
-		
+		return list;
 	}
+
+	public List<Product> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
+		StringBuilder sql = new StringBuilder("SELECT * FROM product WHERE 1=1");
+		List<Object> params = new ArrayList<>();
+
+		if (conditions.get("product_id") != null) {
+			sql.append(" AND product_id = ?");
+			params.add(conditions.get("product_id"));
+		}
+		if (conditions.get("product_name") != null) {
+			sql.append(" AND product_name LIKE ?");
+			params.add("%" + conditions.get("product_name") + "%");
+		}
+		if (conditions.get("category") != null) {
+			sql.append(" AND category = ?");
+			params.add(conditions.get("category"));
+		}
+		if (conditions.get("supplier_id") != null) {
+			sql.append(" AND supplier_id = ?");
+			params.add(conditions.get("supplier_id"));
+		}
+		sql.append(" ORDER BY product_id");
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+			for (int i = 0; i < params.size(); i++) {
+				pstmt.setObject(i + 1, params.get(i));
+			}
+			try (ResultSet rs = pstmt.executeQuery()) {
+				List<Product> list = new ArrayList<>();
+				while (rs.next()) {
+					Product p = new Product(rs.getString("product_id"), rs.getString("product_name"),
+							rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"));
+					list.add(p);
+				}
+				return list;
+			}
+		}
+	}
+
 	
-	
+	  public List<String> getCategoryList(Connection conn) {
+	  
+	  List<String> categoryList = new ArrayList<>();
+	  
+	  try (PreparedStatement pstmt = conn.
+	  prepareStatement("SELECT DISTINCT category FROM product ORDER BY category")){
+	  ResultSet rs = pstmt.executeQuery(); while (rs.next()) {
+	  categoryList.add(rs.getString("category")); } } catch (Exception e) {
+	  e.printStackTrace(); } return categoryList;
+	  
+	  }
+	 
+
 }

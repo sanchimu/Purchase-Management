@@ -46,4 +46,12 @@ public class ProductService {
 	        throw new RuntimeException(e);
 	    }
 	}
+	
+	
+	  public List<String> getCategoryList() { try (Connection conn =
+	  ConnectionProvider.getConnection()) { return
+	  productDao.getCategoryList(conn); } catch (SQLException e) { throw new
+	  RuntimeException(e); } }
+	 
 }
+
