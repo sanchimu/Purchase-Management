@@ -9,14 +9,14 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/receiveInfoList.do") // ✅ URL 매핑 추가 (.do 확장자 사용)
+@WebServlet("/receiveInfoList.do")
 public class ListReceiveInfoServlet extends HttpServlet {
 
     private ReceiveInfoService service;
 
     @Override
     public void init() throws ServletException {
-        service = new ReceiveInfoService(); // super.init() 제거해도 무방
+        service = new ReceiveInfoService();
     }
 
     @Override
@@ -25,13 +25,13 @@ public class ListReceiveInfoServlet extends HttpServlet {
 
         List<ReceiveInfo> receiveList = service.getAllReceiveInfos();
 
+        // null 체크 대신 빈 리스트도 처리 가능
         if (receiveList == null) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "입고 정보 조회 실패");
             return;
         }
 
-        request.setAttribute("receiveList", receiveList);
+        request.setAttribute("receiveInfoList", receiveList);
         request.getRequestDispatcher("/WEB-INF/view/receiveInfoList.jsp").forward(request, response);
     }
 }
-

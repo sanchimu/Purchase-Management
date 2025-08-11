@@ -29,26 +29,29 @@
                 <th>입고일자</th>
             </tr>
 
-            <%
-                if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
-                    for (ReceiveInfo info : receiveInfoList) {
-            %>
-                  <td><%= info.getReceive_id() %></td>
-						<td><%= info.getOrder_id() %></td>
-						<td><%= info.getProduct_id() %></td>
-						<td><%= info.getQuantity() %></td>
-					<td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td>
+<%
+    if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
+        for (ReceiveInfo info : receiveInfoList) {
+%>
+    <tr>
+        <td><input type="checkbox" name="receiveIds" value="<%= info.getReceive_id() %>"></td>
+        <td><%= info.getReceive_id() %></td>
+        <td><%= info.getOrder_id() %></td>
+        <td><%= info.getProduct_id() %></td>
+        <td><%= info.getQuantity() %></td>
+        <td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td>
+    </tr>
+<%
+        }
+    } else {
+%>
+    <tr>
+        <td colspan="6">조회된 입고 정보가 없습니다.</td>
+    </tr>
+<%
+    }
+%>
 
-            <%
-                    }
-                } else {
-            %>
-                        <tr>
-                            <td colspan="6">조회된 입고 정보가 없습니다.</td>
-                        </tr>
-            <%
-                }
-            %>
         </table>
 
         <br>

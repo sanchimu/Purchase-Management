@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 
-@WebServlet("/receiveInfo.do")  // ✅ URL 매핑
+@WebServlet("/receiveInfo.do") 
 public class ReceiveInfoServlet extends HttpServlet {
     private ReceiveInfoService service = new ReceiveInfoService();
 
@@ -16,22 +16,22 @@ public class ReceiveInfoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
 
-        // 입력값 파라미터 수집
+        
         String orderId = req.getParameter("order_id");
         String productId = req.getParameter("product_id");
         int quantity = Integer.parseInt(req.getParameter("quantity"));
 
-        // VO 객체 생성
+     
         ReceiveInfo vo = new ReceiveInfo();
-        vo.setOrder_id(orderId);      // ✅ 메서드명 수정
-        vo.setProduct_id(productId);  // ✅ 메서드명 수정
+        vo.setOrder_id(orderId);      
+        vo.setProduct_id(productId);  
         vo.setQuantity(quantity);
 
         try {
-            // 서비스 로직 실행
+ 
             service.addReceiveInfo(vo);
 
-            // 등록 성공 시 목록 페이지로 리다이렉트
+
             res.sendRedirect("receiveInfoList.do");
         } catch (Exception e) {
             e.printStackTrace();
