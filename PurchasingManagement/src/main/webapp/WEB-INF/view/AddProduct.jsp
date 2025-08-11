@@ -26,6 +26,9 @@ window.onload = function() {
 </p>
 <p>
 	카테고리 : <br/><input type = "text" name="category" <%-- <%-- value="${param.category}" --%>>
+	<select>
+	
+	</select>
 </p>
 <p>
 	가격 : <br/><input type = "text" name="price" <%-- value="${param.price}" --%>>

@@ -23,6 +23,7 @@ public class SearchProductHandler implements CommandHandler {
         String category = req.getParameter("category");
         String supplierId = req.getParameter("supplier_id");
 
+        List<String> categoryList =productService.getCategoryList(); 
         // 2. 조건 Map에 넣기 (널/빈문자 체크)
         Map<String, String> searchParams = new HashMap<>();
         if(productId != null && !productId.trim().isEmpty()) {
@@ -43,7 +44,7 @@ public class SearchProductHandler implements CommandHandler {
 
         // 4. JSP에 결과 전달
         req.setAttribute("productList", productList);
-
+        req.setAttribute("categoryList", categoryList); 
         // 5. 뷰 이름 반환 (productList.jsp 경로)
         return "/WEB-INF/view/productList.jsp";
     }

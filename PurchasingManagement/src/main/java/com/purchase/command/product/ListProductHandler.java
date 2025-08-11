@@ -20,15 +20,18 @@ public class ListProductHandler implements CommandHandler {
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
-        List<Product> productList = productService.getAllProducts();
+		
+		
+		List<Product> productList = productService.getAllProducts();
 		 List<String> categoryList =productService.getCategoryList(); 
         
         req.setAttribute("productList", productList);
 		 req.setAttribute("categoryList", categoryList); 
-        
+		 
         RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/view/productList.jsp");
         rd.forward(req, res);
         
-        return "/WEB-INF/view/productList.jsp";
+		/* return "/WEB-INF/view/productList.jsp"; */
+        return null;
 	}
 }
