@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.purchase.vo.Product" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +30,16 @@ function validateForm() {
 	상품 ID : <input type = "text" name="product_id" value="${param.product_id}">
 	상품명 : <input type = "text" name="product_name" value="${param.product_name}">
 	<br>
-	카테고리 : <input type = "text" name="category" value="${param.category}">
+	카테고리 : 
+<select name="category">
+    <option value="">-- 선택 --</option>
+    <c:forEach items="${categoryList}" var="category">
+        <option value="${category}" 
+            <c:if test="${param.category == category}">selected</c:if>>
+            ${category}
+        </option>
+    </c:forEach>
+</select>
 	공급업체 ID  : <input type = "text" name="supplier_id" value="${param.supplier_id}">
 	<br>
 
