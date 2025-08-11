@@ -89,7 +89,7 @@ public class SupplierInfoDao {
                     rs.getString("supplier_id"),
                     rs.getString("supplier_name"),
                     rs.getString("contact_number"),
-                    rs.getString("adress")
+                    rs.getString("address")
                 );
                 list.add(supplier);
             }
