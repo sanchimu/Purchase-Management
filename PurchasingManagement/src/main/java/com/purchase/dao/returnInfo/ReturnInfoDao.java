@@ -73,17 +73,6 @@ public class ReturnInfoDao {
 	}
 	
 	
-	/*
-	 * public List<Product> selectAll(Connection conn) throws SQLException { String
-	 * sql = "SELECT * FROM product ORDER BY product_id"; List<Product> list = new
-	 * ArrayList<>(); try (PreparedStatement pstmt = conn.prepareStatement(sql);
-	 * ResultSet rs = pstmt.executeQuery()) { while (rs.next()) { Product p = new
-	 * Product( rs.getString("product_id"), rs.getString("product_name"),
-	 * rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"));
-	 * list.add(p); } } return list; }
-	 */
-	
-	
 	public List<ReturnInfo> selectAll(Connection conn) throws SQLException {
 		String sql = "SELECT * FROM RETURN_INFO ORDER BY RETURN_ID";
 		List<ReturnInfo> returnInfoList = new ArrayList<>();

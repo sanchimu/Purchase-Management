@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.purchase.dao.ReceiveInfo.ReceiveInfoDao;
 import com.purchase.dao.returnInfo.ReturnInfoDao;
 import com.purchase.vo.ReturnInfo;
 
@@ -11,6 +12,7 @@ import jdbc.connection.ConnectionProvider;
 
 public class ReturnInfoService {
 	private ReturnInfoDao returnInfoDao = new ReturnInfoDao();
+	private ReceiveInfoDao receiveInfoDao = new ReceiveInfoDao();
 	
 	public void addReturnInfo(ReturnInfo returnInfo) {
 		try(Connection conn = ConnectionProvider.getConnection()){
@@ -42,5 +44,13 @@ public class ReturnInfoService {
 	    } catch (SQLException e) {
 	        throw new RuntimeException(e);
 	    }
+	}
+	
+	public String getProductIdByReceiveId(String receiveId) {
+		try(Connection conn = ConnectionProvider.getConnection()) {
+			return receiveInfoDao.getProductIdByReceiveId(conn, receiveId);
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

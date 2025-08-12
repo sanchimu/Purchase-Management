@@ -44,7 +44,7 @@ public class SearchProductHandler implements CommandHandler {
 
         // 4. JSP에 결과 전달
         req.setAttribute("productList", productList);
-        req.setAttribute("categoryList", categoryList); 
+        req.setAttribute("categoryList", categoryList);
         // 5. 뷰 이름 반환 (productList.jsp 경로)
         return "/WEB-INF/view/productList.jsp";
     }

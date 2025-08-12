@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="com.purchase.vo.ReceiveInfo" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,24 +22,65 @@ window.onload = function() {
 
 
 <body>
-		<h3>반품 요청</h3>
-		<form action = "ReceiveListcheck.do" method="post">
+    <%
+        // 컨트롤러에서 전달받은 입고 목록
+        List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    %>
+
+		<h3>입고 현황</h3>
+		<form action = returnProcess.do method="post">
+ <table border="1">
+            <tr>
+                <th>선택</th>
+                <th>입고 ID</th>
+                <th>주문 ID</th>
+                <th>상품 ID</th>
+                <th>수량</th>
+                <th>반품 가능 수량</th>
+                <th>입고일자</th>
+            </tr>
+
+<%
+if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
+    for (ReceiveInfo info : receiveInfoList) {
+        int available = info.getAvailable_to_return();
+%>
+    <tr>
+        <td>
+            <% if (available > 0) { %>
+                <input type="radio" name="receiveId" value="<%= info.getReceive_id() %>">
+            <% } else { %>
+                <!-- 반품 가능 수량 없으면 체크 불가 -->
+                <input type="radio" disabled>
+            <% } %>
+        </td>
+        <td><%= info.getReceive_id() %></td>
+        <td><%= info.getOrder_id() %></td>
+        <td><%= info.getProduct_id() %></td>
+        <td><%= info.getQuantity() %></td>
+        <td><%= available %></td>
+        <td><%= info.getReceive_date() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(info.getReceive_date()) : "" %></td>
+    </tr>
+<%
+        }
+    } else {
+%>
+    <tr>
+        <td colspan="6">반품 가능한 입고 리스트가 없습니다.</td>
+    </tr>
+<%
+    }
+%>
+
+        </table>
 
 <p>
-	입고 고유번호 : <br/><input type = "text" name="product_name" <%-- value="${param.product_name}" --%>>
-</p>
-<p>
-	카테고리 : <br/><input type = "text" name="category" <%-- <%-- value="${param.category}" --%>>
-</p>
-<p>
-	가격 : <br/><input type = "text" name="price" <%-- value="${param.price}" --%>>
-</p>
-<p>
-	공급업체 ID  : <br/><input type = "text" name="supplier_id" <%-- value="${param.supplier_id}" --%>>
-</p>
-<p>
-	<input type = "submit" value="상품 추가">
+	반품 수량 : <input type="text" name="quantity"/><br>
+	반품 사유 : <input type="text" name="reason"/><br><br>
+	<input type = "submit" value="반품 요청">
 	<input type="button" value="뒤로 가기" onclick="location.href='returnInfoList.do'">
+	</form>
 </p>
 </body>
 </html>

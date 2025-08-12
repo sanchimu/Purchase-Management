@@ -3,12 +3,14 @@ package com.purchase.vo;
 import java.util.Date;
 
 public class ReceiveInfo {
-	String receive_id;
-	String order_id;
-	String product_id;
-	int quantity;
-	Date receive_date;
+	private String receive_id;
+	private String order_id;
+	private String product_id;
+	private int quantity;
+	private Date receive_date;
 
+	private int available_to_return; // 하정 추가 8월 12일
+	
 	public ReceiveInfo() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -21,6 +23,14 @@ public class ReceiveInfo {
 		this.product_id = product_id;
 		this.quantity = quantity;
 		this.receive_date = receive_date;
+	}
+
+	public int getAvailable_to_return() {
+		return available_to_return;
+	}
+
+	public void setAvailable_to_return(int available_to_return) {
+		this.available_to_return = available_to_return;
 	}
 
 	public String getReceive_id() {
