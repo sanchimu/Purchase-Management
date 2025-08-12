@@ -67,7 +67,7 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
     } else {
 %>
     <tr>
-        <td colspan="6">반품 가능한 입고 리스트가 없습니다.</td>
+        <td colspan="7">반품 가능한 입고 리스트가 없습니다.</td>
     </tr>
 <%
     }
