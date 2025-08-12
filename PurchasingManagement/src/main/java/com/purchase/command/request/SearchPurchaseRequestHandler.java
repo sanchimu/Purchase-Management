@@ -26,7 +26,7 @@ public class SearchPurchaseRequestHandler implements CommandHandler {
 
             if (productId == null || productId.trim().isEmpty()) {
                 // 검색어가 없으면 → 검색 화면 유지 + 메시지 (検索語がない場合 → 検索画面に留まり、メッセージを表示)
-                req.setAttribute("message", "검색어를 입력하세요.");
+                req.setAttribute("message", "상품 ID를 입력하세요.");
                 return "/WEB-INF/view/purchaseRequestSearch.jsp";
             }
 

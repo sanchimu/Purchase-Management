@@ -40,7 +40,7 @@ public class InsertPurchaseRequestHandler implements CommandHandler {
 			service.addPurchaseRequest(request);
 
 			// 등록 완료 후 목록 페이지로 리다이렉트(登録完了後、一覧ページへリダイレクト)
-			res.sendRedirect(req.getContextPath() + "/listpurchaserequest.do");
+			res.sendRedirect(req.getContextPath() + "/requestList.do");
 			return null;
 
 		} else {

@@ -23,7 +23,7 @@ public class DeletePurchaseRequestHandler implements CommandHandler {
             }
 
             //삭제 후 목록 페이지로 리다이렉트 (削除後、リストページにリダイレクト)
-            res.sendRedirect(req.getContextPath() + "/listpurchaserequest.do");
+            res.sendRedirect(req.getContextPath() + "/requestList.do");
             return null;
         } else { //POST 요청이 아니라면 에러 반환 ( POSTリクエスト以外はエラーを返す)
             res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);

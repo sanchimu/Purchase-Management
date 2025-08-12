@@ -1,19 +1,61 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>구매요청 등록</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  h2 { color: #333; }
+  .toolbar { display:flex; gap:12px; align-items:center; margin:10px 0 16px; }
+  .toolbar form { display:flex; gap:8px; align-items:center; }
+  input[type="text"] { padding:6px 8px; }
+  input[type="submit"], a.btn { padding:6px 10px; border:1px solid #ccc; background:#f7f7f7; text-decoration:none; color:#333; cursor:pointer; }
+  .msg { margin:8px 0; padding:8px 10px; background:#fff8d6; border:1px solid #eedc82; }
+  table { border-collapse: collapse; width: 100%; max-width: 900px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background:#f2f2f2; }
+</style>
 </head>
 <body>
 
 <h2>구매요청 등록</h2>
-<form action="<%=request.getContextPath()%>/insertpurchaserequest.do" method="post">
-    상품ID: <input type="text" name="product_id" required><br>
-    수량: <input type="number" name="quantity" required><br>
-    요청자: <input type="text" name="requester_name" required><br>
+
+<div class="toolbar">
+  <a class="btn" href="<c:url value='/requestList.do'/>">목록</a>
+  <a class="btn" href="<c:url value='/searchpurchaserequest.do'/>">상품ID로 조회</a>
+</div>
+
+<c:if test="${not empty message}">
+  <div class="msg">${message}</div>
+</c:if>
+
+<form action="<c:url value='/insertpurchaserequest.do'/>" method="post">
+  <p>
+    <label for="product_id">상품ID</label><br>
+    <input type="text" id="product_id" name="product_id"
+           placeholder="P001"
+           pattern="^P[0-9]{3}$" title="형식은 P001 (P + 3자리 숫자)"
+           required>
+  </p>
+
+  <p>
+    <label for="quantity">수량</label><br>
+    <input type="number" id="quantity" name="quantity"
+           placeholder="1" min="1" step="1" required>
+  </p>
+
+  <p>
+    <label for="requester_name">요청자</label><br>
+    <input type="text" id="requester_name" name="requester_name"
+           maxlength="50" required>
+  </p>
+
+  <p>
     <input type="submit" value="등록">
-    <button type="button" onclick="location.href='<%=request.getContextPath()%>/listpurchaserequest.do'">목록</button>
+    <a class="btn" href="<c:url value='/requestList.do'/>">목록</a>
+  </p>
 </form>
 
 </body>
