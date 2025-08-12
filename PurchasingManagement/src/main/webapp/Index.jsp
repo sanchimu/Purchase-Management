@@ -69,7 +69,7 @@
   <a href="listProducts.do" class="Menu" target="mainFrame">❤️ 상품 관리</a>
   <a href="listsupplier.do" class="Menu" target="mainFrame">😉 공급 업체</a>
   <a href="requestList.do" class="Menu" target="mainFrame">👺 구매 요청</a>
-  <a href="orderList.do" class="Menu" target="mainFrame">😎 발주서</a>
+  <a href="orderSheetList.do" class="Menu" target="mainFrame">😎 발주서</a>
   <a href="receiveInfoList.do" class="Menu" target="mainFrame">😢 입고 관리</a>
   <a href="returnInfoList.do" class="Menu" target="mainFrame">🥱 반품 관리</a>
 </div>
