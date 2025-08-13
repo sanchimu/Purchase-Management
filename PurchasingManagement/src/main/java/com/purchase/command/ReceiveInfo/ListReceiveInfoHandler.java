@@ -15,9 +15,10 @@ public class ListReceiveInfoHandler implements CommandHandler {
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        List<ReceiveInfo> list = service.getAllReceiveInfos();
 
-        req.setAttribute("receiveInfoList", list);
-        return "/WEB-INF/view/receiveInfoForm.jsp";
+        List<ReceiveInfo> receiveList = service.getAllReceiveInfos();
+        req.setAttribute("receiveList", receiveList);
+
+        return "/WEB-INF/view/receiveInfoList.jsp";
     }
 }

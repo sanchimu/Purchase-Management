@@ -11,13 +11,14 @@ import java.util.List;
 public class ReceiveInfoService {
     private ReceiveInfoDao dao = new ReceiveInfoDao();
 
-    public void addReceiveInfo(ReceiveInfo vo) {
+    public void addReceiveInfo(ReceiveInfo receiveInfo) {
         try (Connection conn = ConnectionProvider.getConnection()) {
-            dao.insert(conn, vo);
+            dao.insert(conn, receiveInfo);
         } catch (SQLException e) {
-            throw new RuntimeException("DB 저장 실패", e);
+            throw new RuntimeException(e);
         }
     }
+
 
     public List<ReceiveInfo> getAllReceiveInfos() {
         try (Connection conn = ConnectionProvider.getConnection()) {
@@ -26,7 +27,7 @@ public class ReceiveInfoService {
             throw new RuntimeException(e);
         }
     }
-    
+
     public String getProductIdByReceiveId(String receiveId) throws Exception {
         try (Connection conn = ConnectionProvider.getConnection()) {
             return dao.getProductIdByReceiveId(conn, receiveId);
