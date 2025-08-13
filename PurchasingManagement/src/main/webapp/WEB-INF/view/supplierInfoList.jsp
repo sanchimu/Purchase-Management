@@ -26,6 +26,7 @@
         color: white;
         border: none;
         cursor: pointer;
+        text-decoration: none;
     }
     .btn-delete {
         background-color: #f44336;
@@ -44,6 +45,8 @@
 
 <div class="top-menu">
     <a href="<c:url value='/insertsupplier.do'/>" class="btn">공급업체 등록</a>
+    <a href="<c:url value='/searchsupplier.do'/>" class="btn">공급업체 이름으로 검색</a>
+    <a href="javascript:location.reload();" class="btn">새로고침</a>
 </div>
 
 <h2 style="text-align:center;">공급업체 목록</h2>
