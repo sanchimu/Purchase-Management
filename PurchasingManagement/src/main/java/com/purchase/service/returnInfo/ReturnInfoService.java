@@ -3,9 +3,11 @@ package com.purchase.service.returnInfo;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.purchase.dao.ReceiveInfo.ReceiveInfoDao;
 import com.purchase.dao.returnInfo.ReturnInfoDao;
+import com.purchase.vo.Product;
 import com.purchase.vo.ReturnInfo;
 
 import jdbc.connection.ConnectionProvider;
@@ -44,6 +46,14 @@ public class ReturnInfoService {
 	    } catch (SQLException e) {
 	        throw new RuntimeException(e);
 	    }
+	}
+	
+	public List<ReturnInfo> getReturnInfosByConditions(Map<String, String> conditions) {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			return returnInfoDao.selectByConditions(conn, conditions);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public String getProductIdByReceiveId(String receiveId) {

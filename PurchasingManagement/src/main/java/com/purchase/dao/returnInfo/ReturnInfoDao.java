@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.purchase.vo.Product;
 import com.purchase.vo.ReturnInfo;
 
 import jdbc.JdbcUtil;
@@ -89,6 +91,40 @@ public class ReturnInfoDao {
 			System.out.println("조회된 데이터 수: " + i);
 		}
 		return returnInfoList;
+	}
+	
+	public List<ReturnInfo> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
+		StringBuilder sql = new StringBuilder("SELECT * FROM return_info WHERE 1=1");
+		List<Object> params = new ArrayList<>();
+
+		if (conditions.get("return_id") != null) {
+			sql.append(" AND return_id = ?");
+			params.add(conditions.get("return_id"));
+		}
+		if (conditions.get("receive_id") != null) {
+			sql.append(" AND receive_id LIKE ?");
+			params.add("%" + conditions.get("receive_id") + "%");
+		}
+		if (conditions.get("product_id") != null) {
+			sql.append(" AND product_id = ?");
+			params.add(conditions.get("product_id"));
+		}
+		sql.append(" ORDER BY return_id");
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+			for (int i = 0; i < params.size(); i++) {
+				pstmt.setObject(i + 1, params.get(i));
+			}
+			try (ResultSet rs = pstmt.executeQuery()) {
+				List<ReturnInfo> list = new ArrayList<>();
+				while (rs.next()) {
+					ReturnInfo ri = new ReturnInfo(rs.getString("return_id"), rs.getString("receive_id"),
+							rs.getString("product_id"), rs.getInt("quantity"), rs.getString("reason"), rs.getDate("return_date"));
+					list.add(ri);
+				}
+				return list;
+			}
+		}
 	}
 
 }

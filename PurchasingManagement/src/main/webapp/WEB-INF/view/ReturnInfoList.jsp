@@ -24,18 +24,18 @@ function validateForm() {
 </head>
 <body>
     <h2>입고 정보 조회</h2>
-<%--      <form action="returnInfoList.do" method="get">
-	반품 고유 번호 : <input type = "text" name="return_id" value="${param.product_id}">
+    <form action="searchReturnInfo.do" method="get">
+	반품 고유 번호 : <input type = "text" name="return_id" value="${param.return_id}">
 	<br>
-	입고 고유 번호 : <input type = "text" name="receive_id" value="${param.product_name}">
+	입고 고유 번호 : <input type = "text" name="receive_id" value="${param.receive_id}">
 	<br>
-	상품 고유 번호 : <input type = "text" name="product_id" value="${param.category}">
+	상품 고유 번호 : <input type = "text" name="product_id" value="${param.product_id}">
 	<br>
 
         <input type="submit" value="반품 정보 조회">
 	
 	</form>
- --%>
+
     <h2>반품  정보</h2>
      <form action="deleteReturnInfos.do" method="post" onsubmit="return validateForm();">
         <table border="1">
