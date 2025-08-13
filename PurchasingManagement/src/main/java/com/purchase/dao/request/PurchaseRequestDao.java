@@ -64,6 +64,26 @@ public class PurchaseRequestDao {
 			return pstmt.executeUpdate();
 		}
 	}
+	
+	//여러가지 요청 삭제
+	public int deleteMany(Connection conn, List<String> ids) throws SQLException {
+        if (ids == null || ids.isEmpty()) return 0;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM purchase_request WHERE request_id IN (");
+        for (int i = 0; i < ids.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append("?");
+        }
+        sb.append(")");
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
+            for (int i = 0; i < ids.size(); i++) {
+                pstmt.setString(i + 1, ids.get(i));
+            }
+            return pstmt.executeUpdate();
+        }
+    }
 
 	// 전체 주문 요청 조회
 	public List<PurchaseRequest> selectAll(Connection conn) throws SQLException {

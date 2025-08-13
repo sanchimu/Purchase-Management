@@ -2,6 +2,7 @@ package com.purchase.service.request;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.purchase.dao.request.PurchaseRequestDao;
@@ -68,6 +69,25 @@ public class PurchaseRequestService {
             conn = ConnectionProvider.getConnection();
             return requestDao.selectByProductId(conn, productId);
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.close(conn);
+        }
+    }
+    
+    //여러가지 요청 삭제
+    public int removePurchaseRequests(String[] requestIds) {
+        Connection conn = null;
+        try {
+            conn = ConnectionProvider.getConnection();
+            conn.setAutoCommit(false);
+
+            int deleted = requestDao.deleteMany(conn, Arrays.asList(requestIds));
+
+            conn.commit();
+            return deleted;
+        } catch (SQLException e) {
+            JdbcUtil.rollback(conn);
             throw new RuntimeException(e);
         } finally {
             JdbcUtil.close(conn);

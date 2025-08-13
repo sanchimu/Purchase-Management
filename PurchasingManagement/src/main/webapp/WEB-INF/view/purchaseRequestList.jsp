@@ -32,14 +32,15 @@
   <div class="msg">${message}</div>
 </c:if>
 
+<form action="<c:url value='/deletepurchaserequest.do'/>" method="post" onsubmit="return confirm('선택한 요청을 삭제하시겠습니까?');">
 <table>
   <tr>
+    <th><input type="checkbox" id="checkAll" onclick="toggleAll(this)"></th>
     <th>요청ID</th>
     <th>상품ID</th>
     <th>수량</th>
     <th>요청일</th>
     <th>요청자</th>
-    <th>삭제</th>
   </tr>
 
   <c:if test="${empty requestList}">
@@ -50,20 +51,27 @@
 
   <c:forEach var="req" items="${requestList}">
     <tr>
+      <td><input type="checkbox" name="request_id" value="${req.request_id}"></td>
       <td>${req.request_id}</td>
       <td>${req.product_id}</td>
       <td>${req.quantity}</td>
       <td>${req.request_date}</td>
       <td>${req.requester_name}</td>
-      <td>
-        <form action="<c:url value='/deletepurchaserequest.do'/>" method="post" style="margin:0">
-          <input type="hidden" name="request_id" value="${req.request_id}">
-          <input type="submit" value="삭제" onclick="return confirm('삭제하시겠습니까?');">
-        </form>
-      </td>
     </tr>
   </c:forEach>
 </table>
+
+<div style="margin-top:10px;">
+  <input type="submit" value="선택 삭제">
+</div>
+</form>
+
+<script>
+function toggleAll(source) {
+  const checkboxes = document.querySelectorAll('input[name="request_id"]');
+  checkboxes.forEach(cb => cb.checked = source.checked);
+}
+</script>
 
 </body>
 </html>

@@ -9,25 +9,28 @@ import mvc.command.CommandHandler;
 
 public class DeletePurchaseRequestHandler implements CommandHandler {
 
-    private PurchaseRequestService requestService = new PurchaseRequestService();
+    private final PurchaseRequestService service = new PurchaseRequestService();
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
-        if (req.getMethod().equalsIgnoreCase("POST")) { //요청 방식이 POST인지 확인 (リクエストメソッドがPOSTか確認)
-            String requestId = req.getParameter("request_id"); //삭제할 구매 요청 ID를 파라미터에서 꺼냄 (削除対象のリクエストIDをパラメータから取得)
-
-            //requset_id가 null이 아니고 공백도 아닐 때만 삭제 실행(request_id が null でも空白でもない場合のみ削除を実行)
-            if (requestId != null && !requestId.trim().isEmpty()) {
-                requestService.removePurchaseRequest(requestId);
-            }
-
-            //삭제 후 목록 페이지로 리다이렉트 (削除後、リストページにリダイレクト)
+        if (!req.getMethod().equalsIgnoreCase("POST")) {
+            // GET 등은 목록으로
             res.sendRedirect(req.getContextPath() + "/requestList.do");
             return null;
-        } else { //POST 요청이 아니라면 에러 반환 ( POSTリクエスト以外はエラーを返す)
-            res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        }
+
+        String[] ids = req.getParameterValues("request_id");
+
+        if (ids == null || ids.length == 0) {
+            req.getSession().setAttribute("message", "선택된 항목이 없습니다.");
+            res.sendRedirect(req.getContextPath() + "/requestList.do");
             return null;
         }
+
+        int deleted = service.removePurchaseRequests(ids);
+
+        req.getSession().setAttribute("message", deleted + "건 삭제되었습니다.");
+        res.sendRedirect(req.getContextPath() + "/requestList.do");
+        return null;
     }
 }
