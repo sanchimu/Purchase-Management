@@ -18,7 +18,7 @@ public class SupplierInfoDao {
         PreparedStatement pstmt = null;
         try {
             pstmt = conn.prepareStatement(
-                "INSERT INTO supplier_info (supplier_id, supplier_name, contact_number, adress) VALUES (?, ?, ?, ?)"
+                "INSERT INTO supplier_info (supplier_id, supplier_name, contact_number, address) VALUES (?, ?, ?, ?)"
             );
             pstmt.setString(1, supplier.getSupplier_id());
             pstmt.setString(2, supplier.getSupplier_name());
