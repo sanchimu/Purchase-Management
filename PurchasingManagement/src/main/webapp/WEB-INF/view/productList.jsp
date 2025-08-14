@@ -23,7 +23,7 @@
 
 
 
-<script>
+<!-- <script>
 // 폼 제출 전 체크박스 선택 여부 확인
 function validateForm() {
     const checkboxes = document.querySelectorAll('input[name="productIds"]:checked');
@@ -35,7 +35,7 @@ function validateForm() {
 }
 
 
-</script>
+</script> -->
 </head>
 <body>
     <h2>상품 조회</h2>
@@ -61,7 +61,7 @@ function validateForm() {
 	</form>
 
     <h2>상품 목록</h2>
-     <form action="deleteProducts.do" method="post" onsubmit="return validateForm();">
+     <form action="updateProducts.do" method="post" onsubmit="return validateForm();">
         <table border="1">
             <tr>
                 <th>선택</th>
@@ -70,6 +70,7 @@ function validateForm() {
                 <th>카테고리</th>
                 <th>가격</th>
                 <th>공급업체</th>
+                <th>상태</th>
             </tr>
             <%
                 List<Product> productList = (List<Product>) request.getAttribute("productList");
@@ -83,6 +84,14 @@ function validateForm() {
                 <td><%= p.getCategory() %></td>
                 <td><%= p.getPrice() %></td>
                 <td><%= p.getSupplier_id() %></td>
+                 <td>
+        			<select name="<%= p.getProduct_id() %>">
+           			<option value="판매중" <%= "판매중".equals(p.getProduct_status()) ? "selected" : "" %>>판매중</option>
+            		<option value="판매중지" <%= "판매중지".equals(p.getProduct_status()) ? "selected" : "" %>>판매중지</option>
+            		<option value="품절" <%= "품절".equals(p.getProduct_status()) ? "selected" : "" %>>품절</option>
+            		<option value="보류" <%= "보류".equals(p.getProduct_status()) ? "selected" : "" %>>보류</option>
+        			</select>
+   			 	</td>
             </tr>
             <%
                 }
@@ -90,6 +99,10 @@ function validateForm() {
             %><tr><td colspan="6">조회된 상품이 없습니다..</td></tr>
             <% } %>
         </table>
+        
+        
+        
+        
         
         	<%
     
@@ -112,7 +125,7 @@ function validateForm() {
 		<% } %>
         
         <br>
-        <input type="submit" value="선택 항목 삭제">
+        <input type="submit" value="상태 저장">
     </form>
            <br>
     <a href="addProduct.do">상품 등록하기</a>

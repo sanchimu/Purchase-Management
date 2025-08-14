@@ -34,15 +34,13 @@ public class SearchReturnInfoHandler implements CommandHandler {
             searchParams.put("product_id", productId.trim());
         }
 
-
         // 3. 서비스 호출 → 조건에 맞는 상품 리스트 조회
         List<ReturnInfo> returnInfoList = returmInfoService.getReturnInfosByConditions(searchParams);
 
         // 4. JSP에 결과 전달
         req.setAttribute("returnInfoList", returnInfoList);
-        
+
         // 5. 뷰 이름 반환 (productList.jsp 경로)
         return "/WEB-INF/view/ReturnInfoList.jsp";
     }
-
 }

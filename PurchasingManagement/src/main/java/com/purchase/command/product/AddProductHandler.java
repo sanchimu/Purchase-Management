@@ -25,6 +25,7 @@ public class AddProductHandler implements CommandHandler {
 		String productName = req.getParameter("product_name");
 		String category = req.getParameter("category");
 		String supplierId = req.getParameter("supplier_id");
+		String productStatus = req.getParameter("product_status");
 
 		if(priceStr == null || priceStr.trim().isEmpty()) {
 		    // 예외 처리 또는 기본값 지정
@@ -33,7 +34,7 @@ public class AddProductHandler implements CommandHandler {
 
 		int price = Integer.parseInt(priceStr);
 		
-		Product product = new Product(null, productName, category, price, supplierId);
+		Product product = new Product(null, productName, category, price, supplierId,productStatus);
 		productService.addProduct(product);
 
 	    req.setAttribute("success", true);

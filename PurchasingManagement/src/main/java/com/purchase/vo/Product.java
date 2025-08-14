@@ -1,24 +1,36 @@
 package com.purchase.vo;
 
 public class Product {
-	String product_id;
-	String product_name;
-	String category;
-	int price;
-	String supplier_id;
+	private String product_id;
+	private String product_name;
+	private String category;
+	private int price;
+	private String supplier_id;
+	private String product_status;
+
+
 
 	public Product() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Product(String product_id, String product_name, String category, int price, String supplier_id) {
+	public Product(String product_id, String product_name, String category, int price, String supplier_id, String product_status) {
 		super();
 		this.product_id = product_id;
 		this.product_name = product_name;
 		this.category = category;
 		this.price = price;
 		this.supplier_id = supplier_id;
+		this.product_status = product_status;
+	}
+
+	public String getProduct_status() {
+		return product_status;
+	}
+
+	public void setProduct_status(String product_status) {
+		this.product_status = product_status;
 	}
 
 	public String getProduct_id() {

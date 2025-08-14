@@ -29,7 +29,7 @@ public class SearchProductHandler implements CommandHandler {
         if(productId != null && !productId.trim().isEmpty()) {
             searchParams.put("product_id", productId.trim());
         }
-        if(productName != null && !productName.trim().isEmpty()) {
+        if(productName != null && !productName.trim().isEmpty()) { 
             searchParams.put("product_name", productName.trim());
         }
         if(category != null && !category.trim().isEmpty()) {

@@ -33,12 +33,13 @@ public class ProductDao {
 			String productId = String.format("P%03d", seqNum);
 			product.setProduct_id(productId);
 
-			pstmt = conn.prepareStatement("insert into product values (?,?,?,?,?)");
+			pstmt = conn.prepareStatement("insert into product values (?,?,?,?,?,?)");
 			pstmt.setString(1, product.getProduct_id());
 			pstmt.setString(2, product.getProduct_name());
 			pstmt.setString(3, product.getCategory());
 			pstmt.setInt(4, product.getPrice());
 			pstmt.setString(5, product.getSupplier_id());
+			pstmt.setString(6, product.getProduct_status());
 			int insertedCount = pstmt.executeUpdate();
 
 			if (insertedCount > 0) {
@@ -47,7 +48,7 @@ public class ProductDao {
 						"select * from (select product_id from product order by product_id desc) where rownum = 1");
 				if (rs.next()) {
 					return new Product(product.getProduct_id(), product.getProduct_name(), product.getCategory(),
-							product.getPrice(), product.getSupplier_id());
+							product.getPrice(), product.getSupplier_id(), product.getProduct_status());
 				}
 			}
 			return null;
@@ -72,7 +73,7 @@ public class ProductDao {
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
 				Product p = new Product(rs.getString("product_id"), rs.getString("product_name"),
-						rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"));
+						rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"), rs.getString("product_status"));
 				list.add(p);
 			}
 		}
@@ -109,7 +110,7 @@ public class ProductDao {
 				List<Product> list = new ArrayList<>();
 				while (rs.next()) {
 					Product p = new Product(rs.getString("product_id"), rs.getString("product_name"),
-							rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"));
+							rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"), rs.getString("product_status"));
 					list.add(p);
 				}
 				return list;
@@ -130,5 +131,12 @@ public class ProductDao {
 	  
 	  }
 	 
+	  public int updateProductStatus(Connection conn, Product product) throws SQLException {
+		  try(PreparedStatement pstmt = conn.prepareStatement("UPDATE PRODUCT SET PRODUCT_STATUS = ? WHERE PRODUCT_ID = ?")){
+			  pstmt.setString(1, product.getProduct_status());
+			  pstmt.setString(2, product.getProduct_id());
+			  return pstmt.executeUpdate();
+		  }
+	  }
 
 }

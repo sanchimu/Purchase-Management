@@ -54,5 +54,13 @@ public class ProductService {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public void updateProductStatus(Product product) {
+	    try (Connection conn = ConnectionProvider.getConnection()) {
+	        productDao.updateProductStatus(conn, product); // DAO에 conn 전달
+	    } catch (SQLException e) {
+	        throw new RuntimeException(e);
+	    }
+	}
 
 }
