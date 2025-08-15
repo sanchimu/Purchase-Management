@@ -1,0 +1,21 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%-- 상태 일괄 변경 툴바 (A=進行中, X=中断) --%>
+<div class="toolbar" style="margin:10px 0;">
+  <button type="submit" name="to" value="X"
+          onclick="return confirm('選択項目を中断しますか？');">選択項目 中断</button>
+  <button type="submit" name="to" value="A">選択項目 再開</button>
+
+  <label style="margin-left:12px;">
+    <input type="checkbox"
+           onchange="location.href='?includeHidden='+(this.checked?'1':'0');"
+      <c:if test="${includeHidden}">checked</c:if> /> 中断を含む
+  </label>
+</div>
+
+<style>
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid #ddd;padding:8px;text-align:center}
+.badge-ok{padding:2px 8px;border-radius:10px;background:#e6f6e6}
+.badge-stop{padding:2px 8px;border-radius:10px;background:#fdeaea}
+.toolbar button{margin-right:6px}
+</style>
