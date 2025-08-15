@@ -9,42 +9,58 @@ import com.purchase.vo.SupplierInfo;
 import mvc.command.CommandHandler;
 
 public class InsertSupplierInfoHandler implements CommandHandler {
-	// CommandHandler 인터페이스의 process()메서드를 구현해야 함
 
-    private SupplierInfoService supplierService = new SupplierInfoService();
-    // 공급업체 등록 로직을 실행할 서비스 객체 생성
-    // SupplierInfoService 안에 addSupplier() 같은 메서드들 있음
+    private final SupplierInfoService supplierService = new SupplierInfoService();
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
-        if (req.getMethod().equalsIgnoreCase("GET")) {
-        	// 요청 방식이 GET 인지 확인
-           
+        if ("GET".equalsIgnoreCase(req.getMethod())) {
+            // 등록 폼으로 이동
             return "/WEB-INF/view/supplierInfoForm.jsp";
-            // GET 요청이면 공급업체 등록 폼 페이지 경로를 반환
-            // WEB-INF 폴더 안의 JSP 는 직접 URL 로 접근 불가. Controller를 거쳐야 함
-        } else if (req.getMethod().equalsIgnoreCase("POST")) {
-        	// POST 요청이면 실제 데이터 등록 작업 수행
-           
-        	// 폼에서 전송된 입력값을 요청 객체에서 꺼냄
-            String supplierId = req.getParameter("supplier_id");
-            String supplierName = req.getParameter("supplier_name");
-            String contactNumber = req.getParameter("contact_number");
-            String address = req.getParameter("address");
+        }
 
+        if ("POST".equalsIgnoreCase(req.getMethod())) {
+            // 한글 파라미터 깨짐 방지
+            req.setCharacterEncoding("UTF-8");
+
+            // 파라미터 수집 & 기본 검증
+            String supplierId    = trim(req.getParameter("supplier_id"));
+            String supplierName  = trim(req.getParameter("supplier_name"));
+            String contactNumber = trim(req.getParameter("contact_number"));
+            String address       = trim(req.getParameter("address"));
+
+            // 필수값 체크 (ID, 이름)
+            if (isEmpty(supplierId) || isEmpty(supplierName)) {
+                req.setAttribute("error", "공급업체 ID와 이름은 필수입니다.");
+                // 사용자가 입력했던 값 유지
+                req.setAttribute("form_supplier_id", supplierId);
+                req.setAttribute("form_supplier_name", supplierName);
+                req.setAttribute("form_contact_number", contactNumber);
+                req.setAttribute("form_address", address);
+                return "/WEB-INF/view/supplierInfoForm.jsp";
+            }
+
+            // VO 구성 (업무/표시상태는 DB 기본값 사용: supplier_status='활성', row_status='A')
             SupplierInfo supplier = new SupplierInfo(supplierId, supplierName, contactNumber, address);
-            // 입력값을 하나의 SupplierInfo 객체로 묶음
-            
-            supplierService.insertSupplier(supplier);
-            // Service에 등록 요청
 
-            // 등록 후 목록페이지로
+            // 등록
+            supplierService.insertSupplier(supplier);
+
+            // 완료 후 목록으로
             res.sendRedirect(req.getContextPath() + "/listsupplier.do");
             return null;
-        } else {
-            res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return null;
         }
+
+        // 허용되지 않은 메서드
+        res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        return null;
+    }
+
+    private static String trim(String s) {
+        return s == null ? null : s.trim();
+    }
+
+    private static boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }

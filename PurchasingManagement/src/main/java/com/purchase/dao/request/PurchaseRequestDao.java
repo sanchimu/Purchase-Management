@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.purchase.vo.PurchaseRequest;
 
@@ -13,60 +14,56 @@ import jdbc.JdbcUtil;
 
 public class PurchaseRequestDao {
 
-	// 주문 요청 생성
-	public PurchaseRequest insert(Connection conn, PurchaseRequest req) throws SQLException {
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+    // 주문 요청 생성 (request_status, row_status는 DB 기본값 사용)
+    public PurchaseRequest insert(Connection conn, PurchaseRequest req) throws SQLException {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
-		// 시퀀스를 이용하여 주문번호 생성
-		try {
-			int seqNum = 0; // 시퀀스 번호 저장 변수
-			pstmt = conn.prepareStatement("select purchase_request_seq.nextval from dual");
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				seqNum = rs.getInt(1); // 결과가 있으면 첫번째 컬럼의 값을 seqNum에 저장
-			}
-			JdbcUtil.close(rs);
-			JdbcUtil.close(pstmt);
+        try {
+            int seqNum = 0;
+            pstmt = conn.prepareStatement("SELECT purchase_request_seq.NEXTVAL FROM dual");
+            rs = pstmt.executeQuery();
+            if (rs.next()) seqNum = rs.getInt(1);
+            JdbcUtil.close(rs);
+            JdbcUtil.close(pstmt);
 
-			// 시퀀스를 기반으로 request_id 생성
-			String requestId = String.format("PR%03d", seqNum);
-			req.setRequest_id(requestId);
+            String requestId = String.format("PR%03d", seqNum);
+            req.setRequest_id(requestId);
 
-			pstmt = conn.prepareStatement(
-					"INSERT INTO purchase_request (request_id, product_id, quantity, request_date, requester_name) VALUES (?, ?, ?, ?, ?)");
-			pstmt.setString(1, req.getRequest_id());
-			pstmt.setString(2, req.getProduct_id());
-			pstmt.setInt(3, req.getQuantity());
+            pstmt = conn.prepareStatement(
+                "INSERT INTO purchase_request " +
+                "  (request_id, product_id, quantity, request_date, requester_name) " +
+                "VALUES (?,?,?,?,?)"
+            );
+            pstmt.setString(1, req.getRequest_id());
+            pstmt.setString(2, req.getProduct_id());
+            pstmt.setInt(3, req.getQuantity());
+            java.sql.Date sqlDate = (req.getRequest_date() == null)
+                    ? new java.sql.Date(System.currentTimeMillis())
+                    : new java.sql.Date(req.getRequest_date().getTime());
+            pstmt.setDate(4, sqlDate);
+            pstmt.setString(5, req.getRequester_name());
 
-			// java.sql.Date 형식으로 변환
-			java.sql.Date sqlDate = new java.sql.Date(req.getRequest_date().getTime());
-			pstmt.setDate(4, sqlDate);
-			pstmt.setString(5, req.getRequester_name());
-			int insertedCount = pstmt.executeUpdate();
+            int inserted = pstmt.executeUpdate();
+            if (inserted > 0) return req;
+            return null;
+        } finally {
+            JdbcUtil.close(rs);
+            JdbcUtil.close(pstmt);
+        }
+    }
 
-			// 성공적으로 삽입되었을 시 해당 vo 반환
-			if (insertedCount > 0) {
-				return req;
-			}
+    // (정책상 UI에서 미사용) 단건 삭제 – 남겨두어도 되고, 제거해도 무방
+    public int delete(Connection conn, String requestId) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "DELETE FROM purchase_request WHERE request_id = ?")) {
+            pstmt.setString(1, requestId);
+            return pstmt.executeUpdate();
+        }
+    }
 
-			return null;
-		} finally {
-			JdbcUtil.close(rs);
-			JdbcUtil.close(pstmt);
-		}
-	}
-
-	// 주문 요청 삭제
-	public int delete(Connection conn, String requestId) throws SQLException {
-		try (PreparedStatement pstmt = conn.prepareStatement("delete from purchase_request where request_id = ?")) {
-			pstmt.setString(1, requestId);
-			return pstmt.executeUpdate();
-		}
-	}
-	
-	//여러가지 요청 삭제
-	public int deleteMany(Connection conn, List<String> ids) throws SQLException {
+    // (정책상 UI에서 미사용) 여러 요청 삭제
+    public int deleteMany(Connection conn, List<String> ids) throws SQLException {
         if (ids == null || ids.isEmpty()) return 0;
 
         StringBuilder sb = new StringBuilder();
@@ -85,38 +82,121 @@ public class PurchaseRequestDao {
         }
     }
 
-	// 전체 주문 요청 조회
-	public List<PurchaseRequest> selectAll(Connection conn) throws SQLException {
-		String sql = "SELECT * FROM purchase_request ORDER BY request_id";
-		List<PurchaseRequest> list = new ArrayList<>();
-		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-			while (rs.next()) {
-				PurchaseRequest pr = new PurchaseRequest(rs.getString("request_id"), rs.getString("product_id"),
-						rs.getInt("quantity"), rs.getDate("request_date"), rs.getString("requester_name"));
-				list.add(pr);
-			}
-		}
-		// 최종 조회된 전체 목록 반환
-		return list;
-	}
+    // 전체 주문 요청 조회 (request_status, row_status 포함)
+    public List<PurchaseRequest> selectAll(Connection conn) throws SQLException {
+        String sql =
+            "SELECT request_id, product_id, quantity, request_date, requester_name, " +
+            "       request_status, row_status " +
+            "  FROM purchase_request " +
+            " ORDER BY request_id";
 
-	//상품 ID로 검색하기
-	public List<PurchaseRequest> selectByProductId(Connection conn, String productId) throws SQLException {
-		String sql = "SELECT * FROM purchase_request WHERE product_id = ? ORDER BY request_date DESC";
+        List<PurchaseRequest> list = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-		List<PurchaseRequest> list = new ArrayList<>();
+            while (rs.next()) {
+                PurchaseRequest pr = new PurchaseRequest();
+                pr.setRequest_id(rs.getString("request_id"));
+                pr.setProduct_id(rs.getString("product_id"));
+                pr.setQuantity(rs.getInt("quantity"));
+                pr.setRequest_date(rs.getDate("request_date"));
+                pr.setRequester_name(rs.getString("requester_name"));
+                pr.setRequest_status(rs.getString("request_status")); // ✅ 업무상태
+                pr.setRow_status(rs.getString("row_status"));         // ✅ 표시상태(A/X)
+                list.add(pr);
+            }
+        }
+        return list;
+    }
 
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, productId);
+    // ✅ 조건 검색 (request_id, product_id, requester_name)
+    public List<PurchaseRequest> selectByConditions(Connection conn, Map<String, String> cond) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+            "SELECT request_id, product_id, quantity, request_date, requester_name, request_status, row_status " +
+            "  FROM purchase_request WHERE 1=1"
+        );
+        List<Object> params = new ArrayList<>();
 
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					PurchaseRequest pr = new PurchaseRequest(rs.getString("request_id"), rs.getString("product_id"),
-							rs.getInt("quantity"), rs.getDate("request_date"), rs.getString("requester_name"));
-					list.add(pr);
-				}
-			}
-		}
-		return list;
-	}
+        if (cond != null) {
+            String v;
+            v = cond.get("request_id");
+            if (v != null && !v.isEmpty()) {
+                sql.append(" AND request_id = ?");
+                params.add(v);
+            }
+            v = cond.get("product_id");
+            if (v != null && !v.isEmpty()) {
+                sql.append(" AND product_id = ?");
+                params.add(v);
+            }
+            v = cond.get("requester_name");
+            if (v != null && !v.isEmpty()) {
+                sql.append(" AND requester_name LIKE ?");
+                params.add("%" + v + "%");
+            }
+        }
+
+        sql.append(" ORDER BY request_id");
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pstmt.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = pstmt.executeQuery()) {
+                List<PurchaseRequest> list = new ArrayList<>();
+                while (rs.next()) {
+                    PurchaseRequest pr = new PurchaseRequest();
+                    pr.setRequest_id(rs.getString("request_id"));
+                    pr.setProduct_id(rs.getString("product_id"));
+                    pr.setQuantity(rs.getInt("quantity"));
+                    pr.setRequest_date(rs.getDate("request_date"));
+                    pr.setRequester_name(rs.getString("requester_name"));
+                    pr.setRequest_status(rs.getString("request_status"));
+                    pr.setRow_status(rs.getString("row_status"));
+                    list.add(pr);
+                }
+                return list;
+            }
+        }
+    }
+
+    // 상품 ID로 검색 (request_status, row_status 포함)
+    public List<PurchaseRequest> selectByProductId(Connection conn, String productId) throws SQLException {
+        String sql =
+            "SELECT request_id, product_id, quantity, request_date, requester_name, " +
+            "       request_status, row_status " +
+            "  FROM purchase_request " +
+            " WHERE product_id = ? " +
+            " ORDER BY request_date DESC";
+
+        List<PurchaseRequest> list = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, productId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    PurchaseRequest pr = new PurchaseRequest();
+                    pr.setRequest_id(rs.getString("request_id"));
+                    pr.setProduct_id(rs.getString("product_id"));
+                    pr.setQuantity(rs.getInt("quantity"));
+                    pr.setRequest_date(rs.getDate("request_date"));
+                    pr.setRequester_name(rs.getString("requester_name"));
+                    pr.setRequest_status(rs.getString("request_status"));
+                    pr.setRow_status(rs.getString("row_status"));
+                    list.add(pr);
+                }
+            }
+        }
+        return list;
+    }
+
+    // ✅ 업무상태 변경 (드롭다운 저장 시 사용)
+    public int updateRequestStatus(Connection conn, PurchaseRequest pr) throws SQLException {
+        String sql = "UPDATE purchase_request SET request_status = ? WHERE request_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, pr.getRequest_status());
+            pstmt.setString(2, pr.getRequest_id());
+            return pstmt.executeUpdate();
+        }
+    }
 }

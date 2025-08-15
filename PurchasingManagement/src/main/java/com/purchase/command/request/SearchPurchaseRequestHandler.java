@@ -1,6 +1,11 @@
 package com.purchase.command.request;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,38 +20,35 @@ public class SearchPurchaseRequestHandler implements CommandHandler {
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
+        boolean includeHidden = "1".equals(req.getParameter("includeHidden"));
 
-        if (req.getMethod().equalsIgnoreCase("GET")) {
-        	// 요청 메서드가 GET이면 → 검색 폼 표시 ((リクエストメソッドがGETの場合 → 検索フォーム表示)
-            return "/WEB-INF/view/purchaseRequestSearch.jsp";
+        String requestId     = trim(req.getParameter("request_id"));
+        String productId     = trim(req.getParameter("product_id"));
+        String requesterName = trim(req.getParameter("requester_name"));
 
-        } else if (req.getMethod().equalsIgnoreCase("POST")) {
-            // 요청 메서드가 POST면 → 검색 실행 (リクエストメソッドがPOSTの場合 → 検索実行)
-            String productId = req.getParameter("product_id");
+        Map<String,String> cond = new HashMap<>();
+        putIf(cond, "request_id", requestId);
+        putIf(cond, "product_id", productId);
+        putIf(cond, "requester_name", requesterName);
 
-            if (productId == null || productId.trim().isEmpty()) {
-                // 검색어가 없으면 → 검색 화면 유지 + 메시지 (検索語がない場合 → 検索画面に留まり、メッセージを表示)
-                req.setAttribute("message", "상품 ID를 입력하세요.");
-                return "/WEB-INF/view/purchaseRequestSearch.jsp";
-            }
+        List<PurchaseRequest> list = service.getByConditions(cond);
+        List<PurchaseRequest> view = includeHidden
+                ? list
+                : list.stream()
+                      .filter(r -> r.getRow_status() == null || "A".equalsIgnoreCase(r.getRow_status()))
+                      .collect(Collectors.toList());
 
-            List<PurchaseRequest> list = service.searchByProductId(productId.trim());
+        req.setAttribute("requestList", view);
+        req.setAttribute("includeHidden", includeHidden);
+        req.setAttribute("requestStatusList",
+                Arrays.asList("접수","검토중","승인","반려","취소","종결"));
 
-          //목록이 비어있으면 메시지 설정 후 등록 화면으로 이동 (一覧が空ならメッセージを設定して登録画面へ移動)
-            if (list.isEmpty()) {
-                req.setAttribute("message", "등록된 구매 요청이 없습니다. 새 요청을 등록하세요.");
-                return "/WEB-INF/view/purchaseRequestForm.jsp";
-            }
+        // ★ 여기!
+        return "/WEB-INF/view/purchaseRequestList.jsp";
+    }
 
-            // 결과 전달 (結果を渡す)
-            req.setAttribute("product_id", productId);
-            req.setAttribute("requestList", list);
-
-            return "/WEB-INF/view/purchaseRequestSearch.jsp";
-
-        } else {
-            res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return null;
-        }
+    private static String trim(String s){ return s==null?null:s.trim(); }
+    private static void putIf(Map<String,String> map, String k, String v){
+        if (v != null && !v.isEmpty()) map.put(k, v);
     }
 }

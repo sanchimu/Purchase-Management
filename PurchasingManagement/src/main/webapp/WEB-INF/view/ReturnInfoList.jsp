@@ -1,98 +1,115 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="com.purchase.vo.ReturnInfo" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-
-
-
+<title>반품 목록</title>
+<style>
+  body{font-family:Arial,sans-serif;margin:20px;}
+  h2{margin:0 0 12px;}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 16px;}
+  .toolbar a.btn, .toolbar input[type="submit"], .toolbar button.btn{padding:6px 10px;border:1px solid #ccc;background:#f7f7f7;text-decoration:none;color:#333;cursor:pointer;}
+  .toolbar form.search{display:flex;gap:8px;align-items:center;}
+  .toolbar input[type="text"]{padding:6px 8px;}
+  table{border-collapse:collapse;width:100%;}
+  th,td{border:1px solid #ddd;padding:8px;text-align:center;}
+  th{background:#f2f2f2;}
+  .msg{margin:8px 0;padding:8px 10px;border-radius:4px;}
+  .msg-ok{background:#e9f7ef;border:1px solid #c7ebd3;color:#1e7e34;}
+  .msg-err{background:#fdecea;border:1px solid #f5c6cb;color:#a71d2a;white-space:pre-line;}
+  .danger{border-color:#e0b4b4;background:#ffe8e6;}
+  .inline-input{width:80px;}
+  .inline-reason{width:240px;}
+</style>
 <script>
-// 폼 제출 전 체크박스 선택 여부 확인
-function validateForm() {
-    const checkboxes = document.querySelectorAll('input[name="returnInfoIds"]:checked');
-    if (checkboxes.length === 0) {
-        alert("삭제할 반품 정보를 선택하세요.");
-        return false; // 제출 막기
-    }
-    return true; // 제출 허용
-}
+  function toggleAll(src){
+    const boxes=document.querySelectorAll('input[name="returnInfoIds"]');
+    boxes.forEach(cb=>cb.checked=src.checked);
+  }
+  function ensureChecked(){
+    const checked=document.querySelectorAll('input[name="returnInfoIds"]:checked');
+    if(checked.length===0){ alert('항목을 하나 이상 선택하세요.'); return false; }
+    return true;
+  }
 </script>
 </head>
 <body>
-    <h2>입고 정보 조회</h2>
-    <form action="searchReturnInfo.do" method="get">
-	반품 고유 번호 : <input type = "text" name="return_id" value="${param.return_id}">
-	<br>
-	입고 고유 번호 : <input type = "text" name="receive_id" value="${param.receive_id}">
-	<br>
-	상품 고유 번호 : <input type = "text" name="product_id" value="${param.product_id}">
-	<br>
 
-        <input type="submit" value="반품 정보 조회">
-	
-	</form>
+<h2>반품 목록</h2>
 
-    <h2>반품  정보</h2>
-     <form action="deleteReturnInfos.do" method="post" onsubmit="return validateForm();">
-        <table border="1">
-            <tr>
-                <th>선택</th>
-                <th>반품 고유 번호</th>
-                <th>입고 고유 번호</th>
-                <th>상품 고유 번호</th>
-                <th>반품 수량</th>
-                <th>반품 사유</th>
-                <th>반품 날짜</th>
-            </tr>
-            <%
-                List<ReturnInfo> returnInfoList = (List<ReturnInfo>) request.getAttribute("returnInfoList");
-            if(returnInfoList != null){
-                for (ReturnInfo r : returnInfoList) {
-            %>
-            <tr>
-                <td><input type="checkbox" name="returnInfoIds" value="<%= r.getReturn_id() %>"></td>
-                <td><%= r.getReturn_id() %></td>
-                <td><%= r.getReceive_id() %></td>
-                <td><%= r.getProduct_id() %></td>
-                <td><%= r.getQuantity() %></td>
-                <td><%= r.getReason() %></td>
-                <td><%= r.getReturn_date() %></td>
-            </tr>
-            <%
-                }
-                } else {
-            %><tr><td colspan="6">조회된 상품이 없습니다..</td></tr>
-            <% } %>
-        </table>
-        
-        	<%
-    
-    			String returnId = request.getParameter("return_id");
-			    String receiveId = request.getParameter("receive_id");
-			    String productId = request.getParameter("product_id");
-			    
-			
-			    boolean noResult = (returnInfoList == null || returnInfoList.isEmpty());
-			    boolean allConditionsEmpty = ( (productId == null || productId.trim().isEmpty()) &&
-                                  (returnId == null || returnId.trim().isEmpty()) &&
-                                  (receiveId == null || receiveId.trim().isEmpty()) &&
-                                  (productId == null || productId.trim().isEmpty()) );
-			%>
-	
-		<% if (noResult && !allConditionsEmpty) { %>
-			<script>
-    			alert('조회된 요청이 없습니다.');
-			</script>
-		<% } %>
-        
-        <br>
-        <input type="submit" value="선택 항목 반품 취소">
-    </form>
-           <br>
-   <a href="addReturnInfos.do">상품 반품하기</a>
+<!-- 세션 메시지 -->
+<c:if test="${not empty sessionScope.successMsg}">
+  <div class="msg msg-ok">${sessionScope.successMsg}</div>
+  <c:remove var="successMsg" scope="session"/>
+</c:if>
+<c:if test="${not empty sessionScope.errorMsg}">
+  <div class="msg msg-err">${sessionScope.errorMsg}</div>
+  <c:remove var="errorMsg" scope="session"/>
+</c:if>
+
+<div class="toolbar">
+  <a class="btn" href="<c:url value='/addReturnInfos.do'/>">반품 등록</a>
+  <a class="btn" href="<c:url value='/returnInfoList.do'/>">새로고침</a>
+
+  <!-- 빠른 검색 -->
+  <form class="search" action="<c:url value='/searchReturnInfo.do'/>" method="get">
+    반품ID <input type="text" name="return_id"  value="${param.return_id}">
+    입고ID <input type="text" name="receive_id" value="${param.receive_id}">
+    상품ID <input type="text" name="product_id" value="${param.product_id}">
+    <input type="submit" value="검색">
+    <a class="btn" href="<c:url value='/returnInfoList.do'/>">전체보기</a>
+  </form>
+</div>
+
+<form id="retForm" action="<c:url value='/updateReturnInfos.do'/>" method="post" onsubmit="return ensureChecked();">
+  <table>
+    <tr>
+      <th><input type="checkbox" onclick="toggleAll(this)"></th>
+      <th>반품ID</th>
+      <th>입고ID</th>
+      <th>상품ID</th>
+      <th>반품수량</th>
+      <th>사유</th>
+      <th>반품일</th>
+    </tr>
+
+    <c:choose>
+      <c:when test="${empty returnInfoList}">
+        <tr><td colspan="7">조회된 반품 정보가 없습니다.</td></tr>
+      </c:when>
+      <c:otherwise>
+        <c:forEach var="r" items="${returnInfoList}">
+          <tr>
+            <td><input type="checkbox" name="returnInfoIds" value="${r.return_id}"></td>
+            <td>${r.return_id}</td>
+            <td>${r.receive_id}</td>
+            <td>${r.product_id}</td>
+            <td>
+              <input type="text" class="inline-input" name="qty_${r.return_id}" value="${r.quantity}">
+            </td>
+            <td>
+              <input type="text" class="inline-reason" name="reason_${r.return_id}" value="${r.reason}">
+            </td>
+            <td><fmt:formatDate value="${r.return_date}" pattern="yyyy-MM-dd"/></td>
+          </tr>
+        </c:forEach>
+      </c:otherwise>
+    </c:choose>
+  </table>
+
+  <div style="margin-top:10px; display:flex; gap:8px;">
+    <button type="submit" class="btn">선택 항목 저장</button>
+    <button type="submit"
+            class="btn danger"
+            formaction="<c:url value='/deleteReturnInfos.do'/>"
+            formmethod="post"
+            onclick="return ensureChecked() && confirm('선택한 항목을 삭제하시겠습니까?');">
+      선택 항목 삭제
+    </button>
+  </div>
+</form>
+
 </body>
 </html>
