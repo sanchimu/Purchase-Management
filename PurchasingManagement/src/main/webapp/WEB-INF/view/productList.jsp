@@ -100,7 +100,17 @@ function toggleAll(source){
                 <td>${p.product_name}</td>
                 <td>${p.category}</td>
                 <td>${p.price}</td>
-                <td>${p.supplier_id}</td>
+                <!-- ✅ 공급업체명 표시 (공급업체명이 있으면 이름, 없으면 ID) -->
+                <td>
+                  <c:choose>
+                    <c:when test="${not empty p.supplier_name}">
+                      ${p.supplier_name} (${p.supplier_id})
+                    </c:when>
+                    <c:otherwise>
+                      ${p.supplier_id}
+                    </c:otherwise>
+                  </c:choose>
+                </td>
 
                 <!-- ✅ 업무상태 드롭다운: 선택값 반영 -->
                 <td>
