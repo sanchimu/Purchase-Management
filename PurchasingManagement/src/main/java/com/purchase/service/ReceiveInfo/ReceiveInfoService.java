@@ -12,6 +12,7 @@ import java.util.List;
 public class ReceiveInfoService {
     private final ReceiveInfoDao dao = new ReceiveInfoDao();
 
+    /** 입고 등록 */
     public void addReceiveInfo(ReceiveInfo receiveInfo) {
         try (Connection conn = ConnectionProvider.getConnection()) {
             dao.insert(conn, receiveInfo);
@@ -20,6 +21,7 @@ public class ReceiveInfoService {
         }
     }
 
+    /** (이전 호환) 단순 전체 목록 */
     public List<ReceiveInfo> getAllReceiveInfos() {
         try (Connection conn = ConnectionProvider.getConnection()) {
             return dao.selectAll(conn);
@@ -28,17 +30,10 @@ public class ReceiveInfoService {
         }
     }
 
-    public String getProductIdByReceiveId(String receiveId) {
+    /** 조인 기반 목록 (onlyAvailable: 반품가능>0만, includeHidden: 숨김(A/X) 포함 여부) */
+    public List<ReceiveInfo> getReceiveListJoin(boolean onlyAvailable, boolean includeHidden) {
         try (Connection conn = ConnectionProvider.getConnection()) {
-            return dao.getProductIdByReceiveId(conn, receiveId);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<ReceiveInfo> getReceiveInfoWithReturnQty() {
-        try (Connection conn = ConnectionProvider.getConnection()) {
-            return dao.selectReceiveInfoWithReturnQty(conn);
+            return dao.selectAllView(conn, onlyAvailable, includeHidden);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -54,10 +49,15 @@ public class ReceiveInfoService {
         if (ids == null || ids.length == 0) return;
         try (Connection conn = ConnectionProvider.getConnection()) {
             conn.setAutoCommit(false);
-            for (int i = 0; i < ids.length; i++) {
-                dao.updateStatus(conn, ids[i], statuses.get(i));
+            try {
+                for (int i = 0; i < ids.length; i++) {
+                    dao.updateStatus(conn, ids[i], statuses.get(i));
+                }
+                conn.commit();
+            } catch (SQLException ex) {
+                conn.rollback();
+                throw ex;
             }
-            conn.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
