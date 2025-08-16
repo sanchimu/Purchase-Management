@@ -1,62 +1,147 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>구매요청 등록</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  h2 { color: #333; }
-  .toolbar { display:flex; gap:12px; align-items:center; margin:10px 0 16px; }
-  .toolbar form { display:flex; gap:8px; align-items:center; }
-  input[type="text"] { padding:6px 8px; }
-  input[type="submit"], a.btn { padding:6px 10px; border:1px solid #ccc; background:#f7f7f7; text-decoration:none; color:#333; cursor:pointer; }
-  .msg { margin:8px 0; padding:8px 10px; background:#fff8d6; border:1px solid #eedc82; }
-  table { border-collapse: collapse; width: 100%; max-width: 900px; }
-  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-  th { background:#f2f2f2; }
+body {
+	font-family: Arial, sans-serif;
+	margin: 20px;
+}
+
+h2 {
+	color: #333;
+}
+
+.toolbar {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin: 10px 0 16px;
+}
+
+.toolbar form {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+input[type="text"], select, input[type="number"] {
+	padding: 6px 8px;
+}
+
+input[type="submit"], a.btn {
+	padding: 6px 10px;
+	border: 1px solid #ccc;
+	background: #f7f7f7;
+	text-decoration: none;
+	color: #333;
+	cursor: pointer;
+}
+
+.msg {
+	margin: 8px 0;
+	padding: 8px 10px;
+	background: #fff8d6;
+	border: 1px solid #eedc82;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	max-width: 900px;
+}
+
+th, td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: center;
+}
+
+th {
+	background: #f2f2f2;
+}
+
+.muted {
+	color: #777;
+	font-size: 0.95em;
+	margin-top: 6px;
+}
+
+.disabled {
+	opacity: .6;
+	pointer-events: none;
+}
 </style>
 </head>
 <body>
 
-<h2>구매요청 등록</h2>
+	<h2>구매요청 등록</h2>
 
-<div class="toolbar">
-  <a class="btn" href="<c:url value='/requestList.do'/>">목록</a>
-  <a class="btn" href="<c:url value='/searchpurchaserequest.do'/>">상품ID로 조회</a>
-</div>
+	<div class="toolbar">
+		<a class="btn" href="<c:url value='/requestList.do'/>">목록으로 돌아가기</a>
+	</div>
 
-<c:if test="${not empty message}">
-  <div class="msg">${message}</div>
-</c:if>
+	<c:if test="${not empty message}">
+		<div class="msg">${message}</div>
+	</c:if>
 
-<form action="<c:url value='/insertpurchaserequest.do'/>" method="post">
-  <p>
-    <label for="product_id">상품ID</label><br>
-    <input type="text" id="product_id" name="product_id"
-           placeholder="P001"
-           pattern="^P[0-9]{3}$" title="형식은 P001 (P + 3자리 숫자)"
-           required>
-  </p>
+	<c:choose>
+		<%-- 상품이 없을 때 안내 --%>
+		<c:when test="${empty productList}">
+			<div class="msg">등록된 상품이 없습니다. 먼저 상품을 등록해 주세요.</div>
+			<p>
+				<a class="btn" href="<c:url value='/product/new.do'/>">상품 등록</a> <a
+					class="btn" href="<c:url value='/requestList.do'/>">목록</a>
+			</p>
+		</c:when>
 
-  <p>
-    <label for="quantity">수량</label><br>
-    <input type="number" id="quantity" name="quantity"
-           placeholder="1" min="1" step="1" required>
-  </p>
+		<%-- 상품이 있을 때 폼 표시 --%>
+		<c:otherwise>
+			<form action="<c:url value='/insertpurchaserequest.do'/>"
+				method="post">
+				<p>
+					<label for="product_id">상품 선택</label><br> <select
+						id="product_id" name="product_id" required>
+						<option value="">-- 상품을 선택하세요 --</option>
+						<c:forEach var="p" items="${productList}">
+							<option value="${p.product_id}"
+								<c:if test="${p.product_id == selectedProductId}">selected</c:if>>
+								${p.product_name}
+								<c:if test="${not empty p.category}"> / ${p.category}</c:if>
+								<c:if test="${not empty p.price}"> / ₩${p.price}</c:if> (ID:
+								${p.product_id})
+							</option>
+						</c:forEach>
+					</select>
+				<div class="muted">※ 더 정확히 선택하려면 상품명/카테고리/가격을 참고하세요.</div>
+				</p>
 
-  <p>
-    <label for="requester_name">요청자</label><br>
-    <input type="text" id="requester_name" name="requester_name"
-           maxlength="50" required>
-  </p>
+				<p>
+					<label for="quantity">수량</label><br> <input type="number"
+						id="quantity" name="quantity" placeholder="1" min="1" step="1"
+						required value="<c:out value='${param.quantity}'/>">
+				</p>
 
-  <p>
-    <input type="submit" value="등록">
-    <a class="btn" href="<c:url value='/requestList.do'/>">목록</a>
-  </p>
-</form>
+				<p>
+					<label for="requester_name">요청자</label><br> <input type="text"
+						id="requester_name" name="requester_name" maxlength="50" required
+						value="<c:out value='${param.requester_name}'/>">
+				</p>
+
+				<c:if test="${not empty formError}">
+					<div class="msg">${formError}</div>
+				</c:if>
+
+				<p>
+					<input type="submit" value="등록"> <a class="btn"
+						href="<c:url value='/requestList.do'/>">목록</a>
+				</p>
+			</form>
+		</c:otherwise>
+	</c:choose>
 
 </body>
 </html>

@@ -91,6 +91,34 @@ th {
   .viewport { align-items: flex-start; }
 }
 */
+a, a:visited {
+	color: black;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline; /* (옵션) 마우스 올리면만 밑줄 */
+}
+
+.top-menu {
+	margin: 10px 0;
+	text-align: center;
+}
+
+.top-menu a {
+	display: inline-block;
+	padding: 8px 14px;
+	margin-right: 6px;
+	background-color: #4CAF50; /* 초록색 배경 */
+	color: white; /* 흰 글씨 */
+	text-decoration: none; /* 밑줄 제거 */
+	border-radius: 4px; /* 둥근 모서리 */
+	font-weight: bold;
+}
+
+.top-menu a:hover {
+	background-color: #45a049; /* 마우스 올리면 조금 더 진한 초록 */
+}
 </style>
 <script>
   function toggleAll(src){
@@ -127,11 +155,11 @@ th {
 
 			<h2>구매요청 목록</h2>
 
-			<div class="toolbar">
-				<a class="btn" href="<c:url value='/insertpurchaserequest.do'/>">구매요청
-					등록</a> <a class="btn" href="<c:url value='/searchpurchaserequest.do'/>">상품ID로
-					구매요청 조회</a> <a class="btn" href="<c:url value='/requestList.do'/>">새로고침</a>
+			<div class="top-menu">
+				<a href="<c:url value='/requestList.do'/>">목록</a><a
+					href="<c:url value='/insertpurchaserequest.do'/>">구매요청 등록</a>
 			</div>
+
 
 			<c:if test="${not empty message}">
 				<div class="msg">${message}</div>

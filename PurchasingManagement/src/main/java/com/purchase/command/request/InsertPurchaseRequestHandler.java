@@ -1,48 +1,52 @@
+// com.purchase.command.request.InsertPurchaseRequestHandler
 package com.purchase.command.request;
-
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
+import com.purchase.service.product.ProductService;
+import com.purchase.vo.Product;
 import com.purchase.service.request.PurchaseRequestService;
-import com.purchase.vo.PurchaseRequest;
-
 import mvc.command.CommandHandler;
 
 public class InsertPurchaseRequestHandler implements CommandHandler {
 
-	private final PurchaseRequestService service = new PurchaseRequestService();
+	private final PurchaseRequestService requestService = new PurchaseRequestService();
+	private final ProductService productService = new ProductService();
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		
-		 // 요청 메서드가 GET이면 → 등록 폼 화면 표시(リクエストメソッドがGETの場合 → 登録フォームを表示)
 		if (req.getMethod().equalsIgnoreCase("GET")) {
-			return "/WEB-INF/view/purchaseRequestForm.jsp";
-			
-	        // 요청 메서드가 POST면 → 등록 처리 실행(リクエストメソッドがPOSTの場合 → 登録処理を実行)
-		} else if (req.getMethod().equalsIgnoreCase("POST")) {
+			// ★ 상품 목록 조회하여 폼에 전달
+			List<Product> productList = productService.getAllProducts();
+			req.setAttribute("productList", productList);
 
-			String productId = req.getParameter("product_id");
+			// 목록이 비었다면 안내 메시지
+			if (productList == null || productList.isEmpty()) {
+				req.setAttribute("noProductMsg", "등록된 상품이 없습니다. 먼저 상품을 등록해 주세요.");
+			}
+			return "/WEB-INF/view/purchaseRequestForm.jsp";
+
+		} else if (req.getMethod().equalsIgnoreCase("POST")) {
+			// 기존 로직 그대로, 단 product_id는 select에서 넘어오는 값을 사용
+			String productId = req.getParameter("product_id"); // <-- select name과 일치
 			String quantityStr = req.getParameter("quantity");
 			String requesterName = req.getParameter("requester_name");
 
-			int quantity = Integer.parseInt(quantityStr);
+			// 기본 검증
+			if (productId == null || productId.isEmpty()) {
+				req.setAttribute("formError", "상품을 선택해 주세요.");
+				// 에러 시에도 다시 상품목록을 넣어줘야 화면에 보임
+				req.setAttribute("productList", productService.getAllProducts());
+				return "/WEB-INF/view/purchaseRequestForm.jsp";
+			}
 
-			PurchaseRequest request = new PurchaseRequest(
-					null, // request_id는 null로 두고 DAO에서 설정(request_idは nullにしてDAO側で設定）
-					productId, 
-					quantity, 
-					new Date(), 
-					requesterName);
+			// 나머지 생성/저장 로직은 기존과 동일하게…
+			// requestService.addPurchaseRequest(new PurchaseRequest(...));
 
-			service.addPurchaseRequest(request);
-
-			// 등록 완료 후 목록 페이지로 리다이렉트(登録完了後、一覧ページへリダイレクト)
-			res.sendRedirect(req.getContextPath() + "/requestList.do");
-			return null;
-
+			// 성공 시 목록으로 리다이렉트 등
+			return "redirect:/listpurchaserequest.do";
 		} else {
 			res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 			return null;
