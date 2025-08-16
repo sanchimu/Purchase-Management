@@ -10,7 +10,7 @@ import java.util.Date;
 public class PurchaseRequest {
     private String request_id;
     private String product_id;
-    private int    quantity;
+    private Integer    quantity;
     private Date   request_date;
     private String requester_name;
 
@@ -19,11 +19,13 @@ public class PurchaseRequest {
 
     // 공통 표시상태(A/X)
     private String row_status;
+    
+    private String supplier_id;
 
     public PurchaseRequest() { }
 
     // 기존 호환(업무/표시상태 제외)
-    public PurchaseRequest(String request_id, String product_id, int quantity,
+    public PurchaseRequest(String request_id, String product_id, Integer quantity,
                            Date request_date, String requester_name) {
         this.request_id = request_id;
         this.product_id = product_id;
@@ -33,7 +35,7 @@ public class PurchaseRequest {
     }
 
     // 전체 필드 포함
-    public PurchaseRequest(String request_id, String product_id, int quantity,
+    public PurchaseRequest(String request_id, String product_id, Integer quantity,
                            Date request_date, String requester_name,
                            String request_status, String row_status) {
         this.request_id = request_id;
@@ -51,8 +53,8 @@ public class PurchaseRequest {
     public String getProduct_id() { return product_id; }
     public void setProduct_id(String product_id) { this.product_id = product_id; }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
     public Date getRequest_date() { return request_date; }
     public void setRequest_date(Date request_date) { this.request_date = request_date; }
@@ -67,4 +69,7 @@ public class PurchaseRequest {
     /** 'A' or 'X' */
     public String getRow_status() { return row_status; }
     public void setRow_status(String row_status) { this.row_status = row_status; }
+    
+    public String getSupplier_id() {return supplier_id;}
+    public void setSupplier_id(String supplier_id) {this.supplier_id = supplier_id;}
 }

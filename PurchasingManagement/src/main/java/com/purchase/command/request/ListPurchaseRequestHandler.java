@@ -20,7 +20,7 @@ public class ListPurchaseRequestHandler implements CommandHandler {
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
         boolean includeHidden = "1".equals(req.getParameter("includeHidden"));
 
-        List<PurchaseRequest> all = service.getAll();
+        List<PurchaseRequest> all = service.getJoinedRequestList();
         List<PurchaseRequest> view = includeHidden
                 ? all
                 : all.stream()
