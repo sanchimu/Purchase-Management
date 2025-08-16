@@ -30,11 +30,11 @@ public class ProductDao {
             JdbcUtil.close(rs);
             JdbcUtil.close(pstmt);
 
-            // product_id: "P" + 3자리 숫자 (예: P001)
+           
             String productId = String.format("P%03d", seqNum);
             product.setProduct_id(productId);
 
-            // ✅ 컬럼 명시: row_status는 DB 기본값('A') 적용
+            
             String sql = "INSERT INTO product "
                        + "(product_id, product_name, category, price, supplier_id, product_status) "
                        + "VALUES (?,?,?,?,?,?)";
@@ -87,9 +87,11 @@ public class ProductDao {
 
     public List<Product> selectAll(Connection conn) throws SQLException {
         String sql =
-            "SELECT product_id, product_name, category, price, supplier_id, product_status, row_status " +
-            "  FROM product " +
-            " ORDER BY product_id";
+            "SELECT p.product_id, p.product_name, p.category, p.price, " +
+            "       p.supplier_id, s.supplier_name, p.product_status, p.row_status " +
+            "FROM product p " +
+            "LEFT JOIN supplier_info s ON p.supplier_id = s.supplier_id " +
+            "ORDER BY p.product_id";
         List<Product> list = new ArrayList<>();
         try (PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -100,6 +102,7 @@ public class ProductDao {
                     rs.getString("category"),
                     rs.getInt("price"),
                     rs.getString("supplier_id"),
+                    rs.getString("supplier_name"),
                     rs.getString("product_status"),
                     rs.getString("row_status")
                 );
@@ -111,27 +114,30 @@ public class ProductDao {
 
     public List<Product> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
         StringBuilder sql = new StringBuilder(
-            "SELECT product_id, product_name, category, price, supplier_id, product_status, row_status " +
-            "  FROM product WHERE 1=1");
+            "SELECT p.product_id, p.product_name, p.category, p.price, " +
+            "       p.supplier_id, s.supplier_name, p.product_status, p.row_status " +
+            "FROM product p " +
+            "LEFT JOIN supplier_info s ON p.supplier_id = s.supplier_id " +
+            "WHERE 1=1");
         List<Object> params = new ArrayList<>();
 
         if (conditions.get("product_id") != null && !conditions.get("product_id").isEmpty()) {
-            sql.append(" AND product_id = ?");
+            sql.append(" AND p.product_id = ?");
             params.add(conditions.get("product_id"));
         }
         if (conditions.get("product_name") != null && !conditions.get("product_name").isEmpty()) {
-            sql.append(" AND product_name LIKE ?");
+            sql.append(" AND p.product_name LIKE ?");
             params.add("%" + conditions.get("product_name") + "%");
         }
         if (conditions.get("category") != null && !conditions.get("category").isEmpty()) {
-            sql.append(" AND category = ?");
+            sql.append(" AND p.category = ?");
             params.add(conditions.get("category"));
         }
         if (conditions.get("supplier_id") != null && !conditions.get("supplier_id").isEmpty()) {
-            sql.append(" AND supplier_id = ?");
+            sql.append(" AND p.supplier_id = ?");
             params.add(conditions.get("supplier_id"));
         }
-        sql.append(" ORDER BY product_id");
+        sql.append(" ORDER BY p.product_id");
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
@@ -146,6 +152,7 @@ public class ProductDao {
                         rs.getString("category"),
                         rs.getInt("price"),
                         rs.getString("supplier_id"),
+                        rs.getString("supplier_name"),
                         rs.getString("product_status"),
                         rs.getString("row_status")
                     );
