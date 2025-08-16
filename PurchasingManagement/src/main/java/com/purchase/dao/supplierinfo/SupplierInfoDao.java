@@ -119,4 +119,39 @@ public class SupplierInfoDao {
         }
         return list;
     }
+    
+ // 기존 SupplierInfoDao 클래스에 이 메소드만 추가하세요
+
+    // 활성화된 공급업체 목록 조회 (상품 등록용)
+    public List<SupplierInfo> selectActiveSuppliers(Connection conn) throws SQLException {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<SupplierInfo> list = new ArrayList<>();
+
+        try {
+            pstmt = conn.prepareStatement(
+                "SELECT supplier_id, supplier_name, contact_number, address, " +
+                "       supplier_status, row_status " +
+                "  FROM supplier_info " +
+                " WHERE row_status = 'A' " +
+                " ORDER BY supplier_id"
+            );
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                SupplierInfo s = new SupplierInfo();
+                s.setSupplier_id(rs.getString("supplier_id"));
+                s.setSupplier_name(rs.getString("supplier_name"));
+                s.setContact_number(rs.getString("contact_number"));
+                s.setAddress(rs.getString("address"));
+                s.setSupplier_status(rs.getString("supplier_status"));
+                s.setRow_status(rs.getString("row_status"));
+                list.add(s);
+            }
+        } finally {
+            JdbcUtil.close(rs);
+            JdbcUtil.close(pstmt);
+        }
+        return list;
+    }
 }
