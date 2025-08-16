@@ -6,14 +6,18 @@ public class ReceiveInfo {
     private String receive_id;
     private String order_id;
     private String product_id;
-    private int quantity;
-    private Date receive_date;
+    private int    quantity;
+    private Date   receive_date;
 
     // 업무상태(검수중/정상/입고 취소/반품 처리 등)
     private String receive_status;
 
-    // 반품 가능 수량(기존 필드 유지)
-    private int available_to_return;
+    // 반품 가능 수량
+    private int    available_to_return;
+
+    // ✅ JOIN으로 가져올 추가 표시용 필드
+    private String product_name;    // 상품명
+    private String supplier_name;   // 공급업체명
 
     public ReceiveInfo() {}
 
@@ -47,4 +51,11 @@ public class ReceiveInfo {
 
     public int getAvailable_to_return() { return available_to_return; }
     public void setAvailable_to_return(int available_to_return) { this.available_to_return = available_to_return; }
+
+    // ✅ 추가된 getter/setter
+    public String getProduct_name() { return product_name; }
+    public void setProduct_name(String product_name) { this.product_name = product_name; }
+
+    public String getSupplier_name() { return supplier_name; }
+    public void setSupplier_name(String supplier_name) { this.supplier_name = supplier_name; }
 }
