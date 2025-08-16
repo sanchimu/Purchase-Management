@@ -60,8 +60,9 @@ public class ReturnInfoDao {
     /** 전체 조회 (오름차순) */
     public List<ReturnInfo> selectAll(Connection conn) throws SQLException {
         final String sql =
-            "SELECT return_id, receive_id, product_id, quantity, reason, return_date " +
-            "FROM return_info ORDER BY return_id";
+            "SELECT r.return_id, r.receive_id, r.product_id, p.product_name, r.quantity, r.reason, r.return_date " +
+      		"FROM return_info r LEFT JOIN product p  ON r.product_id = p.product_id "
+      		+ "ORDER BY r.return_id";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             List<ReturnInfo> list = new ArrayList<>();
@@ -72,7 +73,8 @@ public class ReturnInfoDao {
                     rs.getString("product_id"),
                     rs.getInt("quantity"),
                     rs.getString("reason"),
-                    rs.getDate("return_date")
+                    rs.getDate("return_date"),
+                    rs.getString("product_name")
                 ));
             }
             return list;

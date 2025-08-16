@@ -3,12 +3,13 @@ package com.purchase.vo;
 import java.util.Date;
 
 public class ReturnInfo {
-	String return_id;
-	String receive_id;
-	String product_id;
-	int quantity;
-	String reason;
-	Date return_date;
+	private String return_id;
+	private String receive_id;
+	private String product_id;
+	private int quantity;
+	private String reason;
+	private Date return_date;
+	private String product_name;
 
 	public ReturnInfo() {
 		super();
@@ -24,6 +25,26 @@ public class ReturnInfo {
 		this.quantity = quantity;
 		this.reason = reason;
 		this.return_date = return_date;
+	}
+	
+	public ReturnInfo(String return_id, String receive_id, String product_id, int quantity, String reason,
+			Date return_date, String product_name) {
+		super();
+		this.return_id = return_id;
+		this.receive_id = receive_id;
+		this.product_id = product_id;
+		this.quantity = quantity;
+		this.reason = reason;
+		this.return_date = return_date;
+		this.product_name = product_name;
+	}
+
+	public String getProduct_name() {
+		return product_name;
+	}
+
+	public void setProduct_name(String product_name) {
+		this.product_name = product_name;
 	}
 
 	public String getReturn_id() {

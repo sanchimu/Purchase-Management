@@ -85,7 +85,16 @@
             <td><input type="checkbox" name="returnInfoIds" value="${r.return_id}"></td>
             <td>${r.return_id}</td>
             <td>${r.receive_id}</td>
-            <td>${r.product_id}</td>
+                            <td>
+                  <c:choose>
+                    <c:when test="${not empty r.product_name}">
+                      ${r.product_name} (${r.product_id})
+                    </c:when>
+                    <c:otherwise>
+                      ${r.product_id}
+                    </c:otherwise>
+                  </c:choose>
+                </td>
             <td>
               <input type="text" class="inline-input" name="qty_${r.return_id}" value="${r.quantity}">
             </td>
