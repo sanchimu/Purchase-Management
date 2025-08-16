@@ -30,13 +30,30 @@ public class ReceiveInfoService {
         }
     }
 
-    /** 조인 기반 목록 (onlyAvailable: 반품가능>0만, includeHidden: 숨김(A/X) 포함 여부) */
+    /**
+     * 조인 기반 목록
+     * @param onlyAvailable   true면 (반품가능수량 > 0)만
+     * @param includeHidden   true면 row_status='X' 등 숨김도 포함
+     */
     public List<ReceiveInfo> getReceiveListJoin(boolean onlyAvailable, boolean includeHidden) {
         try (Connection conn = ConnectionProvider.getConnection()) {
+            // ➜ ReceiveInfoDao에 selectAllView(conn, onlyAvailable, includeHidden) 가 있어야 합니다.
             return dao.selectAllView(conn, onlyAvailable, includeHidden);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /** (호환용) 반품가능수량만 필요한 화면에서 사용 — 기존 핸들러가 이 메서드명을 호출했을 때 대비 */
+    public List<ReceiveInfo> getReceiveInfoWithReturnQty() {
+        // 반품 가능 수량 > 0만, 숨김은 제외
+        return getReceiveListJoin(true, false);
+    }
+
+    /** (호환용) 상품명/공급업체명 + 반품가능수량이 필요한 화면에서 사용 — 기존 핸들러 대비 */
+    public List<ReceiveInfo> getReceiveInfoWithNamesAndReturnQty() {
+        // 동일하게 조인 결과 사용 (이 메서드명을 기대하는 JSP/핸들러가 있어서 유지)
+        return getReceiveListJoin(true, false);
     }
 
     /** 드롭다운에 쓸 업무상태 세트 */
@@ -63,3 +80,4 @@ public class ReceiveInfoService {
         }
     }
 }
+
