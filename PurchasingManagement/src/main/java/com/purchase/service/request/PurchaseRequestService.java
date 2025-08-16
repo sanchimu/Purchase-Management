@@ -77,17 +77,17 @@ public class PurchaseRequestService {
 		}
 	}
 
-	 public List<PurchaseRequest> getJoinedRequestList() {
-	        Connection conn = null;
-	        try {
-	            conn = ConnectionProvider.getConnection();
-	            return requestDao.selectRequestListJoined(conn);
-	        } catch (SQLException e) {
-	            throw new RuntimeException(e);
-	        } finally {
-	            JdbcUtil.close(conn);
-	        }
-	    }
+	public List<PurchaseRequest> getJoinedRequestList() {
+		Connection conn = null;
+		try {
+			conn = ConnectionProvider.getConnection();
+			return requestDao.selectRequestListJoined(conn);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			JdbcUtil.close(conn);
+		}
+	}
 
 	/** ✅ 업무상태 단건 변경 (예: '접수'→'검토중' 등) */
 	public void updateRequestStatus(PurchaseRequest request) {

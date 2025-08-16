@@ -188,19 +188,21 @@ a:hover {
 				<div class="toolbar">
 					<button type="submit"
 						formaction="${pageContext.request.contextPath}/updatePurchaseRequest.do"
-						onclick="return validateSave();">선택항목 업무상태 저장</button>
+						onclick="return prepStatus();">선택항목 업무상태 저장</button>
 
 					<button type="submit"
 						formaction="${pageContext.request.contextPath}/status/bulk.do"
 						name="to" value="X"
-						onclick="return prepStatus() && confirm('선택 항목을 중단하시겠습니까?');">선택항목
-						중단</button>
+						onclick="return prepStatus() && confirm('선택 항목을 중단하시겠습니까?');">
+						선택항목 중단</button>
+
 					<button type="submit"
 						formaction="${pageContext.request.contextPath}/status/bulk.do"
 						name="to" value="A" onclick="return prepStatus();">선택항목
 						재개</button>
 				</div>
 
+				<!-- ✅ JSP 기본 리스트를 fn:split로 생성 (버전 호환) -->
 				<c:if test="${empty requestStatusList}">
 					<c:set var="requestStatusList"
 						value="${fn:split('접수,검토중,승인,반려,취소,종결', ',')}" />
@@ -228,15 +230,15 @@ a:hover {
 					<c:forEach var="req" items="${requestList}">
 						<c:if
 							test="${param.includeHidden=='1' || includeHidden || empty req.row_status || req.row_status=='A'}">
-							<tr class="<c:if test='${req.row_status=="X"}'>muted</c:if>">
+							<tr class="${req.row_status == 'X' ? 'muted' : ''}">
 								<td><input type="checkbox" name="ids"
 									value="${req.request_id}"></td>
 								<td>${req.request_id}</td>
 								<td>${req.product_id}</td>
 								<td><c:out value="${req.supplier_id}" /></td>
 								<td>${req.quantity}</td>
-								<td><fmt:formatDate value="${req.request_date}"
-										pattern="yyyy-MM-dd" /></td>
+								<!-- 임시: -->
+								<td><c:out value="${req.request_date}" /></td>
 								<td>${req.requester_name}</td>
 								<td><select name="${req.request_id}">
 										<c:forEach var="st" items="${requestStatusList}">
