@@ -1,180 +1,148 @@
 package com.purchase.dao.order;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import com.purchase.dto.OrderSheetDTO;
+import com.purchase.vo.OrderSheet;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import com.purchase.vo.OrderSheet;
 
 public class OrderSheetDao {
 
-    /** ✅ 시퀀스 기반 새 ID 생성 (OR%03d) */
-    public String nextOrderId(Connection conn) throws SQLException {
-        String sql = "SELECT order_sheet_seq.NEXTVAL FROM dual";
+    /** 목록(조인) 조회: includeHidden=false면 row_status='A'만 */
+    public List<OrderSheetDTO> selectAllView(Connection conn, boolean includeHidden) throws SQLException {
+        String sql =
+            "SELECT " +
+            "  os.order_id, os.order_date, os.order_status, os.row_status, " +
+            "  os.request_id, os.supplier_id, " +
+            "  pr.product_id, pr.quantity AS request_quantity, pr.requester_name, " +
+            "  p.product_name, " +
+            "  si.supplier_name " +
+            "FROM order_sheet os " +
+            "JOIN purchase_request pr ON pr.request_id = os.request_id " +
+            "JOIN product p           ON p.product_id  = pr.product_id " +
+            "JOIN supplier_info si    ON si.supplier_id = os.supplier_id " +
+            "WHERE (? = 1 OR NVL(os.row_status,'A') = 'A') " +
+            "ORDER BY os.order_id";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, includeHidden ? 1 : 0);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<OrderSheetDTO> list = new ArrayList<>();
+                while (rs.next()) {
+                    OrderSheetDTO dto = new OrderSheetDTO();
+                    dto.setOrder_id(rs.getString("order_id"));
+                    dto.setOrder_date(rs.getDate("order_date"));
+                    dto.setOrder_status(rs.getString("order_status"));
+                    dto.setRow_status(rs.getString("row_status"));
+
+                    dto.setRequest_id(rs.getString("request_id"));
+                    dto.setSupplier_id(rs.getString("supplier_id"));
+
+                    dto.setProduct_id(rs.getString("product_id"));
+                    dto.setRequest_quantity(rs.getInt("request_quantity"));
+                    dto.setRequester_name(rs.getString("requester_name"));
+
+                    dto.setProduct_name(rs.getString("product_name"));
+                    dto.setSupplier_name(rs.getString("supplier_name"));
+
+                    list.add(dto);
+                }
+                return list;
+            }
+        }
+    }
+
+    /** 드롭다운용: 진행중(A) 요청만 + 상품명/공급업체명까지 */
+    public List<OrderSheetDTO> selectRequestOptions(Connection conn) throws SQLException {
+        String sql =
+            "SELECT pr.request_id, pr.product_id, pr.quantity AS request_quantity, pr.requester_name, " +
+            "       p.product_name, p.supplier_id, si.supplier_name " +
+            "FROM purchase_request pr " +
+            "JOIN product p        ON p.product_id = pr.product_id " +
+            "JOIN supplier_info si ON si.supplier_id = p.supplier_id " +
+            "WHERE NVL(pr.row_status,'A')='A' AND NVL(p.row_status,'A')='A' AND NVL(si.row_status,'A')='A' " +
+            "ORDER BY pr.request_id";
+
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                int seq = rs.getInt(1);
-                return String.format("OR%03d", seq);
-            }
-            throw new SQLException("order_sheet_seq NEXTVAL 조회 실패");
-        }
-    }
-
-    /* =====================
-     *  발주서 등록
-     *  - order_id가 null이면 시퀀스로 보정
-     *  - row_status 는 DB 기본값('A') 사용
-     * ===================== */
-    public void insert(Connection conn, OrderSheet order) throws SQLException {
-        if (order.getOrder_id() == null || order.getOrder_id().trim().isEmpty()) {
-            order.setOrder_id(nextOrderId(conn));
-        }
-
-        String sql =
-            "INSERT INTO order_sheet (order_id, request_id, supplier_id, order_date, order_status) " +
-            "VALUES (?, ?, ?, ?, ?)";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, order.getOrder_id());
-            pstmt.setString(2, order.getRequest_id());
-            pstmt.setString(3, order.getSupplier_id());
-            java.sql.Date od = (order.getOrder_date() == null)
-                    ? new java.sql.Date(System.currentTimeMillis())
-                    : new java.sql.Date(order.getOrder_date().getTime());
-            pstmt.setDate(4, od);
-            pstmt.setString(5, order.getOrder_status());
-
-            pstmt.executeUpdate();
-        }
-    }
-
-    /* =====================
-     *  발주서 전체 조회
-     * ===================== */
-    public List<OrderSheet> selectAll(Connection conn) throws SQLException {
-        String sql =
-            "SELECT order_id, request_id, supplier_id, order_date, order_status, row_status " +
-            "  FROM order_sheet " +
-            " ORDER BY order_date DESC, order_id";
-        List<OrderSheet> list = new ArrayList<>();
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
+            List<OrderSheetDTO> list = new ArrayList<>();
             while (rs.next()) {
-                OrderSheet order = new OrderSheet();
-                order.setOrder_id(rs.getString("order_id"));
-                order.setRequest_id(rs.getString("request_id"));
-                order.setSupplier_id(rs.getString("supplier_id"));
-                order.setOrder_date(rs.getDate("order_date"));
-                order.setOrder_status(rs.getString("order_status"));
-                order.setRow_status(rs.getString("row_status"));
-                list.add(order);
-            }
-        }
-        return list;
-    }
+                OrderSheetDTO dto = new OrderSheetDTO();
+                dto.setRequest_id(rs.getString("request_id"));
+                dto.setProduct_id(rs.getString("product_id"));
+                dto.setRequest_quantity(rs.getInt("request_quantity"));
+                dto.setRequester_name(rs.getString("requester_name"));
 
-    /* =====================
-     *  발주서 단건 조회
-     * ===================== */
-    public OrderSheet selectById(Connection conn, String orderId) throws SQLException {
-        String sql =
-            "SELECT order_id, request_id, supplier_id, order_date, order_status, row_status " +
-            "  FROM order_sheet WHERE order_id = ?";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, orderId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    OrderSheet order = new OrderSheet();
-                    order.setOrder_id(rs.getString("order_id"));
-                    order.setRequest_id(rs.getString("request_id"));
-                    order.setSupplier_id(rs.getString("supplier_id"));
-                    order.setOrder_date(rs.getDate("order_date"));
-                    order.setOrder_status(rs.getString("order_status"));
-                    order.setRow_status(rs.getString("row_status"));
-                    return order;
-                }
-            }
-        }
-        return null;
-    }
-
-    /* =====================
-     *  조건 검색
-     * ===================== */
-    public List<OrderSheet> selectByConditions(Connection conn, Map<String, String> cond) throws SQLException {
-        StringBuilder sql = new StringBuilder(
-            "SELECT order_id, request_id, supplier_id, order_date, order_status, row_status " +
-            "  FROM order_sheet WHERE 1=1"
-        );
-        List<Object> params = new ArrayList<>();
-
-        if (cond != null) {
-            String v;
-            v = cond.get("order_id");
-            if (v != null && !v.isEmpty()) { sql.append(" AND order_id = ?"); params.add(v); }
-            v = cond.get("request_id");
-            if (v != null && !v.isEmpty()) { sql.append(" AND request_id = ?"); params.add(v); }
-            v = cond.get("supplier_id");
-            if (v != null && !v.isEmpty()) { sql.append(" AND supplier_id = ?"); params.add(v); }
-        }
-        sql.append(" ORDER BY order_date DESC, order_id");
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) pstmt.setObject(i + 1, params.get(i));
-            List<OrderSheet> list = new ArrayList<>();
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    OrderSheet order = new OrderSheet();
-                    order.setOrder_id(rs.getString("order_id"));
-                    order.setRequest_id(rs.getString("request_id"));
-                    order.setSupplier_id(rs.getString("supplier_id"));
-                    order.setOrder_date(rs.getDate("order_date"));
-                    order.setOrder_status(rs.getString("order_status"));
-                    order.setRow_status(rs.getString("row_status"));
-                    list.add(order);
-                }
+                dto.setProduct_name(rs.getString("product_name"));
+                dto.setSupplier_id(rs.getString("supplier_id"));
+                dto.setSupplier_name(rs.getString("supplier_name"));
+                list.add(dto);
             }
             return list;
         }
     }
 
-    /* =====================
-     *  업무상태 변경 (단건)
-     * ===================== */
-    public int updateOrderStatus(Connection conn, OrderSheet order) throws SQLException {
-        String sql = "UPDATE order_sheet SET order_status = ? WHERE order_id = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, order.getOrder_status());
-            pstmt.setString(2, order.getOrder_id());
-            return pstmt.executeUpdate();
+    /** request_id → supplier_id (서버 검증/자동결정용) */
+    public String findSupplierIdByRequestId(Connection conn, String requestId) throws SQLException {
+        String sql =
+            "SELECT p.supplier_id " +
+            "FROM purchase_request pr " +
+            "JOIN product p ON p.product_id = pr.product_id " +
+            "WHERE pr.request_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString(1) : null;
+            }
         }
     }
 
-    /* =====================
-     *  업무상태 변경 (일괄)
-     * ===================== */
-    public int updateOrderStatusBulk(Connection conn, Map<String, String> idToStatus) throws SQLException {
-        if (idToStatus == null || idToStatus.isEmpty()) return 0;
-
-        String sql = "UPDATE order_sheet SET order_status = ? WHERE order_id = ?";
-        int updated = 0;
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            for (Map.Entry<String, String> e : idToStatus.entrySet()) {
-                pstmt.setString(1, e.getValue());
-                pstmt.setString(2, e.getKey());
-                updated += pstmt.executeUpdate();
+    /** 다음 발주ID: OR + 3자리 (시퀀스) */
+    public String nextOrderId(Connection conn) throws SQLException {
+        String sql = "SELECT order_sheet_seq.NEXTVAL FROM dual";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                long seq = rs.getLong(1);
+                return String.format("OR%03d", seq);
             }
         }
-        return updated;
+        throw new SQLException("order_sheet_seq.NEXTVAL 조회 실패");
+    }
+
+    /** INSERT(발주 등록) */
+    public void insert(Connection conn, OrderSheet order) throws SQLException {
+        String sql = "INSERT INTO order_sheet (order_id, request_id, supplier_id, order_date, order_status, row_status) " +
+                     "VALUES (?, ?, ?, ?, ?, NVL(?, 'A'))";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, order.getOrder_id());
+            ps.setString(2, order.getRequest_id());
+            ps.setString(3, order.getSupplier_id());
+            ps.setDate(4, new java.sql.Date(order.getOrder_date().getTime()));
+            ps.setString(5, order.getOrder_status());
+            ps.setString(6, order.getRow_status()); // null이면 A
+            ps.executeUpdate();
+        }
+    }
+
+    /** 업무상태 변경 */
+    public void updateStatus(Connection conn, OrderSheet order) throws SQLException {
+        String sql = "UPDATE order_sheet SET order_status=? WHERE order_id=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, order.getOrder_status());
+            ps.setString(2, order.getOrder_id());
+            ps.executeUpdate();
+        }
+    }
+
+    /** 표시상태(A/X) 변경 */
+    public void updateRowStatus(Connection conn, String orderId, String rowStatus) throws SQLException {
+        String sql = "UPDATE order_sheet SET row_status=? WHERE order_id=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, rowStatus);
+            ps.setString(2, orderId);
+            ps.executeUpdate();
+        }
     }
 }

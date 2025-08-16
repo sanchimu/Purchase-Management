@@ -1,15 +1,14 @@
 package com.purchase.command.order;
 
-import java.util.Date;
-import java.util.List;
+import com.purchase.dto.OrderSheetDTO;
+import com.purchase.service.order.OrderSheetService;
+import com.purchase.vo.OrderSheet;
+import mvc.command.CommandHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.purchase.service.order.OrderSheetService;
-import com.purchase.vo.OrderSheet;
-
-import mvc.command.CommandHandler;
+import java.util.Date;
+import java.util.List;
 
 public class AddOrderSheetHandler implements CommandHandler {
 
@@ -19,7 +18,9 @@ public class AddOrderSheetHandler implements CommandHandler {
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
         if ("GET".equalsIgnoreCase(req.getMethod())) {
-            // 드롭다운 옵션 바인딩
+            // 드롭다운 옵션 + 상태리스트
+            List<OrderSheetDTO> options = service.getRequestOptions();
+            req.setAttribute("requestOptions", options);
             req.setAttribute("orderStatusList", service.getOrderStatusList());
             return FORM_VIEW;
         }
@@ -27,44 +28,45 @@ public class AddOrderSheetHandler implements CommandHandler {
         if ("POST".equalsIgnoreCase(req.getMethod())) {
             req.setCharacterEncoding("UTF-8");
 
-            String request_id  = trim(req.getParameter("request_id"));
-            String supplier_id = trim(req.getParameter("supplier_id"));
-            String order_status = trim(req.getParameter("order_status"));
+            String requestId   = trim(req.getParameter("request_id"));
+            String orderStatus = trim(req.getParameter("order_status"));
 
-            // 필수값 체크
-            if (isEmpty(request_id) || isEmpty(supplier_id)) {
-                req.setAttribute("error", "요청ID와 공급업체ID는 필수입니다.");
+            if (isEmpty(requestId)) {
+                req.setAttribute("error", "요청ID는 필수입니다.");
+                req.setAttribute("requestOptions", service.getRequestOptions());
                 req.setAttribute("orderStatusList", service.getOrderStatusList());
                 return FORM_VIEW;
             }
 
-            // 상태값 검증 (허용 세트)
-            List<String> allowed = service.getOrderStatusList(); // 요청/승인/발주/부분입고/완료/취소/보류
-            if (isEmpty(order_status)) order_status = "요청";     // 기본값
-            if (!allowed.contains(order_status)) {
-                req.setAttribute("error", "허용되지 않은 상태값입니다.");
-                req.setAttribute("orderStatusList", allowed);
+            // 서버에서 supplier_id 재계산 (신뢰성)
+            String supplierId = service.findSupplierIdByRequestId(requestId);
+            if (supplierId == null) {
+                req.setAttribute("error", "요청ID에 해당하는 공급업체를 찾을 수 없습니다.");
+                req.setAttribute("requestOptions", service.getRequestOptions());
+                req.setAttribute("orderStatusList", service.getOrderStatusList());
                 return FORM_VIEW;
             }
 
-            // 시퀀스로 안전한 ID 발급 (예: OR001, OR002…)
-            String order_id = service.generateNextOrderId();
+            if (isEmpty(orderStatus)) orderStatus = "요청";
 
-            OrderSheet order = new OrderSheet();
-            order.setOrder_id(order_id);
-            order.setRequest_id(request_id);
-            order.setSupplier_id(supplier_id);
-            order.setOrder_date(new Date());     // 오늘
-            order.setOrder_status(order_status); // 검증된 값
+            String orderId = service.generateNextOrderId();
+
+            OrderSheet os = new OrderSheet();
+            os.setOrder_id(orderId);
+            os.setRequest_id(requestId);
+            os.setSupplier_id(supplierId);
+            os.setOrder_date(new Date());
+            os.setOrder_status(orderStatus);
+            os.setRow_status("A"); // 기본 진행
 
             try {
-                service.insert(order);
+                service.insert(os);
                 res.sendRedirect(req.getContextPath() + "/orderSheetList.do");
                 return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-                req.setAttribute("error", "등록 중 오류 발생: " + e.getMessage());
-                req.setAttribute("orderStatusList", allowed);
+            } catch (RuntimeException e) {
+                req.setAttribute("error", "등록 중 오류: " + e.getMessage());
+                req.setAttribute("requestOptions", service.getRequestOptions());
+                req.setAttribute("orderStatusList", service.getOrderStatusList());
                 return FORM_VIEW;
             }
         }
