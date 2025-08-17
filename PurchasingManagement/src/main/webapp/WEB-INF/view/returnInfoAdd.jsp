@@ -58,7 +58,7 @@
       <th>선택</th>
       <th>입고ID</th>
       <th>주문ID</th>
-      <th>상품ID</th>
+      <th>상품명(ID)</th>
       <th>총 입고수량</th>
       <th>반품 가능수량</th>
       <th>입고일자</th>
@@ -75,7 +75,17 @@
         </td>
         <td>${ri.receive_id}</td>
         <td>${ri.order_id}</td>
-        <td>${ri.product_id}</td>
+        <td>
+                  <c:choose>
+                    <c:when test="${not empty ri.product_name}">
+                      ${ri.product_name} (${ri.product_id})
+                    </c:when>
+                    <c:otherwise>
+                      ${ri.product_id}
+                    </c:otherwise>
+                  </c:choose>
+        </td>
+        
         <td>${ri.quantity}</td>
         <td>${ri.available_to_return}</td>
         <td><fmt:formatDate value="${ri.receive_date}" pattern="yyyy-MM-dd"/></td>

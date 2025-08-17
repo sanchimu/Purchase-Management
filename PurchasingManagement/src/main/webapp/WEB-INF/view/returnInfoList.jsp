@@ -69,7 +69,7 @@
       <th><input type="checkbox" onclick="toggleAll(this)"></th>
       <th>반품ID</th>
       <th>입고ID</th>
-      <th>상품ID</th>
+      <th>상품명(ID)</th>
       <th>반품수량</th>
       <th>사유</th>
       <th>반품일</th>
