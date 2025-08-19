@@ -32,7 +32,7 @@
 
   <div class="row">
     <label>주문 ID</label>
-    <input type="text" name="order_id" value="${edit ? ri.order_id : ''}" ${edit ? 'readonly' : 'required'} placeholder="OR0001">
+    <input type="text" name="order_id" value="${edit ? ri.order_id : ''}" ${edit ? 'readonly' : 'required'} placeholder="OR001">
   </div>
 
   <div class="row">
