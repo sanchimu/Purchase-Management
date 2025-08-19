@@ -32,12 +32,12 @@
 
   <div class="row">
     <label>주문 ID</label>
-    <input type="text" name="order_id" value="${edit ? ri.order_id : ''}" ${edit ? 'readonly' : 'required'} placeholder="ORD001">
+    <input type="text" name="order_id" value="${edit ? ri.order_id : ''}" ${edit ? 'readonly' : 'required'} placeholder="OR0001">
   </div>
 
   <div class="row">
     <label>상품 ID</label>
-    <input type="text" name="product_id" value="${edit ? ri.product_id : ''}" ${edit ? 'readonly' : 'required'} placeholder="PRD001">
+    <input type="text" name="product_id" value="${edit ? ri.product_id : ''}" ${edit ? 'readonly' : 'required'} placeholder="P001">
   </div>
 
   <div class="row">
@@ -73,22 +73,7 @@
     </select>
   </div>
 
-  <!-- 조인 표시용 필드 -->
-  <div class="row">
-    <label>상품명(표시)</label>
-    <input type="text" value="${edit ? (empty ri.product_name ? '-' : ri.product_name) : (empty product_name ? '-' : product_name)}" readonly>
-  </div>
 
-  <div class="row">
-    <label>공급업체(표시)</label>
-    <input type="text" value="${edit ? (empty ri.supplier_name ? '-' : ri.supplier_name) : (empty supplier_name ? '-' : supplier_name)}" readonly>
-  </div>
-
-  <div class="row">
-    <label>반품 가능 수량(표시)</label>
-    <input type="number" value="${edit ? ri.available_to_return : (empty available_to_return ? 0 : available_to_return)}" readonly>
-  </div>
-  <div class="hint">※ 표시 필드는 조인 조회 값으로 자동 표시됩니다.</div>
 
   <div class="actions">
     <button type="submit" class="btn">${edit ? '수정 저장' : '등록'}</button>
