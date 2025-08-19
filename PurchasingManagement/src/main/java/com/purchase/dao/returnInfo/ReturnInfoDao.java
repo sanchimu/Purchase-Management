@@ -85,21 +85,24 @@ public class ReturnInfoDao {
     public List<ReturnInfo> selectByConditions(Connection conn, Map<String,String> cond)
             throws SQLException {
         StringBuilder sb = new StringBuilder(
-            "SELECT return_id, receive_id, product_id, quantity, reason, return_date " +
-            "FROM return_info WHERE 1=1");
+        	    "SELECT r.return_id, r.receive_id, r.product_id, p.product_name AS product_name, " +
+        	    	    "r.quantity, r.reason, r.return_date " +
+        	    	    "FROM return_info r " +
+        	    	    "LEFT JOIN product p ON r.product_id = p.product_id " +
+        	    	    "WHERE 1=1");
         List<Object> params = new ArrayList<>();
 
-        if (cond.get("return_id") != null) {
-            sb.append(" AND return_id = ?");
-            params.add(cond.get("return_id"));
+        if (cond.get("return_id") != null && !cond.get("return_id").isEmpty()) {
+            sb.append(" AND UPPER(r.return_id) LIKE ?");
+            params.add("%" + cond.get("return_id").toUpperCase() + "%");
         }
-        if (cond.get("receive_id") != null) {
-            sb.append(" AND receive_id LIKE ?");
-            params.add("%" + cond.get("receive_id") + "%");
+        if (cond.get("receive_id") != null && !cond.get("receive_id").isEmpty()) {
+            sb.append(" AND UPPER(r.receive_id) LIKE ?");
+            params.add("%" + cond.get("receive_id").toUpperCase() + "%");
         }
-        if (cond.get("product_id") != null) {
-            sb.append(" AND product_id = ?");
-            params.add(cond.get("product_id"));
+        if (cond.get("product_id") != null && !cond.get("product_id").isEmpty()) {
+            sb.append(" AND UPPER(r.product_id) LIKE ?");
+            params.add("%" + cond.get("product_id").toUpperCase() + "%");
         }
         sb.append(" ORDER BY return_id");
 
@@ -114,7 +117,8 @@ public class ReturnInfoDao {
                         rs.getString("product_id"),
                         rs.getInt("quantity"),
                         rs.getString("reason"),
-                        rs.getDate("return_date")
+                        rs.getDate("return_date"),
+                        rs.getString("product_name")
                     ));
                 }
                 return list;

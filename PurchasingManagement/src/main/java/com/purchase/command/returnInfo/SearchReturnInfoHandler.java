@@ -28,13 +28,13 @@ public class SearchReturnInfoHandler implements CommandHandler {
         if (notEmpty(receiveId)) params.put("receive_id", receiveId);
         if (notEmpty(productId)) params.put("product_id", productId);
 
-        List<ReturnInfo> list = returnInfoService.getReturnInfosByConditions(params);
+        List<ReturnInfo> returnInfoList = returnInfoService.getReturnInfosByConditions(params);
 
         // JSP에서 사용: ${returnList}
-        req.setAttribute("returnList", list);
+        req.setAttribute("returnInfoList", returnInfoList);
 
         // 결과가 없고, 검색 조건이 하나라도 있었으면 메시지 표시(선택)
-        if (list.isEmpty() && !params.isEmpty()) {
+        if (returnInfoList.isEmpty() && !params.isEmpty()) {
             req.setAttribute("message", "조회된 반품 정보가 없습니다.");
         }
 
