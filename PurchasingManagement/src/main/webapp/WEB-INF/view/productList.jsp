@@ -24,39 +24,46 @@ function validateSelection(){
 function toggleAll(source){
   document.querySelectorAll('input[name="ids"]').forEach(cb => cb.checked = source.checked);
 }
+function toggleHidden(checked){
+  const params = new URLSearchParams(location.search);
+  params.set('includeHidden', checked ? '1' : '0');
+  location.search = params.toString();
+}
 </script>
 </head>
 <body>
 
   <h2>상품 조회</h2>
-  <form action="${pageContext.request.contextPath}/productList.do" method="get">
-    상품 ID : <input type="text" name="product_id" value="${param.product_id}">
-    상품명 : <input type="text" name="product_name" value="${param.product_name}">
+  <form action="${pageContext.request.contextPath}/listProducts.do" method="get">
+    상품 ID : <input type="text" name="product_id" value="<c:out value='${param.product_id}'/>">
+    상품명 : <input type="text" name="product_name" value="<c:out value='${param.product_name}'/>">
     <br>
     카테고리 :
     <select name="category">
       <option value="">-- 선택 --</option>
       <c:forEach items="${categoryList}" var="category">
-        <option value="${category}" <c:if test="${param.category == category}">selected</c:if>>${category}</option>
+        <option value="<c:out value='${category}'/>"
+                <c:if test="${param.category eq category}">selected</c:if>>
+          <c:out value='${category}'/>
+        </option>
       </c:forEach>
     </select>
-    공급업체 ID : <input type="text" name="supplier_id" value="${param.supplier_id}">
+    공급업체 ID : <input type="text" name="supplier_id" value="<c:out value='${param.supplier_id}'/>">
     <br>
     <input type="submit" value="상품 조회">
   </form>
 
   <h2>상품 목록</h2>
 
-  <!-- 한 폼에서: 업무상태 저장 / 표시상태(A/X) 일괄변경 모두 처리 -->
-  <form method="post">
+  <!-- 기본 action = 업무상태 일괄 저장 -->
+  <form method="post" action="${pageContext.request.contextPath}/productStatusBulkUpdate.do">
     <input type="hidden" name="table" value="product"/>
     <input type="hidden" name="idColumn" value="product_id"/>
+    <input type="hidden" name="includeHidden" value="<c:out value='${includeHidden}'/>"/>
 
     <div class="toolbar" style="margin:10px 0;">
       <!-- 업무상태 저장 -->
-      <button type="submit"
-              formaction="${pageContext.request.contextPath}/updateProducts.do"
-              onclick="return validateSelection();">선택항목 업무상태 저장</button>
+      <button type="submit" onclick="return validateSelection();">선택항목 업무상태 저장</button>
 
       <!-- 표시상태(A/X) 일괄변경 -->
       <button type="submit"
@@ -71,8 +78,8 @@ function toggleAll(source){
 
       <label style="margin-left:12px;">
         <input type="checkbox"
-               onchange="location.href='?includeHidden='+(this.checked?'1':'0');"
-          <c:if test="${includeHidden}">checked</c:if> /> 중단 포함
+               onchange="toggleHidden(this.checked)"
+               <c:if test="${includeHidden eq '1' || includeHidden == true}">checked</c:if> /> 중단 포함
       </label>
     </div>
 
@@ -92,36 +99,45 @@ function toggleAll(source){
       <tbody>
         <c:choose>
           <c:when test="${not empty productList}">
-            <!-- ✅ 행 반복도 JSTL로 -->
             <c:forEach var="p" items="${productList}">
-              <tr class="<c:if test='${p.row_status == "X"}'>muted</c:if>">
-                <td><input type="checkbox" name="ids" value="${p.product_id}"></td>
-                <td>${p.product_id}</td>
-                <td>${p.product_name}</td>
-                <td>${p.category}</td>
-                <td>${p.price}</td>
-                <!-- ✅ 공급업체명 표시 (공급업체명이 있으면 이름, 없으면 ID) -->
+              <tr class="${p.row_status == 'X' ? 'muted' : ''}">
+                <td><input type="checkbox" name="ids" value="<c:out value='${p.product_id}'/>"></td>
+                <td><c:out value='${p.product_id}'/></td>
+
+                <!-- 상품명 클릭 → 전용 수정 폼 -->
+                <td>
+                  <a href="<c:url value='/updateProducts.do'>
+                             <c:param name='product_id' value='${p.product_id}'/>
+                             <c:param name='includeHidden' value='${includeHidden}'/>
+                           </c:url>"><c:out value='${p.product_name}'/></a>
+                </td>
+
+                <td><c:out value='${p.category}'/></td>
+                <td><c:out value='${p.price}'/></td>
+
                 <td>
                   <c:choose>
                     <c:when test="${not empty p.supplier_name}">
-                      ${p.supplier_name} (${p.supplier_id})
+                      <c:out value='${p.supplier_name}'/> (<c:out value='${p.supplier_id}'/>)
                     </c:when>
                     <c:otherwise>
-                      ${p.supplier_id}
+                      <c:out value='${p.supplier_id}'/>
                     </c:otherwise>
                   </c:choose>
                 </td>
 
-                <!-- ✅ 업무상태 드롭다운: 선택값 반영 -->
+                <!-- 업무상태 드롭다운(벌크 저장 대상) -->
                 <td>
-                  <select name="${p.product_id}">
+                  <select name="status[${p.product_id}]">
                     <c:forEach items="${productStatusList}" var="st">
-                      <option value="${st}" <c:if test="${st eq p.product_status}">selected</c:if>>${st}</option>
+                      <option value="<c:out value='${st}'/>"
+                              <c:if test="${st eq p.product_status}">selected</c:if>>
+                        <c:out value='${st}'/>
+                      </option>
                     </c:forEach>
                   </select>
                 </td>
 
-                <!-- 표시상태 배지 -->
                 <td>
                   <c:choose>
                     <c:when test="${empty p.row_status || p.row_status == 'A'}">
@@ -136,7 +152,7 @@ function toggleAll(source){
             </c:forEach>
           </c:when>
           <c:otherwise>
-            <tr><td colspan="8">조회된 상품이 없습니다..</td></tr>
+            <tr><td colspan="8">조회된 상품이 없습니다.</td></tr>
           </c:otherwise>
         </c:choose>
       </tbody>
@@ -146,7 +162,6 @@ function toggleAll(source){
   <br>
   <a href="${pageContext.request.contextPath}/addProduct.do">상품 등록하기</a>
 
-  <!-- 검색했는데 결과 없을 때 알림 (기존 로직 유지) -->
   <c:if test="${empty productList and (not empty param.product_id or not empty param.product_name or not empty param.category or not empty param.supplier_id)}">
     <script>alert('조회된 상품이 없습니다.');</script>
   </c:if>
