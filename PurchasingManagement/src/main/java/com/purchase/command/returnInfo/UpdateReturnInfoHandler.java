@@ -46,14 +46,14 @@ public class UpdateReturnInfoHandler implements CommandHandler {
                 continue;
             }
 
-            try {
+           /* try {
                 service.updateReturnInfo(id, qty, reason);
                 success++;
             } catch (IllegalArgumentException | IllegalStateException biz) {
                 errors.add(id + ": " + biz.getMessage());
             } catch (RuntimeException ex) {
                 errors.add(id + ": 저장 중 오류가 발생했습니다.");
-            }
+            }*/
         }
 
         if (success > 0) {

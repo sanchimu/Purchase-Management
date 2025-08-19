@@ -1,5 +1,6 @@
 package com.purchase.command.returnInfo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,37 +15,42 @@ import mvc.command.CommandHandler;
 
 public class SearchReturnInfoHandler implements CommandHandler {
 
-    private final ReturnInfoService returnInfoService = new ReturnInfoService();
+	private ReturnInfoService returmInfoService = new ReturnInfoService();
+	
+	@Override
+	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// TODO Auto-generated method stub
+		String returnId = req.getParameter("return_id");
+        String receiveId = req.getParameter("receive_id");
+        String productId = req.getParameter("product_id");
 
-    @Override
-    public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
-        String returnId  = trim(req.getParameter("return_id"));
-        String receiveId = trim(req.getParameter("receive_id"));
-        String productId = trim(req.getParameter("product_id"));
-
-        Map<String, String> params = new HashMap<>();
-        if (notEmpty(returnId))  params.put("return_id",  returnId);
-        if (notEmpty(receiveId)) params.put("receive_id", receiveId);
-        if (notEmpty(productId)) params.put("product_id", productId);
-
-        List<ReturnInfo> returnInfoList = returnInfoService.getReturnInfosByConditions(params);
-
-        // JSP에서 사용: ${returnList}
-        req.setAttribute("returnInfoList", returnInfoList);
-
-        // 결과가 없고, 검색 조건이 하나라도 있었으면 메시지 표시(선택)
-        if (returnInfoList.isEmpty() && !params.isEmpty()) {
-            req.setAttribute("message", "조회된 반품 정보가 없습니다.");
+        Map<String, String> searchParams = new HashMap<>();
+        if(returnId != null && !returnId.trim().isEmpty()) {
+            searchParams.put("return_id", returnId.trim());
+        }
+        if(receiveId != null && !receiveId.trim().isEmpty()) {
+            searchParams.put("receive_id", receiveId.trim());
+        }
+        if(productId != null && !productId.trim().isEmpty()) {
+            searchParams.put("product_id", productId.trim());
         }
 
-        return "/WEB-INF/view/returnInfoList.jsp";
-    }
+        // 3. 서비스 호출 → 조건에 맞는 상품 리스트 조회
+        List<ReturnInfo> returnInfoList = returmInfoService.getReturnInfosByConditions(searchParams);
 
-    private static String trim(String s) {
-        return s == null ? null : s.trim();
-    }
-    private static boolean notEmpty(String s) {
-        return s != null && !s.trim().isEmpty();
+
+        // 4. JSP에 결과 전달
+        req.setAttribute("returnInfoList", returnInfoList);
+
+        if (returnInfoList == null || returnInfoList.isEmpty()) {
+            // 검색 실패 → 전체 리스트 조회
+            returnInfoList = returmInfoService.getAllReturnInfo();
+        }
+        
+        // 5. 뷰 이름 반환 (productList.jsp 경로)
+        //res.sendRedirect(req.getContextPath() + "/listReturnInfos.do");
+        req.getRequestDispatcher("/WEB-INF/view/returnInfoList.jsp").forward(req, res);
+        return null;
+
     }
 }
