@@ -70,7 +70,8 @@ public class ReturnInfoDao {
 	
 	
 	public List<ReturnInfo> selectAll(Connection conn) throws SQLException {
-		String sql = "SELECT r.return_id, r.receive_id, r.product_id, p.product_name, r.quantity, r.reason, r.return_date FROM return_info r JOIN product p ON r.product_id = p.product_id ORDER BY r.return_id";
+		String sql = "SELECT r.return_id, r.receive_id, r.product_id, p.product_name, r.quantity, r.reason, r.return_date "
+				+ "FROM return_info r JOIN product p ON r.product_id = p.product_id ORDER BY r.return_id";
 		List<ReturnInfo> returnInfoList = new ArrayList<>();
 	    System.out.println("DAO selectAll 실행");
 		int i = 0;
@@ -88,7 +89,8 @@ public class ReturnInfoDao {
 	}
 	
 	public List<ReturnInfo> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
-		StringBuilder sql = new StringBuilder("SELECT * FROM return_info where 1=1");
+		StringBuilder sql = new StringBuilder("SELECT  r.return_id, r.receive_id, r.product_id, p.product_name, r.quantity, r.reason, r.return_date "
+				+ "FROM return_info r JOIN product p ON r.product_id = p.product_id WHERE 1=1");
 		List<Object> params = new ArrayList<>();
 
 		if (conditions.get("return_id") != null) {
@@ -113,7 +115,7 @@ public class ReturnInfoDao {
 				List<ReturnInfo> list = new ArrayList<>();
 				while (rs.next()) {
 					ReturnInfo ri = new ReturnInfo(rs.getString("return_id"), rs.getString("receive_id"),
-							rs.getString("product_id"), rs.getInt("quantity"), rs.getString("reason"), rs.getDate("return_date"));
+							rs.getString("product_id"), rs.getInt("quantity"), rs.getString("reason"), rs.getDate("return_date"), rs.getString("product_name"));
 					list.add(ri);
 				}
 				return list;

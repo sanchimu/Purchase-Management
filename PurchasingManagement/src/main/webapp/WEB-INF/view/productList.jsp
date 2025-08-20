@@ -20,36 +20,20 @@
 <head>
 <meta charset="UTF-8">
 <title>상품 목록</title>
-
-
-
-<!-- <script>
-// 폼 제출 전 체크박스 선택 여부 확인
-function validateForm() {
-    const checkboxes = document.querySelectorAll('input[name="productIds"]:checked');
-    if (checkboxes.length === 0) {
-        alert("삭제할 상품을 선택하세요.");
-        return false; // 제출 막기
-    }
-    return true; // 제출 허용
-}
-
-
-</script> -->
 </head>
 <body>
     <h2>상품 조회</h2>
-     <form action="productList.do" method="get">
+     <form action="searchProducts.do" method="get">
 	상품 ID : <input type = "text" name="product_id" value="${param.product_id}">
 	상품명 : <input type = "text" name="product_name" value="${param.product_name}">
 	<br>
 	카테고리 : 
 <select name="category">
     <option value="">-- 선택 --</option>
-    <c:forEach items="${categoryList}" var="category">
-        <option value="${category}" 
-            <c:if test="${selectedCategory == category}">selected</c:if>>
-            ${category}
+    <c:forEach items="${categoryList}" var="cat">
+        <option value="${cat}" 
+            <c:if test="${param.category == cat}">selected</c:if>>
+            ${cat}
         </option>
     </c:forEach>
 </select>
@@ -62,6 +46,10 @@ function validateForm() {
 
     <h2>상품 목록</h2>
      <form action="updateProducts.do" method="post" onsubmit="return validateForm();">
+          <% Boolean NoSearchProductResult = (Boolean) request.getAttribute("NoSearchProductResult");
+   		if (Boolean.TRUE.equals(NoSearchProductResult)) { %>
+    <script>alert("조회된 상품이 없습니다. 전체 목록을 표시합니다.");</script>
+	<% } %>
         <table border="1">
             <tr>
                 <th>상품 ID</th>
@@ -84,10 +72,11 @@ function validateForm() {
                 <td><%= p.getSupplier_id() %></td>
                  <td>
         			<select name="<%= p.getProduct_id() %>">
-           			<option value="판매중" <%= "판매중".equals(p.getProduct_status()) ? "selected" : "" %>>판매중</option>
-            		<option value="판매중지" <%= "판매중지".equals(p.getProduct_status()) ? "selected" : "" %>>판매중지</option>
-            		<option value="품절" <%= "품절".equals(p.getProduct_status()) ? "selected" : "" %>>품절</option>
-            		<option value="보류" <%= "보류".equals(p.getProduct_status()) ? "selected" : "" %>>보류</option>
+           			<option value="정상판매" <%= "정상판매".equals(p.getProduct_status()) ? "selected" : "" %>>정상판매</option>
+            		<option value="일시품절" <%= "일시품절".equals(p.getProduct_status()) ? "selected" : "" %>>일시품절</option>
+            		<option value="예약판매" <%= "예약판매".equals(p.getProduct_status()) ? "selected" : "" %>>예약판매</option>
+            		<option value="판매보류" <%= "판매보류".equals(p.getProduct_status()) ? "selected" : "" %>>판매보류</option>
+            		<option value="단종" <%= "단종".equals(p.getProduct_status()) ? "selected" : "" %>>단종</option>
         			</select>
    			 	</td>
             </tr>
@@ -97,31 +86,6 @@ function validateForm() {
             %><tr><td colspan="6">조회된 상품이 없습니다..</td></tr>
             <% } %>
         </table>
-        
-        
-        
-        
-        
-        	<%
-    
-    			String productId = request.getParameter("product_id");
-			    String productName = request.getParameter("product_name");
-			    String category = request.getParameter("category");
-			    String supplierId = request.getParameter("supplier_id");
-			
-			    boolean noResult = (productList == null || productList.isEmpty());
-			    boolean allConditionsEmpty = ( (productId == null || productId.trim().isEmpty()) &&
-                                  (productName == null || productName.trim().isEmpty()) &&
-                                  (category == null || category.trim().isEmpty()) &&
-                                  (supplierId == null || supplierId.trim().isEmpty()) );
-			%>
-	
-		<% if (noResult && !allConditionsEmpty) { %>
-			<script>
-    			alert('조회된 상품이 없습니다.');
-			</script>
-		<% } %>
-        
         <br>
         <input type="submit" value="상태 저장">
     </form>

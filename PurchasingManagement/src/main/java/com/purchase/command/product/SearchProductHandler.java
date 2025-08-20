@@ -42,12 +42,20 @@ public class SearchProductHandler implements CommandHandler {
         // 3. 서비스 호출 → 조건에 맞는 상품 리스트 조회
         List<Product> productList = productService.getProductsByConditions(searchParams);
 
+        if (productList == null || productList.isEmpty()) {
+            // 검색 실패 → 전체 리스트 조회
+        	req.setAttribute("NoSearchProductResult", true);
+        	productList = productService.getAllProducts();
+        }
+        
         // 4. JSP에 결과 전달
         req.setAttribute("productList", productList);
         req.setAttribute("categoryList", categoryList);
         // 5. 뷰 이름 반환 (productList.jsp 경로)
-        return "/WEB-INF/view/productList.jsp";
-    }
+        
+        req.getRequestDispatcher("/WEB-INF/view/productList.jsp").forward(req, res);
+        return null;
+    }	
 		// TODO Auto-generated method stub
 }
 

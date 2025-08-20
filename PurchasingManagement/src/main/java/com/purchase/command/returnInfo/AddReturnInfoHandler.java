@@ -23,8 +23,7 @@ public class AddReturnInfoHandler implements CommandHandler {
 		  List<ReceiveInfo> receiveInfoList = receiveInfoService.getReceiveInfoWithReturnQty();
 		  req.setAttribute("receiveInfoList", receiveInfoList);
 		 
-		  
+		 
 		 return "/WEB-INF/view/returnInfoAdd.jsp";
 	}
-
 }

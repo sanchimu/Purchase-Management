@@ -39,6 +39,12 @@ function validateForm() {
 
     <h2>반품  정보</h2>
      <form action="deleteReturnInfos.do" method="post" onsubmit="return validateForm();">
+     <% Boolean NoSearchReturnInfoResult = (Boolean) request.getAttribute("NoSearchReturnInfoResult");
+   		if (Boolean.TRUE.equals(NoSearchReturnInfoResult)) { %>
+    <script>alert("조회된 반품 요청 사항이 없습니다. 전체 목록을 표시합니다.");</script>
+	<% } %>
+     
+     
         <table border="1">
             <tr>
                 <th>선택</th>
@@ -72,30 +78,8 @@ function validateForm() {
             <tr>
                 <td colspan="7" style="text-align:center;">조회된 반품 요청 사항이 없습니다.</td>
             </tr>
-            <% }
-                    %>
+            <% }%>
         </table>
-        
-        	<%
-    
-    			String returnId = request.getParameter("return_id");
-			    String receiveId = request.getParameter("receive_id");
-			    String productId = request.getParameter("product_id");
-			    
-			
-			    boolean noResult = (returnInfoList == null || returnInfoList.isEmpty());
-			    boolean allConditionsEmpty = ( (productId == null || productId.trim().isEmpty()) &&
-                                  (returnId == null || returnId.trim().isEmpty()) &&
-                                  (receiveId == null || receiveId.trim().isEmpty()) &&
-                                  (productId == null || productId.trim().isEmpty()) );
-			%>
-	
-		<% if (noResult && !allConditionsEmpty) { %>
-			<script>
-    			alert('조회된 요청이 없습니다.');
-			</script>
-		<% } %>
-        
         <br>
         <input type="submit" value="선택 항목 반품 취소">
     </form>

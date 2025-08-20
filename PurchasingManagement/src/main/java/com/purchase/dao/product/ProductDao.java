@@ -93,7 +93,7 @@ public class ProductDao {
 			params.add("%" + conditions.get("product_name") + "%");
 		}
 		if (conditions.get("category") != null) {
-			sql.append(" AND category = ?");
+			sql.append(" AND UPPER(category) LIKE  UPPER(?)");
 			params.add("%" + conditions.get("category") + "%");
 		}
 		if (conditions.get("supplier_id") != null) {
