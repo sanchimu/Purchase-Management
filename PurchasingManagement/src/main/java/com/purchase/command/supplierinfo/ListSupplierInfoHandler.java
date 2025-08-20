@@ -12,33 +12,48 @@ import com.purchase.vo.SupplierInfo;
 
 import mvc.command.CommandHandler;
 
+/**
+ * 仕入先情報一覧を表示するハンドラークラス。
+ * SupplierInfoService を利用してデータを取得し、
+ * 条件に応じてフィルタリングを行った上で JSP に渡す。
+ */
 public class ListSupplierInfoHandler implements CommandHandler {
 
+    // サービス層のインスタンスを生成
     private final SupplierInfoService supplierService = new SupplierInfoService();
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        // 중단 포함 여부: 기본 false (A만)
+        // パラメータ取得
+        // includeHidden=1 の場合は非表示（中断状態を含む）データも表示
+        // デフォルトでは false（= "A" のみ表示）
         boolean includeHidden = "1".equals(req.getParameter("includeHidden"));
 
-        // 전체 목록 조회 (서비스/DAO는 그대로 사용)
+        // 全件取得
+        // SupplierInfoService 経由で全仕入先データを取得
         List<SupplierInfo> all = supplierService.getSupplierList();
 
-        // 기본은 row_status = 'A' 만 표시, includeHidden=1이면 필터없이 모두
+        // フィルタリング処理
+        // デフォルト: row_status が "A" または null のデータのみを表示
+        // includeHidden=1 が指定された場合はフィルタリングせず全件表示
         List<SupplierInfo> viewList = includeHidden
                 ? all
                 : all.stream()
                      .filter(s -> s.getRow_status() == null || "A".equalsIgnoreCase(s.getRow_status()))
                      .collect(Collectors.toList());
 
-        // JSP 바인딩
+        // リクエスト属性にバインド
+        // JSP 側で一覧表示に利用するデータをセット
         req.setAttribute("supplierList", viewList);
         req.setAttribute("includeHidden", includeHidden);
 
-        // 업무상태 드롭다운(활성/거래 중지/폐업/휴면) – JSP에서 없으면 만들어 쓰지만 여기서도 제공
+        // 業務状態ドロップダウン用リスト
+        // JSP 側でセレクトボックスを生成するための選択肢を提供
         req.setAttribute("supplierStatusList",
-                Arrays.asList("활성", "거래 중지", "폐업", "휴면"));
+                Arrays.asList("有効", "取引停止", "廃業", "休眠"));
 
+        // 遷移先 JSP
+        // 仕入先一覧を表示する JSP のパスを返す
         return "/WEB-INF/view/supplierInfoList.jsp";
     }
 }

@@ -10,26 +10,31 @@ import com.purchase.vo.SupplierInfo;
 import jdbc.JdbcUtil;
 import jdbc.connection.ConnectionProvider;
 
+/**
+ * SupplierInfoService クラス
+ * - DAO を利用してビジネスロジックを実装
+ * - トランザクション管理（commit/rollback）を含む
+ */
 public class SupplierInfoService {
 
     private final SupplierInfoDao supplierDao = new SupplierInfoDao();
 
-    /** 공급업체 등록 (DB 기본값: supplier_status='활성', row_status='A') */
+    /** 仕入先登録 (DBデフォルト: supplier_status='有効', row_status='A') */
     public void insertSupplier(SupplierInfo supplier) {
         Connection conn = null;
         try {
             conn = ConnectionProvider.getConnection();
-            supplierDao.insert(conn, supplier);
-            conn.commit();
+            supplierDao.insert(conn, supplier); // DAO 呼び出し
+            conn.commit();                      // 正常時はコミット
         } catch (SQLException e) {
-            rollbackQuietly(conn);
+            rollbackQuietly(conn);              // 例外時はロールバック
             throw new RuntimeException(e);
         } finally {
-            JdbcUtil.close(conn);
+            JdbcUtil.close(conn);               // コネクションをクローズ
         }
     }
 
-    /** 공급업체 전체 목록 */
+    /** 仕入先全件取得 */
     public List<SupplierInfo> getSupplierList() {
         try (Connection conn = ConnectionProvider.getConnection()) {
             return supplierDao.selectAll(conn);
@@ -38,7 +43,7 @@ public class SupplierInfoService {
         }
     }
 
-    /** 공급업체명 LIKE 검색 */
+    /** 仕入先名 LIKE 検索 */
     public List<SupplierInfo> searchSuppliersByName(String name) {
         try (Connection conn = ConnectionProvider.getConnection()) {
             return supplierDao.selectByName(conn, name);
@@ -47,7 +52,7 @@ public class SupplierInfoService {
         }
     }
 
-    /** 공급업체 '업무상태' 변경 */
+    /** 仕入先「業務状態」変更 */
     public void updateSupplierStatus(SupplierInfo supplier) {
         Connection conn = null;
         try {
@@ -62,7 +67,7 @@ public class SupplierInfoService {
         }
     }
 
-    /** 선택 삭제 (필요 시 사용) */
+    /** 選択削除（複数 ID をまとめて削除） */
     public void deleteSuppliers(String[] supplierIds) {
         if (supplierIds == null || supplierIds.length == 0) return;
         Connection conn = null;
@@ -80,6 +85,7 @@ public class SupplierInfoService {
         }
     }
 
+    /** ロールバック（静かに実行、例外は無視） */
     private void rollbackQuietly(Connection conn) {
         if (conn != null) try { conn.rollback(); } catch (SQLException ignore) {}
     }

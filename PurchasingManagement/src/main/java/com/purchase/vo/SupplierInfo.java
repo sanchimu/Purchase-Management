@@ -1,9 +1,9 @@
 package com.purchase.vo;
 
 /**
- * [KO] 공급업체 VO
- *  - supplier_status : 업무상태 (예: 활성/거래 중지/폐업/휴면)
- *  - row_status      : 공통 표시스위치 ('A'=진행중, 'X'=중단)
+ * [JP] 仕入先 VO
+ *  - supplier_status : 業務状態 (例: 有効 / 取引停止 / 廃業 / 休眠)
+ *  - row_status      : 共通表示スイッチ ('A'=進行中, 'X'=中断)
  */
 public class SupplierInfo {
     private String supplier_id;
@@ -11,15 +11,15 @@ public class SupplierInfo {
     private String contact_number;
     private String address;
 
-    // 업무상태
+    // 業務状態
     private String supplier_status;
 
-    // 공통 표시상태(A/X)
+    // 共通表示状態(A/X)
     private String row_status;
 
     public SupplierInfo() { }
 
-    // 기존 호환(업무/표시상태 제외)
+    // 既存互換 (業務/表示状態を除く)
     public SupplierInfo(String supplier_id, String supplier_name, String contact_number, String address) {
         this.supplier_id = supplier_id;
         this.supplier_name = supplier_name;
@@ -27,7 +27,7 @@ public class SupplierInfo {
         this.address = address;
     }
 
-    // 전체 필드 포함
+    // 全フィールドを含む
     public SupplierInfo(String supplier_id, String supplier_name, String contact_number, String address,
                         String supplier_status, String row_status) {
         this.supplier_id = supplier_id;
@@ -50,11 +50,11 @@ public class SupplierInfo {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    /** 업무상태 */
+    /** 業務状態 */
     public String getSupplier_status() { return supplier_status; }
     public void setSupplier_status(String supplier_status) { this.supplier_status = supplier_status; }
 
-    /** 'A' or 'X' */
+    /** 'A' または 'X' */
     public String getRow_status() { return row_status; }
     public void setRow_status(String row_status) { this.row_status = row_status; }
 }

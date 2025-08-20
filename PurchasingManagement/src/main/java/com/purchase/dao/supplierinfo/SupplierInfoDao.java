@@ -11,9 +11,16 @@ import com.purchase.vo.SupplierInfo;
 
 import jdbc.JdbcUtil;
 
+/**
+ * SupplierInfoDao クラス
+ * - DB の supplier_info テーブルを操作する DAO クラス
+ * - CRUD（登録、削除、更新、検索、全件取得など）の処理を実装
+ */
 public class SupplierInfoDao {
 
-    // 등록 (업무/표시 상태는 DB 기본값 사용: supplier_status DEFAULT '활성', row_status DEFAULT 'A')
+    // 登録
+    // supplier_status, row_status は DB 側のデフォルト値を利用
+    // supplier_status DEFAULT '有効', row_status DEFAULT 'A'
     public void insert(Connection conn, SupplierInfo supplier) throws SQLException {
         PreparedStatement pstmt = null;
         try {
@@ -31,7 +38,7 @@ public class SupplierInfoDao {
         }
     }
 
-    // 삭제
+    // 削除処理（supplier_id を指定して物理削除）
     public void delete(Connection conn, String supplierId) throws SQLException {
         PreparedStatement pstmt = null;
         try {
@@ -43,7 +50,8 @@ public class SupplierInfoDao {
         }
     }
     
- // 공급업체 업무상태 변경
+    // 仕入先の業務状態を変更
+    // supplier_status を更新（例: 有効 → 取引停止）
     public int updateSupplierStatus(Connection conn, SupplierInfo supplier) throws SQLException {
         String sql = "UPDATE supplier_info SET supplier_status = ? WHERE supplier_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -53,8 +61,8 @@ public class SupplierInfoDao {
         }
     }
 
-
-    // 이름 검색 (supplier_status, row_status 포함해서 매핑)
+    // 名前で検索
+    // supplier_status, row_status を含めてマッピングして返す
     public List<SupplierInfo> selectByName(Connection conn, String name) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -77,8 +85,8 @@ public class SupplierInfoDao {
                 s.setSupplier_name(rs.getString("supplier_name"));
                 s.setContact_number(rs.getString("contact_number"));
                 s.setAddress(rs.getString("address"));
-                s.setSupplier_status(rs.getString("supplier_status")); // ✅ 업무상태
-                s.setRow_status(rs.getString("row_status"));           // ✅ 표시상태(A/X)
+                s.setSupplier_status(rs.getString("supplier_status")); // 業務状態
+                s.setRow_status(rs.getString("row_status"));           // 表示状態(A/X)
                 list.add(s);
             }
         } finally {
@@ -88,7 +96,8 @@ public class SupplierInfoDao {
         return list;
     }
 
-    // 전체 목록 (supplier_status, row_status 포함해서 매핑)
+    // 全件取得
+    // supplier_status, row_status を含めてマッピング
     public List<SupplierInfo> selectAll(Connection conn) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -109,8 +118,8 @@ public class SupplierInfoDao {
                 s.setSupplier_name(rs.getString("supplier_name"));
                 s.setContact_number(rs.getString("contact_number"));
                 s.setAddress(rs.getString("address"));
-                s.setSupplier_status(rs.getString("supplier_status")); // ✅
-                s.setRow_status(rs.getString("row_status"));           // ✅
+                s.setSupplier_status(rs.getString("supplier_status")); // 業務状態
+                s.setRow_status(rs.getString("row_status"));           // 表示状態
                 list.add(s);
             }
         } finally {
@@ -120,9 +129,8 @@ public class SupplierInfoDao {
         return list;
     }
     
- // 기존 SupplierInfoDao 클래스에 이 메소드만 추가하세요
-
-    // 활성화된 공급업체 목록 조회 (상품 등록용)
+    // 有効な仕入先一覧を取得（商品登録用に使用）
+    // row_status = 'A' のものだけ返す
     public List<SupplierInfo> selectActiveSuppliers(Connection conn) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -144,8 +152,8 @@ public class SupplierInfoDao {
                 s.setSupplier_name(rs.getString("supplier_name"));
                 s.setContact_number(rs.getString("contact_number"));
                 s.setAddress(rs.getString("address"));
-                s.setSupplier_status(rs.getString("supplier_status"));
-                s.setRow_status(rs.getString("row_status"));
+                s.setSupplier_status(rs.getString("supplier_status")); // 業務状態
+                s.setRow_status(rs.getString("row_status"));           // 表示状態
                 list.add(s);
             }
         } finally {
