@@ -29,6 +29,14 @@
   <c:if test="${edit}">
     <input type="hidden" name="receive_id" value="${ri.receive_id}"/>
   </c:if>
+  
+<c:if test="${not empty errorMsg}">
+  <div style="color:#b00020; font-weight:bold; margin-bottom:10px;">
+    ${errorMsg}
+  </div>
+</c:if>
+
+<div class="hint">※ 주문 ID와 상품 ID는 반드시 사전에 등록된 값만 입력해야 합니다.</div>
 
   <div class="row">
     <label>주문 ID</label>
