@@ -18,7 +18,7 @@ public class UpdatePurchaseRequestHandler implements CommandHandler {
 
     // ✅ 실무형 상태 세트
     private static final List<String> ALLOWED =
-            Arrays.asList("접수","검토중","승인","반려","취소","종결");
+            Arrays.asList("受付","検討中","承認","差し戻し","取り消し","完了");
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {

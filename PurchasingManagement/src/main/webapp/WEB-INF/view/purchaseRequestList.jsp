@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>구매요청 목록</title>
+<title>購買リクエストリスト</title>
 <style>
 /* ★ 가로·세로 중앙 배치를 위한 기본 세팅 */
 html, body {
@@ -129,7 +129,7 @@ a:hover {
   }
   function prepStatus(){
     const ids = getCheckedIds();
-    if(!ids.length){alert('대상을 선택하세요.'); return false;}
+    if(!ids.length){alert('選択された項目がありません。'); return false;}
     const box = document.getElementById('idsContainer');
     box.innerHTML = '';
     ids.forEach(v=>{
@@ -141,7 +141,7 @@ a:hover {
   }
   function validateSave(){
     const ids = getCheckedIds();
-    if(!ids.length){alert('대상을 선택하세요.'); return false;}
+    if(!ids.length){alert('選択された項目がありません。'); return false;}
     return true;
   }
 </script>
@@ -153,11 +153,10 @@ a:hover {
 		<!-- ★ 실제 페이지 콘텐츠 -->
 		<div class="content">
 
-			<h2>구매요청 목록</h2>
+			<h2>購買リクエストリスト</h2>
 
 			<div class="top-menu">
-				<a href="<c:url value='/requestList.do'/>">목록</a><a
-					href="<c:url value='/insertpurchaserequest.do'/>">구매요청 등록</a>
+			<a href="<c:url value='/insertpurchaserequest.do'/>">購買リクエスト登録</a>
 			</div>
 
 
@@ -168,15 +167,15 @@ a:hover {
 			<!-- ★ 검색 폼에 중앙 정렬 클래스 적용 -->
 			<form action="<c:url value='/searchpurchaserequest.do'/>"
 				method="get" class="searchbar">
-				요청ID <input type="text" name="request_id"
-					value="${param.request_id}"> 상품ID <input type="text"
-					name="product_id" value="${param.product_id}"> 요청자 <input
+				リクエストID <input type="text" name="request_id"
+					value="${param.request_id}"> 商品ID <input type="text"
+					name="product_id" value="${param.product_id}"> 要請者 <input
 					type="text" name="requester_name" value="${param.requester_name}">
-				<input type="submit" value="검색"> <label
+				<input type="submit" value="探す"> <label
 					style="margin-left: 10px;"> <input type="checkbox"
 					onchange="location.href='?includeHidden='+(this.checked?'1':'0');"
 					<c:if test="${param.includeHidden=='1' || includeHidden}">checked</c:if> />
-					중단 포함
+					中断含め
 				</label>
 			</form>
 
@@ -188,42 +187,42 @@ a:hover {
 				<div class="toolbar">
 					<button type="submit"
 						formaction="${pageContext.request.contextPath}/updatePurchaseRequest.do"
-						onclick="return prepStatus();">선택항목 업무상태 저장</button>
+						onclick="return prepStatus();">選択項目業務状態保存</button>
 
 					<button type="submit"
 						formaction="${pageContext.request.contextPath}/status/bulk.do"
 						name="to" value="X"
-						onclick="return prepStatus() && confirm('선택 항목을 중단하시겠습니까?');">
-						선택항목 중단</button>
+						onclick="return prepStatus() && confirm('選択項目を中断しますか');">
+						選択項目中断</button>
 
 					<button type="submit"
 						formaction="${pageContext.request.contextPath}/status/bulk.do"
-						name="to" value="A" onclick="return prepStatus();">선택항목
-						재개</button>
+						name="to" value="A" onclick="return prepStatus();">選択項目再開
+					</button>
 				</div>
 
 				<!-- ✅ JSP 기본 리스트를 fn:split로 생성 (버전 호환) -->
 				<c:if test="${empty requestStatusList}">
 					<c:set var="requestStatusList"
-						value="${fn:split('접수,검토중,승인,반려,취소,종결', ',')}" />
+						value="${fn:split('受付,検討中,承認,差し戻し,取り消し,完了', ',')}" />
 				</c:if>
 
 				<table>
 					<tr>
 						<th><input type="checkbox" onclick="toggleAll(this)"></th>
-						<th>요청ID</th>
-						<th>상품ID</th>
-						<th>공급업체ID</th>
-						<th>수량</th>
-						<th>요청일</th>
-						<th>요청자</th>
-						<th>상태(업무)</th>
-						<th>표시상태(A/X)</th>
+						<th>リクエストID</th>
+						<th>商品ID</th>
+						<th>サプライヤーID</th>
+						<th>数量</th>
+						<th>要請日</th>
+						<th>要請者</th>
+						<th>状態(業務)</th>
+						<th>進行状況(A/X)</th>
 					</tr>
 
 					<c:if test="${empty requestList}">
 						<tr>
-							<td colspan="9">데이터가 없습니다.</td>
+							<td colspan="9">データがありません。</td>
 						</tr>
 					</c:if>
 
@@ -248,10 +247,10 @@ a:hover {
 								</select></td>
 								<td><c:choose>
 										<c:when test="${empty req.row_status || req.row_status=='A'}">
-											<span class="badge-ok">진행중</span>
+											<span class="badge-ok">進行中</span>
 										</c:when>
 										<c:otherwise>
-											<span class="badge-stop">중단</span>
+											<span class="badge-stop">中断</span>
 										</c:otherwise>
 									</c:choose></td>
 							</tr>
