@@ -66,7 +66,7 @@
             %>
             <tr>
                 <td><%= p.getProduct_id() %></td>
-                <td><%= p.getProduct_name() %></td>
+                <td><a href ="modifyProduct.do?product_id=<%= p.getProduct_id() %>" ><%= p.getProduct_name() %></a></td>
                 <td><%= p.getCategory() %></td>
                 <td><%= p.getPrice() %></td>
                 <td><%= p.getSupplier_id() %></td>

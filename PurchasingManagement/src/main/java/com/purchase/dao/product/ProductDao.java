@@ -138,4 +138,42 @@ public class ProductDao {
 			  return pstmt.executeUpdate();
 		  }
 	  }
+	  
+	  public Product getProductById(Connection conn, String productId) {
+		  Product product = null;
+		    String sql = "SELECT * FROM product WHERE product_id = ?";
+
+		    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		        pstmt.setString(1, productId);
+		        try (ResultSet rs = pstmt.executeQuery()) {
+		            if (rs.next()) {
+		                product = new Product();
+		                product.setProduct_id(rs.getString("product_id"));
+		                product.setProduct_name(rs.getString("product_name"));
+		                product.setCategory(rs.getString("category"));
+		                product.setPrice(rs.getInt("price"));
+		                product.setSupplier_id(rs.getString("supplier_id"));
+		                product.setProduct_status(rs.getString("product_status"));
+		            }
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		    return product;
+	  }
+	  
+	  public int modifyProduct(Connection conn, Product product) throws SQLException { // 반환형이 int인 이유는 반환되는 executeeUpdate가 영향받은 행의 개수를 반환하기 떄문에 개수는 숮자 즉 int로 반환됨
+		    String sql = "UPDATE product SET product_name = ?, category = ?, price = ?, supplier_id = ?, product_status = ? WHERE product_id = ?";
+
+		    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		        pstmt.setString(1, product.getProduct_name());
+		        pstmt.setString(2, product.getCategory());
+		        pstmt.setInt(3, product.getPrice());
+		        pstmt.setString(4, product.getSupplier_id());
+		        pstmt.setString(5, product.getProduct_status());
+		        pstmt.setString(6, product.getProduct_id()); // WHERE 조건
+
+		        return pstmt.executeUpdate();
+		    }
+		}
 }

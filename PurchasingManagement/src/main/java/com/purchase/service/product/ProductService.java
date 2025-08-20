@@ -76,4 +76,19 @@ public class ProductService {
         }
     }
 
+    public Product getProductById(String productId) {
+    	try (Connection conn = ConnectionProvider.getConnection()) {
+	        return productDao.getProductById(conn, productId); // DAO에 conn 전달
+	    } catch (SQLException e) {
+	        throw new RuntimeException(e);
+	    }
+    }
+    
+    public int modifyProduct(Product product) {
+    	try (Connection conn = ConnectionProvider.getConnection()) {
+    		return productDao.modifyProduct(conn, product); // DAO에 conn 전달
+    	} catch (SQLException e) {
+    		throw new RuntimeException(e);
+    	}
+    }
 }
