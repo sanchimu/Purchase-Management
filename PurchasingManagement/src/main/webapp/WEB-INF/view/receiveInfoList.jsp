@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>입고 목록</title>
+<title>入庫リスト</title>
 <style>
   body{font-family:Arial,sans-serif;margin:20px;}
   h2{margin-bottom:10px;}
@@ -29,27 +29,27 @@
   }
   function ensureChecked(){
     const checked=document.querySelectorAll('input[name="receiveIds"]:checked');
-    if(checked.length===0){ alert('항목을 하나 이상 선택하세요.'); return false; }
-    return confirm('선택한 항목의 업무상태를 저장하시겠습니까?');
+    if(checked.length===0){ alert('1つ以上の項目を選択してください。'); return false; }
+    return confirm('選択した項目の業務状態を保存しますか？');
   }
 </script>
 </head>
 <body>
 
-<h2>입고 목록</h2>
+<h2>入庫リスト</h2>
 
 <div class="toolbar">
-  <a class="btn" href="<c:url value='/addReceiveInfo.do'/>">입고 등록</a>
-  <a class="btn" href="<c:url value='/listReceiveInfos.do'/>">새로고침</a>
+  <a class="btn" href="<c:url value='/addReceiveInfo.do'/>">入庫登録</a>
+  <a class="btn" href="<c:url value='/listReceiveInfos.do'/>">再読み込み</a>
 
-  <!-- 간단 검색 -->
+  <!-- 簡易検索 -->
   <form action="<c:url value='/listReceiveInfos.do'/>" method="get">
-    <input type="text" name="productName" value="${fn:escapeXml(param.productName)}" placeholder="상품명"/>
-    <input type="text" name="supplierName" value="${fn:escapeXml(param.supplierName)}" placeholder="공급업체"/>
+    <input type="text" name="productName" value="${fn:escapeXml(param.productName)}" placeholder="商品名"/>
+    <input type="text" name="supplierName" value="${fn:escapeXml(param.supplierName)}" placeholder="仕入先"/>
     <input type="date" name="fromDate" value="${param.fromDate}"/>
     ~
     <input type="date" name="toDate" value="${param.toDate}"/>
-    <input type="submit" class="btn" value="검색"/>
+    <input type="submit" class="btn" value="検索"/>
   </form>
 </div>
 
@@ -57,20 +57,20 @@
   <table>
     <tr>
       <th><input type="checkbox" onclick="toggleAll(this)"></th>
-      <th>입고 ID</th>
-      <th>주문 ID</th>
-      <th>상품 ID</th>
-      <th>상품명</th>
-      <th>공급업체</th>
-      <th class="right">수량</th>
-      <th>입고일자</th>
-      <th class="right">반품가능</th>
-      <th>업무상태</th>
+      <th>入庫ID</th>
+      <th>注文ID</th>
+      <th>商品ID</th>
+      <th>商品名</th>
+      <th>仕入先</th>
+      <th class="right">数量</th>
+      <th>入庫日</th>
+      <th class="right">返品可能</th>
+      <th>業務状態</th>
     </tr>
 
     <c:choose>
       <c:when test="${empty receiveList}">
-        <tr><td colspan="10">조회된 입고 정보가 없습니다.</td></tr>
+        <tr><td colspan="10">該当する入庫情報がありません。</td></tr>
       </c:when>
       <c:otherwise>
         <c:forEach var="r" items="${receiveList}">
@@ -93,10 +93,10 @@
                     </c:forEach>
                   </c:when>
                   <c:otherwise>
-                    <option value="검수중"  <c:if test="${r.receive_status == '검수중'}">selected</c:if>>검수중</option>
-                    <option value="정상"    <c:if test="${r.receive_status == '정상'}">selected</c:if>>정상</option>
-                    <option value="입고 취소" <c:if test="${r.receive_status == '입고 취소'}">selected</c:if>>입고 취소</option>
-                    <option value="반품 처리" <c:if test="${r.receive_status == '반품 처리'}">selected</c:if>>반품 처리</option>
+                    <option value="検収中"  <c:if test="${r.receive_status == '検収中'}">selected</c:if>>検収中</option>
+                    <option value="正常"    <c:if test="${r.receive_status == '正常'}">selected</c:if>>正常</option>
+                    <option value="入庫取消" <c:if test="${r.receive_status == '入庫取消'}">selected</c:if>>入庫取消</option>
+                    <option value="返品処理" <c:if test="${r.receive_status == '返品処理'}">selected</c:if>>返品処理</option>
                   </c:otherwise>
                 </c:choose>
               </select>
@@ -108,8 +108,8 @@
   </table>
 
   <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
-    <button type="submit" class="btn">선택 항목 업무상태 저장</button>
-    <span class="muted">총 <strong>${fn:length(receiveList)}</strong> 건</span>
+    <button type="submit" class="btn">選択項目の業務状態を保存</button>
+    <span class="muted">合計 <strong>${fn:length(receiveList)}</strong> 件</span>
   </div>
 </form>
 

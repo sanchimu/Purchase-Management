@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ReceiveInfoDao {
 
-    /** RI + 3자리 시퀀스 (예: RI001, RI002…) */
+    /** RI + 3桁のシーケンスを生成 (例: RI001, RI002…) */
     private String nextReceiveId(Connection conn) throws SQLException {
         final String sql = "SELECT receive_info_seq.NEXTVAL FROM dual";
         try (PreparedStatement ps = conn.prepareStatement(sql);
@@ -18,10 +18,10 @@ public class ReceiveInfoDao {
                 return String.format("RI%03d", seq);
             }
         }
-        throw new SQLException("receive_info_seq.NEXTVAL 조회 실패");
+        throw new SQLException("receive_info_seq.NEXTVAL の取得に失敗しました");
     }
 
-    /** INSERT (receive_status 입력값이 있으면 사용, 없으면 DB DEFAULT '정상') */
+    /** INSERT処理 (receive_status が指定されれば使用、なければDBのデフォルト '正常' を適用) */
     public void insert(Connection conn, ReceiveInfo receiveInfo) throws SQLException {
         String newId = nextReceiveId(conn);
         receiveInfo.setReceive_id(newId);
@@ -30,7 +30,7 @@ public class ReceiveInfoDao {
             "INSERT INTO receive_info " +
             "  (receive_id, order_id, product_id, quantity, receive_date, receive_status) " +
             "VALUES " +
-            "  (?, ?, ?, ?, NVL(?, SYSDATE), NVL(?, '정상'))";
+            "  (?, ?, ?, ?, NVL(?, SYSDATE), NVL(?, '正常'))";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, receiveInfo.getReceive_id());
@@ -38,18 +38,19 @@ public class ReceiveInfoDao {
             ps.setString(3, receiveInfo.getProduct_id());
             ps.setInt(4, receiveInfo.getQuantity());
 
+            // 入庫日が存在すればセット、なければNULL
             if (receiveInfo.getReceive_date() != null) {
                 ps.setDate(5, new java.sql.Date(receiveInfo.getReceive_date().getTime()));
             } else {
                 ps.setNull(5, Types.DATE);
             }
 
-            ps.setString(6, receiveInfo.getReceive_status()); // null이면 DEFAULT '정상'
+            ps.setString(6, receiveInfo.getReceive_status()); // nullの場合はDEFAULT '正常' を適用
             ps.executeUpdate();
         }
     }
 
-    /** 단순 전체 조회 (조인 없음) */
+    /** 単純な全件取得 (JOINなし) */
     public List<ReceiveInfo> selectAll(Connection conn) throws SQLException {
         final String sql =
             "SELECT receive_id, order_id, product_id, quantity, receive_date, receive_status " +
@@ -73,29 +74,28 @@ public class ReceiveInfoDao {
         }
     }
 
-    /** receive_id → product_id */
-	public String getProductIdByReceiveId(Connection conn, String receiveId) throws SQLException {
-		String productId = null;
+    /** receive_id から product_id を取得 */
+    public String getProductIdByReceiveId(Connection conn, String receiveId) throws SQLException {
+        String productId = null;
 
-		try (PreparedStatement pstmt = conn
-				.prepareStatement("SELECT PRODUCT_ID FROM RECEIVE_INFO WHERE RECEIVE_ID = ?")) {
-			pstmt.setString(1, receiveId);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					productId = rs.getString("PRODUCT_ID");
-				}
-
-			}
-			return productId;
-		}
-}
+        try (PreparedStatement pstmt = conn
+                .prepareStatement("SELECT PRODUCT_ID FROM RECEIVE_INFO WHERE RECEIVE_ID = ?")) {
+            pstmt.setString(1, receiveId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    productId = rs.getString("PRODUCT_ID");
+                }
+            }
+            return productId;
+        }
+    }
 
     /**
-     * JOIN 한방 조회:
-     *  - 상품명/공급업체명 포함
-     *  - 반품가능수량(= ri.quantity - NVL(SUM(rti.quantity),0)) 계산
-     *  - onlyAvailable=true 이면 HAVING > 0
-     *  - includeHidden=false 이면 p/si/os 의 row_status='A'만
+     * JOINを利用した一括取得:
+     *  - 商品名 / 仕入先名 を含む
+     *  - 返品可能数量 = ri.quantity - NVL(SUM(rti.quantity),0)
+     *  - onlyAvailable=true の場合 HAVING > 0
+     *  - includeHidden=false の場合 p/si/os の row_status='A' のみ
      */
     public List<ReceiveInfo> selectAllView(Connection conn,
                                            boolean onlyAvailable,
@@ -113,7 +113,7 @@ public class ReceiveInfoDao {
             "JOIN supplier_info si ON si.supplier_id = os.supplier_id " +
             "LEFT JOIN return_info rti ON rti.receive_id = ri.receive_id "
         );
-        // 숨김 미포함이면 진행중(A)만
+        // 非表示データを含めない場合、row_status='A' のみ抽出
         sb.append("WHERE (? = 1 OR (NVL(p.row_status,'A')='A' AND NVL(si.row_status,'A')='A' AND NVL(os.row_status,'A')='A')) ");
         sb.append(
             "GROUP BY " +
@@ -150,7 +150,7 @@ public class ReceiveInfoDao {
         }
     }
 
-    /** 상태 변경 */
+    /** ステータスを変更する */
     public int updateStatus(Connection conn, String receiveId, String status) throws SQLException {
         final String sql = "UPDATE receive_info SET receive_status = ? WHERE receive_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -159,10 +159,8 @@ public class ReceiveInfoDao {
             return ps.executeUpdate();
         }
     }
-    
-    
 
-    
+    /** 返品数量を考慮した入庫情報の取得 (返品可能数量 > 0 のみ) */
     public List<ReceiveInfo> selectReceiveInfoWithReturnQty(Connection conn) throws SQLException {
         String sql = "SELECT ri.receive_id, ri.order_id, ri.product_id, ri.quantity AS received_quantity, ri.receive_date, "
                    + "       NVL(SUM(rti.quantity), 0) AS returned_quantity, "
@@ -182,10 +180,10 @@ public class ReceiveInfoDao {
                 vo.setReceive_id(rs.getString("receive_id"));
                 vo.setOrder_id(rs.getString("order_id"));
                 vo.setProduct_id(rs.getString("product_id"));
-                vo.setQuantity(rs.getInt("received_quantity"));  // 총 입고 수량
+                vo.setQuantity(rs.getInt("received_quantity"));  // 入庫数量
                 vo.setReceive_date(rs.getDate("receive_date"));
 
-                // 반품 가능 수량을 따로 필드로 가지고 있지 않으면 ReceiveInfo에 새 필드 추가 필요
+                // 返品可能数量 → ReceiveInfoに専用フィールドが必要
                 vo.setAvailable_to_return(rs.getInt("available_to_return"));
 
                 list.add(vo);
@@ -193,5 +191,5 @@ public class ReceiveInfoDao {
         }
         return list;
     }
-    
 }
+
