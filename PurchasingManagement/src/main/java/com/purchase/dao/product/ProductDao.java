@@ -124,17 +124,22 @@ public class ProductDao {
 	}
 
 	
-	  public List<String> getCategoryList(Connection conn) {
-	  
-	  List<String> categoryList = new ArrayList<>();
-	  
-	  try (PreparedStatement pstmt = conn.
-	  prepareStatement("SELECT DISTINCT category FROM product ORDER BY category")){
-	  ResultSet rs = pstmt.executeQuery(); while (rs.next()) {
-	  categoryList.add(rs.getString("category")); } } catch (Exception e) {
-	  e.printStackTrace(); } return categoryList;
-	  
-	  }
+	public List<String> getCategoryList(Connection conn) {
+
+		List<String> categoryList = new ArrayList<>();
+
+		try (PreparedStatement pstmt = conn
+				.prepareStatement("SELECT DISTINCT category FROM product ORDER BY category")) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				categoryList.add(rs.getString("category"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return categoryList;
+
+	}
 	  
 	  public List<String> getSupplierList(Connection conn) {
 		  
@@ -194,9 +199,9 @@ public class ProductDao {
 		    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 		        pstmt.setString(1, product.getProduct_name());
 		        pstmt.setString(2, product.getCategory());
-		        pstmt.setInt(3, product.getPrice());
+		        		pstmt.setInt(3, product.getPrice());
 		        pstmt.setString(4, product.getSupplier_id());
-		        pstmt.setString(5, product.getProduct_status());
+		        			pstmt.setString(5, product.getProduct_status());
 		        pstmt.setString(6, product.getProduct_id()); // WHERE 조건
 
 		        return pstmt.executeUpdate();

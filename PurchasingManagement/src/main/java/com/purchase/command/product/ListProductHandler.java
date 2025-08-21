@@ -28,8 +28,8 @@ public class ListProductHandler implements CommandHandler {
 		 
 		 
 		 List<String> productStatusList = Arrays.asList("판매중", "판매중지", "품절", "보류");
-        
-        req.setAttribute("productList", productList);
+         
+         req.setAttribute("productList", productList);
 		 req.setAttribute("categoryList", categoryList); 
 		 
 		 
