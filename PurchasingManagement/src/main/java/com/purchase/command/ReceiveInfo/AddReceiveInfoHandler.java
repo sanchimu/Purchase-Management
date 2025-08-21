@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import com.purchase.service.ReceiveInfo.ReceiveInfoService;
+import com.purchase.service.order.OrderSheetService;
+import com.purchase.service.product.ProductService;
 import com.purchase.vo.ReceiveInfo;
 
 import mvc.command.CommandHandler;
@@ -24,8 +26,15 @@ public class AddReceiveInfoHandler implements CommandHandler {
 
         // GETリクエスト → 入庫登録フォームを表示
         if ("GET".equalsIgnoreCase(req.getMethod())) {
-            // ステータス(検収中/正常/入庫取消/返品処理など)のリストを取得してセット
+            // ステータス(検収中/正常/入庫取消/返品処理など)のリスト
             req.setAttribute("receiveStatusList", service.getReceiveStatusList());
+
+            // 商品一覧をセット（ドロップダウン用）
+            req.setAttribute("productList", new ProductService().getAllProducts());
+
+            // 注文一覧をセット（ドロップダウン用）
+            req.setAttribute("orderList", new OrderSheetService().getRequestOptions());
+
             return FORM;
         }
 
