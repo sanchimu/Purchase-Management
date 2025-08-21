@@ -62,7 +62,8 @@
             <%
                 List<Product> productList = (List<Product>) request.getAttribute("productList");
             if(productList != null){
-                for (Product p : productList) {
+            	 for (int i = 0; i < productList.size(); i++) {
+            	        Product p = productList.get(i);
             %>
             <tr>
                 <td><%= p.getProduct_id() %></td>

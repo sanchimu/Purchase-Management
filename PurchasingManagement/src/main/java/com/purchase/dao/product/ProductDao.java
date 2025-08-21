@@ -33,13 +33,14 @@ public class ProductDao {
 			String productId = String.format("P%03d", seqNum);
 			product.setProduct_id(productId);
 
-			pstmt = conn.prepareStatement("insert into product values (?,?,?,?,?,?)");
+			pstmt = conn.prepareStatement("insert into product values (?,?,?,?,?,?,?)");
 			pstmt.setString(1, product.getProduct_id());
 			pstmt.setString(2, product.getProduct_name());
 			pstmt.setString(3, product.getCategory());
 			pstmt.setInt(4, product.getPrice());
-			pstmt.setString(5, product.getSupplier_id());
+			pstmt.setString(5, product.getSupplier_id());			
 			pstmt.setString(6, product.getProduct_status());
+			pstmt.setString(7, "A");
 			int insertedCount = pstmt.executeUpdate();
 
 			if (insertedCount > 0) {
@@ -82,26 +83,29 @@ public class ProductDao {
 	}
 
 	public List<Product> selectByConditions(Connection conn, Map<String, String> conditions) throws SQLException {
-		StringBuilder sql = new StringBuilder("SELECT * FROM product WHERE 1=1");
+		StringBuilder sql = new StringBuilder("SELECT p.product_id, p.product_name, p.category, p.price, " +
+			    "p.supplier_id, s.supplier_name, p.product_status " +
+			    "FROM product p JOIN supplier_info s ON p.supplier_id = s.supplier_id " +
+			    "WHERE 1=1");
 		List<Object> params = new ArrayList<>();
 
 		if (conditions.get("product_id") != null) {
-			sql.append(" AND UPPER(product_id) LIKE UPPER(?)");
+			sql.append(" AND UPPER(p.product_id) LIKE UPPER(?)");
 			params.add("%" + conditions.get("product_id") + "%");
 		}
 		if (conditions.get("product_name") != null) {
-			sql.append(" AND UPPER(product_name) LIKE UPPER(?)");
+			sql.append(" AND UPPER(p.product_name) LIKE UPPER(?)");
 			params.add("%" + conditions.get("product_name") + "%");
 		}
 		if (conditions.get("category") != null) {
-			sql.append(" AND UPPER(category) LIKE  UPPER(?)");
+			sql.append(" AND UPPER(p.category) LIKE  UPPER(?)");
 			params.add("%" + conditions.get("category") + "%");
 		}
 		if (conditions.get("supplier_id") != null) {
-			sql.append(" AND UPPER(supplier_id) LIKE UPPER(?)");
+			sql.append(" AND UPPER(p.supplier_id) LIKE UPPER(?)");
 			params.add("%" + conditions.get("supplier_id") + "%");
 		}
-		sql.append(" ORDER BY product_id");
+		sql.append(" ORDER BY p.product_id");
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 			for (int i = 0; i < params.size(); i++) {
@@ -111,7 +115,7 @@ public class ProductDao {
 				List<Product> list = new ArrayList<>();
 				while (rs.next()) {
 					Product p = new Product(rs.getString("product_id"), rs.getString("product_name"),
-							rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"), rs.getString("product_status"));
+							rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"), rs.getString("supplier_name"), rs.getString("product_status"));
 					list.add(p);
 				}
 				return list;
