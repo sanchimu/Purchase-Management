@@ -179,7 +179,7 @@ th {
 							href="<c:url value='/editsupplier.do'>
               <c:param name='supplier_id' value='${supplier.supplier_id}'/>
            </c:url>">
-								${supplier.supplier_name} </a></td>
+								${supplier.supplier_id} </a></td>
 						<td>${supplier.supplier_name}</td>
 						<td>${supplier.contact_number}</td>
 						<td>${supplier.address}</td>
