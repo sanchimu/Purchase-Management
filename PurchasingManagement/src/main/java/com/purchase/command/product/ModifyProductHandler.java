@@ -1,5 +1,7 @@
 package com.purchase.command.product;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,10 +21,12 @@ public class ModifyProductHandler implements CommandHandler {
 			
 			String productId = req.getParameter("product_id");
 	        Product product = productService.getProductById(productId);
+	        List<String> supplierList =productService.getSupplierList(); 
 
 	        // JSP에서 product 꺼낼 수 있도록 저장
 	        req.setAttribute("product", product);
-			
+	        req.setAttribute("supplierList", supplierList); 
+	        
 			return "WEB-INF/view/productModify.jsp";
 		}else if(req.getMethod().equalsIgnoreCase("POST")) {
 			 Product product = new Product();
@@ -31,6 +35,7 @@ public class ModifyProductHandler implements CommandHandler {
 		        product.setCategory(req.getParameter("category"));
 		        product.setPrice(Integer.parseInt(req.getParameter("price")));
 		        product.setSupplier_id(req.getParameter("supplier_id"));
+		        product.setSupplier_name(req.getParameter("supplier_name"));
 		        product.setProduct_status(req.getParameter("product_status"));
 
 		        

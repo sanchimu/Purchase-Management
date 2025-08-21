@@ -56,6 +56,14 @@ public class ProductService {
 		}
 	}
 	
+	public List<String> getSupplierList() {
+		try (Connection conn = ConnectionProvider.getConnection()) {
+			return productDao.getSupplierList(conn);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public void updateProductStatus(Product product) {
 	    try (Connection conn = ConnectionProvider.getConnection()) {
 	        productDao.updateProductStatus(conn, product); // DAO에 conn 전달

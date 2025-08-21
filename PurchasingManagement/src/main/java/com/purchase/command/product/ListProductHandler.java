@@ -23,12 +23,16 @@ public class ListProductHandler implements CommandHandler {
 		// TODO Auto-generated method stub
 		
 		
-		List<Product> productList = productService.getAllProducts();
+		 List<Product> productList = productService.getAllProducts();
 		 List<String> categoryList =productService.getCategoryList(); 
+		 
+		 
 		 List<String> productStatusList = Arrays.asList("판매중", "판매중지", "품절", "보류");
         
         req.setAttribute("productList", productList);
 		 req.setAttribute("categoryList", categoryList); 
+		 
+		 
 		 req.setAttribute("productStatusList", productStatusList);
 		 
         RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/view/productList.jsp");

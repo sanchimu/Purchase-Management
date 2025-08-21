@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,17 +32,22 @@ window.onload = function() {
 	가격 : <br/><input type = "text" name="price" >
 </p>
 <p>
-	공급업체 ID  : <br/><select id="supplier" name="supplier">
-									<option value="SI001">삼성전자</option>
-									<option value="SI002">LG전자</option>
-									<option value="SI003">SK하이닉스</option>
+	공급업체 ID  : <br/>
+<select name="supplier_id">
+    <option value="">-- 선택 --</option>
+    <c:forEach items="${supplierList}" var="sup">
+        <option value="${sup}" 
+            <c:if test="${product.supplier_id == sup}">selected</c:if>>
+            ${sup}
+        </option>
+    </c:forEach>
 </select>
 </p>
-</form>
+
 <p>
 	<input type = "submit" value="상품 추가">
 	<input type="button" value="뒤로 가기" onclick="location.href='listProducts.do'">
 </p>
-
+</form>
 </body>
 </html>

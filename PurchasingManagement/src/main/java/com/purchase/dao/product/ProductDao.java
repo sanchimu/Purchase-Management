@@ -68,12 +68,13 @@ public class ProductDao {
 	}
 
 	public List<Product> selectAll(Connection conn) throws SQLException {
-		String sql = "SELECT * FROM product ORDER BY product_id";
+		String sql = "SELECT p.product_id, p.product_name, p.category, p.price, p.supplier_id, s.supplier_name, p.product_status"
+				+ " FROM product p JOIN supplier_info s ON p.supplier_id = s.supplier_id ORDER BY p.product_id";
 		List<Product> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
 				Product p = new Product(rs.getString("product_id"), rs.getString("product_name"),
-						rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"), rs.getString("product_status"));
+						rs.getString("category"), rs.getInt("price"), rs.getString("supplier_id"), rs.getString("supplier_name"), rs.getString("product_status"));
 				list.add(p);
 			}
 		}
@@ -130,6 +131,25 @@ public class ProductDao {
 	  e.printStackTrace(); } return categoryList;
 	  
 	  }
+	  
+	  public List<String> getSupplierList(Connection conn) {
+		  
+		  List<String> supplierList = new ArrayList<>();
+		  
+		  try (PreparedStatement pstmt = conn.
+		  prepareStatement("SELECT supplier_id FROM supplier_info ORDER BY supplier_id")){
+		  ResultSet rs = pstmt.executeQuery(); 
+		  while (rs.next()) {
+			  supplierList.add(rs.getString("supplier_id"));
+			  System.out.println("DAO - supplier_id: " + rs.getString("supplier_id")); // ← 확인용
+			  } 
+		  } catch (Exception e) {
+				  e.printStackTrace(); 
+				  } 
+		  return supplierList;
+		  
+		  }
+	  
 	 
 	  public int updateProductStatus(Connection conn, Product product) throws SQLException {
 		  try(PreparedStatement pstmt = conn.prepareStatement("UPDATE PRODUCT SET PRODUCT_STATUS = ? WHERE PRODUCT_ID = ?")){
@@ -141,7 +161,8 @@ public class ProductDao {
 	  
 	  public Product getProductById(Connection conn, String productId) {
 		  Product product = null;
-		    String sql = "SELECT * FROM product WHERE product_id = ?";
+		    String sql =  "SELECT p.product_id, p.product_name, p.category, p.price, p.supplier_id, s.supplier_name, p.product_status"
+					+ " FROM product p JOIN supplier_info s ON p.supplier_id = s.supplier_id WHERE p.product_id = ?";
 
 		    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 		        pstmt.setString(1, productId);
@@ -153,6 +174,7 @@ public class ProductDao {
 		                product.setCategory(rs.getString("category"));
 		                product.setPrice(rs.getInt("price"));
 		                product.setSupplier_id(rs.getString("supplier_id"));
+		                product.setSupplier_name(rs.getString("supplier_name"));
 		                product.setProduct_status(rs.getString("product_status"));
 		            }
 		        }

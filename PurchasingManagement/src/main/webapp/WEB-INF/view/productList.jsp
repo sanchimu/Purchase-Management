@@ -69,7 +69,7 @@
                 <td><a href ="modifyProduct.do?product_id=<%= p.getProduct_id() %>" ><%= p.getProduct_name() %></a></td>
                 <td><%= p.getCategory() %></td>
                 <td><%= p.getPrice() %></td>
-                <td><%= p.getSupplier_id() %></td>
+                <td><%= p.getSupplier_name() %> (<%= p.getSupplier_id() %>)</td>
                  <td>
         			<select name="<%= p.getProduct_id() %>">
            			<option value="정상판매" <%= "정상판매".equals(p.getProduct_status()) ? "selected" : "" %>>정상판매</option>

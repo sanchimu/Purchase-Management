@@ -28,18 +28,13 @@ public class Product {
         this.supplier_id = supplier_id;
         this.product_status = product_status;
     }
-    
-    // 전체 필드 포함 (기존)
-    public Product(String product_id, String product_name, String category, int price,
-                   String supplier_id, String product_status, String row_status) {
-        this.product_id = product_id;
-        this.product_name = product_name;
-        this.category = category;
-        this.price = price;
-        this.supplier_id = supplier_id;
-        this.product_status = product_status;
-        this.row_status = row_status;
-    }
+	/*
+	 * // 전체 필드 포함 (기존) public Product(String product_id, String product_name,
+	 * String category, int price, String supplier_id, String product_status, String
+	 * row_status) { this.product_id = product_id; this.product_name = product_name;
+	 * this.category = category; this.price = price; this.supplier_id = supplier_id;
+	 * this.product_status = product_status; this.row_status = row_status; }
+	 */
     
     // 새로운 생성자: supplier_name 포함
     public Product(String product_id, String product_name, String category, int price,
@@ -53,6 +48,17 @@ public class Product {
         this.product_status = product_status;
         this.row_status = row_status;
     }
+    
+	public Product(String product_id, String product_name, String category, int price, String supplier_id,
+			String supplier_name, String product_status) {
+		this.product_id = product_id;
+		this.product_name = product_name;
+		this.category = category;
+		this.price = price;
+		this.supplier_id = supplier_id;
+		this.supplier_name = supplier_name;
+		this.product_status = product_status;
+	}
     
     public String getProduct_id() { return product_id; }
     public void setProduct_id(String product_id) { this.product_id = product_id; }
