@@ -89,4 +89,33 @@ public class SupplierInfoService {
     private void rollbackQuietly(Connection conn) {
         if (conn != null) try { conn.rollback(); } catch (SQLException ignore) {}
     }
+    
+ // SupplierInfoService.java (추가)
+    public SupplierInfo getSupplierById(String supplierId) {
+        Connection conn = null;
+        try {
+            conn = ConnectionProvider.getConnection();
+            return supplierDao.selectById(conn, supplierId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.close(conn);
+        }
+    }
+
+    public void updateSupplier(SupplierInfo supplier) {
+        Connection conn = null;
+        try {
+            conn = ConnectionProvider.getConnection();
+            conn.setAutoCommit(false);
+            supplierDao.update(conn, supplier);
+            conn.commit();
+        } catch (SQLException e) {
+            JdbcUtil.rollback(conn);
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.close(conn);
+        }
+    }
+
 }

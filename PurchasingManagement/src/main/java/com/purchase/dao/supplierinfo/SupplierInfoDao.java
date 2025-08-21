@@ -162,4 +162,47 @@ public class SupplierInfoDao {
         }
         return list;
     }
+    
+ // SupplierInfoDao.java (필요 시 추가)
+    public SupplierInfo selectById(Connection conn, String supplierId) throws SQLException {
+        String sql = "SELECT supplier_id, supplier_name, contact_number, address, supplier_status, row_status " +
+                     "FROM supplier_info WHERE supplier_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, supplierId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    SupplierInfo s = new SupplierInfo();
+                    s.setSupplier_id(rs.getString("supplier_id"));
+                    s.setSupplier_name(rs.getString("supplier_name"));
+                    s.setContact_number(rs.getString("contact_number"));
+                    s.setAddress(rs.getString("address"));
+                    s.setSupplier_status(rs.getString("supplier_status"));
+                    s.setRow_status(rs.getString("row_status"));
+                    return s;
+                }
+                return null;
+            }
+        }
+    }
+
+    public int update(Connection conn, SupplierInfo s) throws SQLException {
+        String sql =
+            "UPDATE supplier_info " +
+            "   SET supplier_name = ?, " +
+            "       contact_number = ?, " +
+            "       address = ?, " +
+            "       supplier_status = ?, " +
+            "       row_status = ? " +
+            " WHERE supplier_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, s.getSupplier_name());
+            ps.setString(2, s.getContact_number());
+            ps.setString(3, s.getAddress());
+            ps.setString(4, s.getSupplier_status());
+            ps.setString(5, s.getRow_status());
+            ps.setString(6, s.getSupplier_id());
+            return ps.executeUpdate();
+        }
+    }
+
 }

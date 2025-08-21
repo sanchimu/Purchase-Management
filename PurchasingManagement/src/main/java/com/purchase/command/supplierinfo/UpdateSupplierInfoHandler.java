@@ -1,76 +1,61 @@
 package com.purchase.command.supplierinfo;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 import com.purchase.service.supplierinfo.SupplierInfoService;
 import com.purchase.vo.SupplierInfo;
 
 import mvc.command.CommandHandler;
 
-/**
- * 仕入先の状態（有効、取引停止、廃業、休眠）を更新するためのハンドラー。
- * - チェックボックスで選択された仕入先IDに対してのみ状態を変更。
- * - 不正な状態値は無視する。
- */
 public class UpdateSupplierInfoHandler implements CommandHandler {
 
-    // サービスクラス。実際のDB更新処理はService → DAOに委譲。
     private final SupplierInfoService supplierService = new SupplierInfoService();
-
-    // 許可される状態のホワイトリスト（このリスト以外は更新不可）
-    private static final List<String> ALLOWED =
-            Arrays.asList("有効","取引停止","廃業","休眠");
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        // 日本語入力の文字化け防止（マルチバイト文字対応）
         req.setCharacterEncoding("UTF-8");
 
-  
-        // 1. チェックされた仕入先IDを取得
+        String supplierId     = req.getParameter("supplier_id");
+        String supplierName   = req.getParameter("supplier_name");
+        String contactNumber  = req.getParameter("contact_number");
+        String address        = req.getParameter("address");
+        String supplierStatus = req.getParameter("supplier_status"); // 有効/取引停止/廃業/休眠
+        String rowStatus      = req.getParameter("row_status");      // A/X
 
-        String[] ids = req.getParameterValues("supplier_id"); // チェックボックスの値
-        if (ids == null || ids.length == 0) {
-            // 1件も選択されていない場合は元の画面へリダイレクト
-            return redirectBack(req, res);
+        if (supplierId == null || supplierId.isEmpty()) {
+            res.sendRedirect(req.getContextPath() + "/listsupplier.do");
+            return null;
         }
 
+        SupplierInfo vo = new SupplierInfo();
+        vo.setSupplier_id(supplierId);
+        vo.setSupplier_name(supplierName);
+        vo.setContact_number(contactNumber);
+        vo.setAddress(address);
+        vo.setSupplier_status(supplierStatus);
+        vo.setRow_status((rowStatus == null || rowStatus.isEmpty()) ? "A" : rowStatus);
 
-        // 2. 選択されたIDごとに処理
+        supplierService.updateSupplier(vo);
 
-        Arrays.stream(ids).distinct().forEach(id -> {
-            // selectタグのnameが仕入先IDになっているので、それで新しい状態を取得
-            String newStatus = req.getParameter(id);
+        // ✅ 별도 페이지 없이 즉시 alert + 목록으로 이동
+        res.setCharacterEncoding("UTF-8");
+        res.setContentType("text/html; charset=UTF-8");
+        // 캐시 방지(선택)
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        res.setHeader("Pragma", "no-cache");
 
-            // 新しい状態がnull または ホワイトリストにない場合は無視
-            if (newStatus == null || !ALLOWED.contains(newStatus)) return;
-
-            // VOを生成して更新対象データを格納
-            SupplierInfo s = new SupplierInfo();
-            s.setSupplier_id(id);          // 主キー（仕入先ID）
-            s.setSupplier_status(newStatus); // 更新する状態
-
-            // サービスを通じてDB更新
-            supplierService.updateSupplierStatus(s);
-        });
-
-
-        // 3. 完了後リダイレクト（元のページに戻す）
-        return redirectBack(req, res);
-    }
-
-    /**
-     * 元の画面に戻す処理
-     * - Refererヘッダーがあればそこにリダイレクト
-     * - なければ仕入先一覧ページに戻る
-     */
-    private String redirectBack(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        String referer = req.getHeader("Referer");
-        res.sendRedirect(referer != null ? referer : (req.getContextPath() + "/listsupplier.do"));
+        String next = req.getContextPath() + "/listsupplier.do";
+        try (PrintWriter out = res.getWriter()) {
+            out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>");
+            out.println("<script>");
+            out.println("alert('修正が完了しました。');"); // = 수정완료되었습니다
+            out.println("location.href='" + next + "';");
+            out.println("</script>");
+            out.println("</body></html>");
+            out.flush();
+        }
         return null;
     }
 }
