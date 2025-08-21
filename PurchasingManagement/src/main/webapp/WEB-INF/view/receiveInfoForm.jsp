@@ -10,9 +10,7 @@
 <head>
 <meta charset="UTF-8">
 <title>${edit ? '入庫修正' : '入庫登録'}</title>
-
 <style>
-  /* ===== 画面全体のスタイル ===== */
   body { font-family: Arial, sans-serif; margin: 20px; }
   .form { max-width: 640px; padding: 16px; border: 1px solid #ddd; border-radius: 6px; }
   .row { display:flex; align-items:center; margin:10px 0; gap:10px; }
@@ -29,7 +27,6 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
 
 <script>
-  // 日付入力用カレンダー初期化
   document.addEventListener("DOMContentLoaded", function() {
     flatpickr("#receive_date", {
       locale: "ja",
@@ -40,62 +37,48 @@
 </head>
 <body>
 
-<!-- 画面タイトル -->
 <h2>${edit ? '入庫修正' : '入庫登録'}</h2>
 
-<!-- 入庫登録フォーム -->
 <form class="form" action="<c:url value='/addReceiveInfo.do'/>" method="post">
-
-  <!-- 編集モードのときはIDをhiddenで保持 -->
   <c:if test="${edit}">
     <input type="hidden" name="receive_id" value="${ri.receive_id}"/>
   </c:if>
   
-  <!-- エラーメッセージ表示エリア -->
   <c:if test="${not empty errorMsg}">
     <div style="color:#b00020; font-weight:bold; margin-bottom:10px;">
       ${errorMsg}
     </div>
   </c:if>
 
-  <!-- 注文IDと商品IDは既存データのみ選択可能 -->
-  <div class="hint">※ 注文IDと商品IDは必ず事前に登録された値のみ選択してください。</div>
+  <!-- 注文ID  -->
+<div class="row">
+  <label>注文ID</label>
+  <select name="order_id" required>
+    <option value="">-- 注文を選択してください --</option>
+    <c:forEach var="o" items="${orderList}">
+      <option value="${o.order_id}" 
+        <c:if test="${edit and o.order_id == ri.order_id}">selected</c:if>>
+        ${o.order_id}
+      </option>
+    </c:forEach>
+  </select>
+</div>
 
-  <!-- 注文ID (ドロップダウン) -->
-  <div class="row">
-    <label>注文ID</label>
-    <select name="order_id" ${edit ? "disabled" : ""} required>
-      <option value="">-- 注文を選択してください --</option>
-      <c:forEach var="o" items="${orderList}">
-        <option value="${o.order_id}" 
-          <c:if test="${edit && o.order_id == ri.order_id}">selected</c:if>>
-          ${o.order_id} - ${o.supplier_name}
-        </option>
-      </c:forEach>
-    </select>
-    <!-- 編集モードではhiddenに保持 -->
-    <c:if test="${edit}">
-      <input type="hidden" name="order_id" value="${ri.order_id}"/>
-    </c:if>
-  </div>
 
-  <!-- 商品ID (ドロップダウン) -->
-  <div class="row">
-    <label>商品ID</label>
-    <select name="product_id" ${edit ? "disabled" : ""} required>
-      <option value="">-- 商品を選択してください --</option>
-      <c:forEach var="p" items="${productList}">
-        <option value="${p.product_id}" 
-          <c:if test="${edit && p.product_id == ri.product_id}">selected</c:if>>
-          ${p.product_id} - ${p.product_name}
-        </option>
-      </c:forEach>
-    </select>
-    <!-- 編集モードではhiddenに保持 -->
-    <c:if test="${edit}">
-      <input type="hidden" name="product_id" value="${ri.product_id}"/>
-    </c:if>
-  </div>
+<!-- 商品ID -->
+<div class="row">
+  <label>商品ID</label>
+  <select name="product_id" required>
+    <option value="">-- 商品を選択してください --</option>
+    <c:forEach var="p" items="${productList}">
+      <option value="${p.product_id}"
+        <c:if test="${edit && p.product_id == ri.product_id}">selected</c:if>>
+        ${p.product_id} - ${p.product_name}
+      </option>
+    </c:forEach>
+  </select>
+</div>
+
 
   <!-- 数量 -->
   <div class="row">
@@ -103,7 +86,7 @@
     <input type="number" name="quantity" min="1" value="${edit ? ri.quantity : 1}" required>
   </div>
 
-  <!-- 入庫日 (カレンダー入力) -->
+  <!-- 入庫日 -->
   <div class="row">
     <label>入庫日</label>
     <c:if test="${edit && ri.receive_date ne null}">
@@ -112,7 +95,7 @@
     <input type="text" id="receive_date" name="receive_date" value="${recvDate}">
   </div>
 
-  <!-- 業務状態 (検収中/正常/入庫取消/返品処理) -->
+  <!-- 業務状態 -->
   <div class="row">
     <label>業務状態</label>
     <select name="receive_status">
@@ -133,7 +116,7 @@
     </select>
   </div>
 
-  <!-- ボタンエリア -->
+  <!-- アクションボタン -->
   <div class="actions">
     <button type="submit" class="btn">${edit ? '修正保存' : '登録'}</button>
     <a href="<c:url value='/listReceiveInfos.do'/>" class="btn">リスト</a>
@@ -142,3 +125,4 @@
 
 </body>
 </html>
+
