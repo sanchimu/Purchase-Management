@@ -244,4 +244,37 @@ public class PurchaseRequestDao {
 			return pstmt.executeUpdate();
 		}
 	}
+
+	public com.purchase.vo.PurchaseRequest selectById(java.sql.Connection conn, String requestId)
+			throws java.sql.SQLException {
+		String sql = "SELECT request_id, product_id, quantity, request_date, requester_name, request_status, row_status "
+				+ "FROM purchase_request WHERE request_id = ?";
+		try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, requestId);
+			try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					com.purchase.vo.PurchaseRequest pr = new com.purchase.vo.PurchaseRequest();
+					pr.setRequest_id(rs.getString("request_id"));
+					pr.setProduct_id(rs.getString("product_id"));
+					pr.setQuantity(rs.getInt("quantity"));
+					pr.setRequest_date(rs.getDate("request_date"));
+					pr.setRequester_name(rs.getString("requester_name"));
+					pr.setRequest_status(rs.getString("request_status"));
+					pr.setRow_status(rs.getString("row_status"));
+					return pr;
+				}
+			}
+		}
+		return null;
+	}
+
+	public int updateQuantity(java.sql.Connection conn, String requestId, int quantity) throws java.sql.SQLException {
+		String sql = "UPDATE purchase_request SET quantity = ? WHERE request_id = ?";
+		try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, quantity);
+			pstmt.setString(2, requestId);
+			return pstmt.executeUpdate();
+		}
+	}
+
 }

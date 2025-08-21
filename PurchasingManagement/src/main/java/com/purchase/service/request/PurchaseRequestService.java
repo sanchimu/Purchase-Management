@@ -132,6 +132,33 @@ public class PurchaseRequestService {
 			JdbcUtil.close(conn);
 		}
 	}
+	public PurchaseRequest getById(String requestId) {
+	    java.sql.Connection conn = null;
+	    try {
+	        conn = jdbc.connection.ConnectionProvider.getConnection();
+	        return requestDao.selectById(conn, requestId);
+	    } catch (java.sql.SQLException e) {
+	        throw new RuntimeException(e);
+	    } finally {
+	        jdbc.JdbcUtil.close(conn);
+	    }
+	}
 
-	/* 삭제 관련 메서드는 정책상 제거 */
+	public void updatePurchaseRequestQuantity(String requestId, int quantity) {
+	    java.sql.Connection conn = null;
+	    try {
+	        conn = jdbc.connection.ConnectionProvider.getConnection();
+	        conn.setAutoCommit(false);
+
+	        requestDao.updateQuantity(conn, requestId, quantity);
+
+	        conn.commit();
+	    } catch (java.sql.SQLException e) {
+	        jdbc.JdbcUtil.rollback(conn);
+	        throw new RuntimeException(e);
+	    } finally {
+	        jdbc.JdbcUtil.close(conn);
+	    }
+	}
+
 }

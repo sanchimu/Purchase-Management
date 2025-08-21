@@ -8,26 +8,26 @@
 <meta charset="UTF-8">
 <title>購買リクエストリスト</title>
 <style>
-/* ★ 가로·세로 중앙 배치를 위한 기본 세팅 */
+
+/* ページのデザイン */
 html, body {
 	height: 100%;
 }
 
 body {
 	font-family: Arial, sans-serif;
-	margin: 0; /* 바깥 여백 제거 */
+	margin: 0;
 	background: #fff;
 }
 
 .viewport {
 	min-height: 100vh;
 	display: flex;
-	align-items: flex-start; /* ← 세로 위쪽 정렬 */
-	justify-content: center; /* ← 가로 중앙 */
-	padding: 8px 0 16px; /* ← 상단 여백 확 줄임 */
+	align-items: flex-start;
+	justify-content: center;
+	padding: 8px 0 16px;
 }
 
-/* 제목/툴바 기본 마진도 살짝 줄임 */
 h2 {
 	margin: 8px 0 12px;
 	text-align: center;
@@ -39,20 +39,19 @@ h2 {
 	gap: 12px;
 	align-items: center;
 	justify-content: center;
-	margin: 6px 0 12px; /* ← 기존보다 작게 */
+	margin: 6px 0 12px;
 }
 
-/* 검색 폼 */
+/* 検索 フォーム */
 .searchbar {
 	display: flex;
 	gap: 8px;
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
-	margin-bottom: 10px; /* ← 살짝 축소 */
+	margin-bottom: 10px;
 }
 
-/* 테이블은 기존대로 래퍼 기준 중앙 */
 table {
 	border-collapse: collapse;
 	width: 100%;
@@ -86,18 +85,13 @@ th {
 	opacity: .55;
 }
 
-/* (옵션) 콘텐츠가 화면보다 훨씬 클 때엔 상단 정렬로 바꾸고 싶다면 아래 주석 해제
-@media (max-height: 750px) {
-  .viewport { align-items: flex-start; }
-}
-*/
 a, a:visited {
 	color: black;
 	text-decoration: none;
 }
 
 a:hover {
-	text-decoration: underline; /* (옵션) 마우스 올리면만 밑줄 */
+	text-decoration: underline;
 }
 
 .top-menu {
@@ -109,15 +103,15 @@ a:hover {
 	display: inline-block;
 	padding: 8px 14px;
 	margin-right: 6px;
-	background-color: #4CAF50; /* 초록색 배경 */
-	color: white; /* 흰 글씨 */
-	text-decoration: none; /* 밑줄 제거 */
-	border-radius: 4px; /* 둥근 모서리 */
+	background-color: #4CAF50;
+	color: white;
+	text-decoration: none;
+	border-radius: 4px;
 	font-weight: bold;
 }
 
 .top-menu a:hover {
-	background-color: #45a049; /* 마우스 올리면 조금 더 진한 초록 */
+	background-color: #45a049;
 }
 </style>
 <script>
@@ -148,23 +142,22 @@ a:hover {
 </head>
 <body>
 
-	<!-- ★ 전체 화면 중앙 래퍼 -->
 	<div class="viewport">
-		<!-- ★ 실제 페이지 콘텐츠 -->
 		<div class="content">
-
 			<h2>購買リクエストリスト</h2>
 
+			<!-- 구매요청 등록 페이지로 이동하는 버튼
+			購買リクエスト登録ページに移動するボタン -->
 			<div class="top-menu">
-			<a href="<c:url value='/insertpurchaserequest.do'/>">購買リクエスト登録</a>
+				<a href="<c:url value='/insertpurchaserequest.do'/>">購買リクエスト登録</a>
 			</div>
-
 
 			<c:if test="${not empty message}">
 				<div class="msg">${message}</div>
 			</c:if>
 
-			<!-- ★ 검색 폼에 중앙 정렬 클래스 적용 -->
+			<!-- 요청ID, 상품ID, 요청자로 검색하는 기능
+			リクエストID、商品ID、要請者で検索する機能 -->
 			<form action="<c:url value='/searchpurchaserequest.do'/>"
 				method="get" class="searchbar">
 				リクエストID <input type="text" name="request_id"
@@ -201,7 +194,8 @@ a:hover {
 					</button>
 				</div>
 
-				<!-- ✅ JSP 기본 리스트를 fn:split로 생성 (버전 호환) -->
+				<!-- 서버에서 상태 목록을 받지 않았다면 기본값 생성
+				サーバーからステータスリストを受けないとデフォルトを入れる -->
 				<c:if test="${empty requestStatusList}">
 					<c:set var="requestStatusList"
 						value="${fn:split('受付,検討中,承認,差し戻し,取り消し,完了', ',')}" />
@@ -209,6 +203,8 @@ a:hover {
 
 				<table>
 					<tr>
+						<!-- 전체 선택/해제 체크박스
+						全体項目を選択・解除するチェックボックス-->
 						<th><input type="checkbox" onclick="toggleAll(this)"></th>
 						<th>リクエストID</th>
 						<th>商品ID</th>
@@ -220,25 +216,44 @@ a:hover {
 						<th>進行状況(A/X)</th>
 					</tr>
 
+					<!-- 데이터가 없을 때만 메세지 출력
+					データがない場合のみ出るメッセージ -->
 					<c:if test="${empty requestList}">
 						<tr>
 							<td colspan="9">データがありません。</td>
 						</tr>
 					</c:if>
 
+					<!-- 리스트의 각 항목을 req로 바인딩하여 반복
+					リストの各項目をreqにバインディングして繰り返す -->
 					<c:forEach var="req" items="${requestList}">
+						<!-- 진행 상태가 'X'인 행은 기본적으로 숨기고 체크박스가 켜져있거나 진행 상태가 'A'라면 표시
+						進行状態が「X」の行は基本的に非表示にし、チェックボックスがオンになっているか、進行状態が「A」であれば表示 -->
 						<c:if
 							test="${param.includeHidden=='1' || includeHidden || empty req.row_status || req.row_status=='A'}">
+
+							<!-- 진행 상태가 'X'라면 흐리게 표시
+							進行状態が'X'ならぼかし表示 -->
 							<tr class="${req.row_status == 'X' ? 'muted' : ''}">
+
+								<!-- 행 선택 체크박스
+								行選択チェックボックス -->
 								<td><input type="checkbox" name="ids"
 									value="${req.request_id}"></td>
 								<td>${req.request_id}</td>
 								<td>${req.product_id}</td>
 								<td><c:out value="${req.supplier_id}" /></td>
-								<td>${req.quantity}</td>
-								<!-- 임시: -->
+
+								<!-- 수량은 파란 링크로 표시, 클릭 시 수정 폼으로 이동
+								数量は青いリンクで表示、クリックすると修正フォームに移動 -->
+								<td><a
+									href="<c:url value='/purchaserequestqty.do'/>?request_id=${req.request_id}"
+									style="color: blue;"> ${req.quantity} </a></td>
 								<td><c:out value="${req.request_date}" /></td>
 								<td>${req.requester_name}</td>
+
+								<!--  드롭다운 (요청 ID를 이름으로 넣어서 구분)
+								ドロップダウン(リクエストIDを名前で入れて区分) -->
 								<td><select name="${req.request_id}">
 										<c:forEach var="st" items="${requestStatusList}">
 											<option value="${st}"
@@ -246,10 +261,14 @@ a:hover {
 										</c:forEach>
 								</select></td>
 								<td><c:choose>
-										<c:when test="${empty req.row_status || req.row_status=='A'}">
+										<c:when test="${req.row_status=='A'}">
+											<!--  진행중(A) 이라면 진행중 표시
+											進行中(A)なら'進行中'表示 -->
 											<span class="badge-ok">進行中</span>
 										</c:when>
 										<c:otherwise>
+											<!--  그 외는 중단 표시 
+											その他は'中断'表示-->
 											<span class="badge-stop">中断</span>
 										</c:otherwise>
 									</c:choose></td>
@@ -258,11 +277,7 @@ a:hover {
 					</c:forEach>
 				</table>
 			</form>
-
 		</div>
-		<!-- .content -->
 	</div>
-	<!-- .viewport -->
-
 </body>
 </html>
