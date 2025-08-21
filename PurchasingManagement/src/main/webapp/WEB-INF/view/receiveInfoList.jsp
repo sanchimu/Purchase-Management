@@ -22,6 +22,12 @@
   .right{text-align:right;}
   .muted{color:#666;}
 </style>
+
+<!-- flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+
 <script>
   function toggleAll(source){
     const boxes=document.querySelectorAll('input[name="receiveIds"]');
@@ -32,6 +38,22 @@
     if(checked.length===0){ alert('1つ以上の項目を選択してください。'); return false; }
     return confirm('選択した項目の業務状態を保存しますか？');
   }
+
+  // flatpickr適用 (日本語ロケール)
+  document.addEventListener("DOMContentLoaded", function() {
+    flatpickr("input[name='fromDate']", {
+      locale: "ja",
+      altInput: true,
+      altFormat: "Y年m月d日",
+      dateFormat: "Y-m-d"    
+    });
+    flatpickr("input[name='toDate']", {
+      locale: "ja",
+      altInput: true,
+      altFormat: "Y年m月d日",
+      dateFormat: "Y-m-d"
+    });
+  });
 </script>
 </head>
 <body>
@@ -46,9 +68,9 @@
   <form action="<c:url value='/listReceiveInfos.do'/>" method="get">
     <input type="text" name="productName" value="${fn:escapeXml(param.productName)}" placeholder="商品名"/>
     <input type="text" name="supplierName" value="${fn:escapeXml(param.supplierName)}" placeholder="仕入先"/>
-    <input type="date" name="fromDate" value="${param.fromDate}"/>
+    <input type="text" name="fromDate" value="${param.fromDate}" placeholder="開始日"/>
     ~
-    <input type="date" name="toDate" value="${param.toDate}"/>
+    <input type="text" name="toDate" value="${param.toDate}" placeholder="終了日"/>
     <input type="submit" class="btn" value="検索"/>
   </form>
 </div>
@@ -82,7 +104,8 @@
             <td>${empty r.product_name ? '-' : r.product_name}</td>
             <td>${empty r.supplier_name ? '-' : r.supplier_name}</td>
             <td class="right"><fmt:formatNumber value="${r.quantity}"/></td>
-            <td><fmt:formatDate value="${r.receive_date}" pattern="yyyy-MM-dd"/></td>
+            <!-- 日本式フォーマットで表示 -->
+            <td><fmt:formatDate value="${r.receive_date}" pattern="yyyy年MM月dd日"/></td>
             <td class="right"><fmt:formatNumber value="${r.available_to_return}"/></td>
             <td>
               <select name="status_${r.receive_id}">
