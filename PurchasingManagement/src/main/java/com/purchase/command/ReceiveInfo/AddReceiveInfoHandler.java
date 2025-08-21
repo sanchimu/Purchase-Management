@@ -24,7 +24,7 @@ public class AddReceiveInfoHandler implements CommandHandler {
 
         // GETリクエスト → 入庫登録フォームを表示
         if ("GET".equalsIgnoreCase(req.getMethod())) {
-            // ステータス(検収中/正常/入庫キャンセル/返品処理など)のリストを取得してセット
+            // ステータス(検収中/正常/入庫取消/返品処理など)のリストを取得してセット
             req.setAttribute("receiveStatusList", service.getReceiveStatusList());
             return FORM;
         }
@@ -51,8 +51,21 @@ public class AddReceiveInfoHandler implements CommandHandler {
 
             // 入庫日が入力されている場合はDate型に変換してセット
             if (receiveDateStr != null && !receiveDateStr.isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                vo.setReceive_date(sdf.parse(receiveDateStr));
+                java.util.Date parsedDate = null;
+                try {
+                    // 1) 日本語形式 (2025年08月07日) を試す
+                    SimpleDateFormat sdfJP = new SimpleDateFormat("yyyy年MM月dd日");
+                    parsedDate = sdfJP.parse(receiveDateStr);
+                } catch (java.text.ParseException e1) {
+                    try {
+                        // 2) 標準形式 (2025-08-07) を試す
+                        SimpleDateFormat sdfStd = new SimpleDateFormat("yyyy-MM-dd");
+                        parsedDate = sdfStd.parse(receiveDateStr);
+                    } catch (java.text.ParseException e2) {
+                        throw new RuntimeException("対応できない日付形式です: " + receiveDateStr, e2);
+                    }
+                }
+                vo.setReceive_date(parsedDate);
             }
 
             // 許可されたステータスのみ設定（それ以外はnull → DAO側で「検収中」をデフォルト適用）
