@@ -56,11 +56,12 @@
   <select name="order_id" required>
     <option value="">-- 注文を選択してください --</option>
     <c:forEach var="o" items="${orderList}">
-      <option value="${o.order_id}" 
-        <c:if test="${edit and o.order_id == ri.order_id}">selected</c:if>>
-        ${o.order_id}
-      </option>
-    </c:forEach>
+  <option value="${o.request_id}" 
+    <c:if test="${edit and o.request_id == ri.order_id}">selected</c:if>>
+    ${o.request_id}
+  </option>
+</c:forEach>
+
   </select>
 </div>
 
