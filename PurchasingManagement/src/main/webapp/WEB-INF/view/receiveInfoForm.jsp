@@ -12,7 +12,10 @@
 <title>${edit ? '入庫修正' : '入庫登録'}</title> <%-- ページタイトル (入庫修正 or 入庫登録) / 페이지 제목 (입고 수정/등록) --%>
 <style>
   /* フォームのスタイル / 폼 스타일 정의 */
-  body { font-family: Arial, sans-serif; margin: 20px; }
+body {
+  font-family: "Noto Sans JP", "Meiryo", "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  margin: 20px;
+}
   .form { max-width: 640px; padding: 16px; border: 1px solid #ddd; border-radius: 6px; }
   .row { display:flex; align-items:center; margin:10px 0; gap:10px; }
   .row label { width: 140px; text-align: right; font-weight:600; }
@@ -120,7 +123,7 @@
   <!-- アクションボタン / 액션 버튼 -->
   <div class="actions">
     <button type="submit" class="btn">${edit ? '修正保存' : '登録'}</button> <%-- 수정 시: 修正保存 / 신규: 登録 --%>
-    <a href="<c:url value='/listReceiveInfos.do'/>" class="btn">リスト</a> <%-- リストに戻る / 리스트로 돌아가기 --%>
+    <a href="<c:url value='/listReceiveInfos.do'/>" class="btn">入庫リストに戻る</a> <%-- リストに戻る / 리스트로 돌아가기 --%>
   </div>
 </form>
 

@@ -11,7 +11,11 @@
 <title>入庫リスト</title> <%-- ページタイトル: 入庫リスト / 페이지 제목: 입고 목록 --%>
 <style>
   /* スタイル設定 / 스타일 정의 */
-  body{font-family:Arial,sans-serif;margin:20px;}
+body {
+  font-family: "Noto Sans JP", "Meiryo", "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  margin: 20px;
+}
+
   h2{margin-bottom:10px;}
   .toolbar{display:flex;gap:8px;align-items:center;margin:10px 0 16px;flex-wrap:wrap;}
   .toolbar form{display:flex;gap:8px;align-items:center;}
