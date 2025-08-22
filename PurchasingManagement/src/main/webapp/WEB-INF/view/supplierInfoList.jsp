@@ -68,7 +68,7 @@ function validateSave(){
   <div id="idsContainer"></div>
 
   <div class="toolbar">
-    <button class="btn" formaction="${pageContext.request.contextPath}/updatesupplier.do" onclick="return validateSave();">選択項目 業務状態保存</button>
+    <button class="btn" formaction="${pageContext.request.contextPath}/updatestatus.do" onclick="return validateSave();">選択項目 業務状態保存</button>
     <button class="btn" formaction="${pageContext.request.contextPath}/status/bulk.do" name="to" value="X" onclick="return prepStatus() && confirm('選択項目を中断しますか？');">選択項目 中断</button>
     <button class="btn" formaction="${pageContext.request.contextPath}/status/bulk.do" name="to" value="A" onclick="return prepStatus();">選択項目 再開</button>
     <label style="margin-left: 12px;">

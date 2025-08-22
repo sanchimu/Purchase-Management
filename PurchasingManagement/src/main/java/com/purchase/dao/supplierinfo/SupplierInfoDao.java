@@ -204,4 +204,13 @@ public class SupplierInfoDao {
             return ps.executeUpdate(); // 몇 개의 행이 수정되엇는지 리턴
         }
     }
+    
+    public void updateStatus(Connection conn, String supplierId, String newStatus) throws SQLException {
+        String sql = "UPDATE supplier_info SET supplier_status = ? WHERE supplier_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newStatus);
+            pstmt.setString(2, supplierId);
+            pstmt.executeUpdate();
+        }
+    }
 }

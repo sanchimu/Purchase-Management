@@ -128,5 +128,18 @@ public class SupplierInfoService {
             JdbcUtil.close(conn);
         }
     }
+    
+    public void updateStatus(String supplierId, String newStatus) {
+        Connection conn = null;
+        try {
+            conn = ConnectionProvider.getConnection();   
+            supplierDao.updateStatus(conn, supplierId, newStatus);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.close(conn);
+        }
+    }
+
 
 }
