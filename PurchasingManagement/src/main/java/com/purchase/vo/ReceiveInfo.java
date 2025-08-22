@@ -3,22 +3,26 @@ package com.purchase.vo;
 import java.util.Date;
 
 public class ReceiveInfo {
-    private String receive_id;   // 入庫ID
-    private String order_id;     // 注文ID
-    private String product_id;   // 商品ID
-    private int    quantity;     // 入庫数量
-    private Date   receive_date; // 入庫日
+    private String receive_id;   // 入庫ID / 입고 ID
+    private String order_id;     // 注文ID / 주문 ID
+    private String product_id;   // 商品ID / 상품 ID
+    private int    quantity;     // 入庫数量 / 입고 수량
+    private Date   receive_date; // 入庫日 / 입고 일자
 
     // 業務ステータス（検収中 / 正常 / 入庫キャンセル / 返品処理 など）
+    // 업무 상태 (검수중 / 정상 / 입고 취소 / 반품 처리 등)
     private String receive_status;
 
     // 返品可能数量
+    // 반품 가능 수량
     private int    available_to_return;
 
     // JOINで取得する追加表示用フィールド
-    private String product_name;   // 商品名
-    private String supplier_name;  // 仕入先名
+    // JOIN 조회 시 추가로 가져오는 표시용 필드
+    private String product_name;   // 商品名 / 상품명
+    private String supplier_name;  // 仕入先名 / 공급업체명
 
+    // === コンストラクタ / 생성자 ===
     public ReceiveInfo() {}
 
     public ReceiveInfo(String receive_id, String order_id, String product_id,
@@ -31,6 +35,7 @@ public class ReceiveInfo {
         this.receive_status = receive_status;
     }
 
+    // === Getter / Setter ===
     public String getReceive_id() { return receive_id; }
     public void setReceive_id(String receive_id) { this.receive_id = receive_id; }
 
@@ -52,11 +57,10 @@ public class ReceiveInfo {
     public int getAvailable_to_return() { return available_to_return; }
     public void setAvailable_to_return(int available_to_return) { this.available_to_return = available_to_return; }
 
-    // 追加された getter/setter
+    // 追加された getter/setter / 추가된 getter/setter
     public String getProduct_name() { return product_name; }
     public void setProduct_name(String product_name) { this.product_name = product_name; }
 
     public String getSupplier_name() { return supplier_name; }
     public void setSupplier_name(String supplier_name) { this.supplier_name = supplier_name; }
 }
-

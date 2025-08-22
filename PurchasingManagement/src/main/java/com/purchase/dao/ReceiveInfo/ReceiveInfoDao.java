@@ -8,7 +8,8 @@ import java.util.List;
 
 public class ReceiveInfoDao {
 
-    /** RI + 3桁のシーケンスを生成 (例: RI001, RI002…) */
+    /** RI + 3桁のシーケンスを生成 (例: RI001, RI002…) 
+     *  RI + 3자리 시퀀스 ID 생성 (예: RI001, RI002…) */
     private String nextReceiveId(Connection conn) throws SQLException {
         final String sql = "SELECT receive_info_seq.NEXTVAL FROM dual";
         try (PreparedStatement ps = conn.prepareStatement(sql);
@@ -18,10 +19,12 @@ public class ReceiveInfoDao {
                 return String.format("RI%03d", seq);
             }
         }
-        throw new SQLException("receive_info_seq.NEXTVAL の取得に失敗しました");
+        throw new SQLException("receive_info_seq.NEXTVAL の取得に失敗しました / 시퀀스 값 조회 실패");
     }
 
-    /** INSERT処理 (receive_status が指定されれば使用、なければDBのデフォルト '正常' を適用) */
+    /** INSERT処理 
+     *  receive_status が指定されれば使用、なければDBのデフォルト '正常' を適用 
+     *  INSERT 처리 (상태가 지정되면 적용, 없으면 DB 기본값 '정상' 적용) */
     public void insert(Connection conn, ReceiveInfo receiveInfo) throws SQLException {
         String newId = nextReceiveId(conn);
         receiveInfo.setReceive_id(newId);
@@ -39,18 +42,22 @@ public class ReceiveInfoDao {
             ps.setInt(4, receiveInfo.getQuantity());
 
             // 入庫日が存在すればセット、なければNULL
+            // 입고일이 있으면 세팅, 없으면 NULL
             if (receiveInfo.getReceive_date() != null) {
                 ps.setDate(5, new java.sql.Date(receiveInfo.getReceive_date().getTime()));
             } else {
                 ps.setNull(5, Types.DATE);
             }
 
-            ps.setString(6, receiveInfo.getReceive_status()); // nullの場合はDEFAULT '正常' を適用
+            ps.setString(6, receiveInfo.getReceive_status()); 
+            // null の場合は DEFAULT '正常' が適用される
+            // null이면 DB 기본값 '정상' 적용
             ps.executeUpdate();
         }
     }
 
-    /** 単純な全件取得 (JOINなし) */
+    /** 単純な全件取得 (JOINなし) 
+     *  단순 전체 조회 (JOIN 없음) */
     public List<ReceiveInfo> selectAll(Connection conn) throws SQLException {
         final String sql =
             "SELECT receive_id, order_id, product_id, quantity, receive_date, receive_status " +
@@ -74,7 +81,8 @@ public class ReceiveInfoDao {
         }
     }
 
-    /** receive_id から product_id を取得 */
+    /** receive_id から product_id を取得 
+     *  receive_id로부터 product_id 조회 */
     public String getProductIdByReceiveId(Connection conn, String receiveId) throws SQLException {
         String productId = null;
 
@@ -96,6 +104,12 @@ public class ReceiveInfoDao {
      *  - 返品可能数量 = ri.quantity - NVL(SUM(rti.quantity),0)
      *  - onlyAvailable=true の場合 HAVING > 0
      *  - includeHidden=false の場合 p/si/os の row_status='A' のみ
+     *
+     * JOIN을 활용한 조회:
+     *  - 상품명 / 공급업체명 포함
+     *  - 반품 가능 수량 = ri.quantity - NVL(SUM(rti.quantity),0)
+     *  - onlyAvailable=true → HAVING 조건으로 > 0
+     *  - includeHidden=false → p/si/os의 row_status='A'만 조회
      */
     public List<ReceiveInfo> selectAllView(Connection conn,
                                            boolean onlyAvailable,
@@ -114,6 +128,7 @@ public class ReceiveInfoDao {
             "LEFT JOIN return_info rti ON rti.receive_id = ri.receive_id "
         );
         // 非表示データを含めない場合、row_status='A' のみ抽出
+        // 숨김 데이터를 포함하지 않으면 row_status='A'만 추출
         sb.append("WHERE (? = 1 OR (NVL(p.row_status,'A')='A' AND NVL(si.row_status,'A')='A' AND NVL(os.row_status,'A')='A')) ");
         sb.append(
             "GROUP BY " +
@@ -150,7 +165,8 @@ public class ReceiveInfoDao {
         }
     }
 
-    /** ステータスを変更する */
+    /** ステータスを変更する 
+     *  상태값 변경 */
     public int updateStatus(Connection conn, String receiveId, String status) throws SQLException {
         final String sql = "UPDATE receive_info SET receive_status = ? WHERE receive_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -160,7 +176,8 @@ public class ReceiveInfoDao {
         }
     }
 
-    /** 返品数量を考慮した入庫情報の取得 (返品可能数量 > 0 のみ) */
+    /** 返品数量を考慮した入庫情報の取得 (返品可能数量 > 0 のみ)
+     *  반품 수량을 고려한 입고정보 조회 (반품 가능 수량 > 0 만) */
     public List<ReceiveInfo> selectReceiveInfoWithReturnQty(Connection conn) throws SQLException {
         String sql = "SELECT ri.receive_id, ri.order_id, ri.product_id, ri.quantity AS received_quantity, ri.receive_date, "
                    + "       NVL(SUM(rti.quantity), 0) AS returned_quantity, "
@@ -180,10 +197,11 @@ public class ReceiveInfoDao {
                 vo.setReceive_id(rs.getString("receive_id"));
                 vo.setOrder_id(rs.getString("order_id"));
                 vo.setProduct_id(rs.getString("product_id"));
-                vo.setQuantity(rs.getInt("received_quantity"));  // 入庫数量
+                vo.setQuantity(rs.getInt("received_quantity"));  // 入庫数量 / 입고 수량
                 vo.setReceive_date(rs.getDate("receive_date"));
 
                 // 返品可能数量 → ReceiveInfoに専用フィールドが必要
+                // 반품 가능 수량 → ReceiveInfo VO에 필드 필요
                 vo.setAvailable_to_return(rs.getInt("available_to_return"));
 
                 list.add(vo);
@@ -192,4 +210,3 @@ public class ReceiveInfoDao {
         return list;
     }
 }
-
