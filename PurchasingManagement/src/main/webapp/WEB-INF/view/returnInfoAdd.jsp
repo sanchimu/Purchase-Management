@@ -7,80 +7,140 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<title>반품 요청</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* 제목 중앙 정렬 */
+h3 {
+    text-align: center;
+}
+
+/* 테이블 스타일 */
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 20px auto;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* 폼 스타일 */
+form {
+    width: 50%;
+    margin: 20px auto;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* 입력 필드 */
+input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* 버튼 스타일 */
+input[type="submit"],
+input[type="button"] {
+    padding: 6px 12px;
+    margin-right: 10px;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    opacity: 0.85;
+}
+</style>
 <script>
 window.onload = function() {
-    // 서버에서 전달된 success 플래그가 true일 경우 alert 띄우기
     <% if (request.getAttribute("success") != null) { %>
         alert("반품 요청 완료");
-        // 입력 필드 초기화 (방법 1: form 전체 reset)
         document.querySelector("form").reset();
     <% } %>
 }
 </script>
-<title>반품 요청</title>
 </head>
-
-
 <body>
-    <%
-        // 컨트롤러에서 전달받은 입고 목록
-        List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    %>
 
-		<h3>입고 현황</h3>
-		<form action = returnProcess.do method="post">
- <table border="1">
-            <tr>
-                <th>선택</th>
-                <th>입고 ID</th>
-                <th>주문 ID</th>
-                <th>상품 ID</th>
-                <th>수량</th>
-                <th>반품 가능 수량</th>
-                <th>입고일자</th>
-            </tr>
+<h3>입고 현황</h3>
 
+<form action="returnProcess.do" method="post">
+<table>
+    <tr>
+        <th>선택</th>
+        <th>입고 ID</th>
+        <th>주문 ID</th>
+        <th>상품 ID</th>
+        <th>수량</th>
+        <th>반품 가능 수량</th>
+        <th>입고일자</th>
+    </tr>
 <%
+List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList");
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
     for (ReceiveInfo info : receiveInfoList) {
         int available = info.getAvailable_to_return();
 %>
-    <tr>
-        <td>
-            <% if (available > 0) { %>
-                <input type="radio" name="receiveId" value="<%= info.getReceive_id() %>">
-            <% } else { %>
-                <!-- 반품 가능 수량 없으면 체크 불가 -->
-                <input type="radio" disabled>
-            <% } %>
-        </td>
-        <td><%= info.getReceive_id() %></td>
-        <td><%= info.getOrder_id() %></td>
-        <td><%= info.getProduct_id() %></td>
-        <td><%= info.getQuantity() %></td>
-        <td><%= available %></td>
-        <td><%= info.getReceive_date() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(info.getReceive_date()) : "" %></td>
-    </tr>
-<%
-        }
-    } else {
-%>
-    <tr>
-        <td colspan="7">반품 가능한 입고 리스트가 없습니다.</td>
-    </tr>
+<tr>
+    <td>
+        <% if (available > 0) { %>
+            <input type="radio" name="receiveId" value="<%= info.getReceive_id() %>">
+        <% } else { %>
+            <input type="radio" disabled>
+        <% } %>
+    </td>
+    <td><%= info.getReceive_id() %></td>
+    <td><%= info.getOrder_id() %></td>
+    <td><%= info.getProduct_id() %></td>
+    <td><%= info.getQuantity() %></td>
+    <td><%= available %></td>
+    <td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td>
+</tr>
 <%
     }
+} else {
 %>
-
-        </table>
+<tr>
+    <td colspan="7" style="text-align:center;">반품 가능한 입고 리스트가 없습니다.</td>
+</tr>
+<%
+}
+%>
+</table>
 
 <p>
-	반품 수량 : <input type="text" name="quantity"/><br>
-	반품 사유 : <input type="text" name="reason"/><br><br>
-	<input type = "submit" value="반품 요청">
-	<input type="button" value="뒤로 가기" onclick="location.href='returnInfoList.do'">
-	</form>
+    반품 수량 : <input type="text" name="quantity"/>
+    반품 사유 : <input type="text" name="reason"/>
 </p>
+<p>
+    <input type="submit" value="반품 요청">
+    <input type="button" value="뒤로 가기" onclick="location.href='returnInfoList.do'">
+</p>
+</form>
+
 </body>
 </html>
