@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>상품 목록</title>
+<title>商品目録</title>
 <style>
 /* 테이블 스타일 */
 table {
@@ -83,36 +83,36 @@ function validateForm(){
 
 <!-- 상단 메뉴 -->
 <div class="top-menu">
-    <a href="addProduct.do" class="btn">상품 등록</a>
-    <a href="javascript:location.reload();" class="btn">재조회</a>
+    <a href="addProduct.do" class="btn">商品登録</a>
+    <a href="javascript:location.reload();" class="btn">再照会</a>
 </div>
 
-<h2 style="text-align:center;">상품 조회</h2>
+<h2 style="text-align:center;">商品照会</h2>
 <!-- 검색 폼 -->
 <form action="searchProducts.do" method="get" style="width:80%; margin:20px auto; text-align:center;">
-    상품 ID : <input type="text" name="product_id" value="${param.product_id}" style="margin-right:10px; padding:4px;">
-    상품명 : <input type="text" name="product_name" value="${param.product_name}" style="margin-right:10px; padding:4px;">
-    카테고리 :
+    商品ID : <input type="text" name="product_id" value="${param.product_id}" style="margin-right:10px; padding:4px;">
+    商品名 : <input type="text" name="product_name" value="${param.product_name}" style="margin-right:10px; padding:4px;">
+    分類 :
     <select name="category" style="margin-right:10px; padding:4px;">
         <option value="">-- 선택 --</option>
         <c:forEach items="${categoryList}" var="cat">
             <option value="${cat}" <c:if test="${param.category == cat}">selected</c:if>>${cat}</option>
         </c:forEach>
     </select>
-    공급업체 ID : <input type="text" name="supplier_id" value="${param.supplier_id}" style="margin-right:10px; padding:4px;">
+    仕入先ID : <input type="text" name="supplier_id" value="${param.supplier_id}" style="margin-right:10px; padding:4px;">
     <input type="submit" value="검색" class="btn">
 </form>
 <!-- 상품 목록 테이블 -->
-<h2 style="text-align:center;">상품 목록</h2>
+<h2 style="text-align:center;">商品目録</h2>
 <form action="updateProducts.do" method="post" onsubmit="return validateForm();">
     <table>
         <tr>
-            <th>상품 ID</th>
-            <th>상품명</th>
-            <th>카테고리</th>
-            <th>가격</th>
-            <th>공급업체</th>
-            <th>상태</th>
+            <th>商品ID</th>
+            <th>商品名</th>
+            <th>分類</th>
+            <th>価格</th>
+            <th>仕入先</th>
+            <th>状態</th>
         </tr>
         <%
             List<Product> productList = (List<Product>) request.getAttribute("productList");
@@ -136,11 +136,11 @@ function validateForm(){
             </td>
         </tr>
         <% } } else { %>
-        <tr><td colspan="6">조회된 상품이 없습니다.</td></tr>
+        <tr><td colspan="6">照会された商品がありません。</td></tr>
         <% } %>
     </table>
     <br>
-    <input type="submit" class="btn" value="상태 저장">
+    <input type="submit" class="btn" value="状態変更保存">
 </form>
 </body>
 </html>

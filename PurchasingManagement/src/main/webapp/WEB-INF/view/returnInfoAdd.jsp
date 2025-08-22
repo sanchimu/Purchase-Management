@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>반품 요청</title>
+<title>返品要請</title>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -76,7 +76,7 @@ input[type="button"]:hover {
 <script>
 window.onload = function() {
     <% if (request.getAttribute("success") != null) { %>
-        alert("반품 요청 완료");
+        alert("返品要請完了");
         document.querySelector("form").reset();
     <% } %>
 }
@@ -84,18 +84,18 @@ window.onload = function() {
 </head>
 <body>
 
-<h3>입고 현황</h3>
+<h3>入庫現況</h3>
 
 <form action="returnProcess.do" method="post">
 <table>
     <tr>
-        <th>선택</th>
-        <th>입고 ID</th>
-        <th>주문 ID</th>
-        <th>상품 ID</th>
-        <th>수량</th>
-        <th>반품 가능 수량</th>
-        <th>입고일자</th>
+        <th>選択</th>
+        <th>入庫番号</th>
+        <th>注文番号</th>
+        <th>商品名(商品番号)</th>
+        <th>入庫数量</th>
+        <th>返品可能数量</th>
+        <th>入庫日</th>
     </tr>
 <%
 List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList");
@@ -125,7 +125,7 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
 } else {
 %>
 <tr>
-    <td colspan="7" style="text-align:center;">반품 가능한 입고 리스트가 없습니다.</td>
+    <td colspan="7" style="text-align:center;">返品可能な入荷品はございません。</td>
 </tr>
 <%
 }
@@ -133,8 +133,8 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) {
 </table>
 
 <p>
-    반품 수량 : <input type="text" name="quantity"/>
-    반품 사유 : <input type="text" name="reason"/>
+    返品数量 : <input type="text" name="quantity"/>
+    返品事由 : <input type="text" name="reason"/>
 </p>
 <p>
     <input type="submit" value="반품 요청">
