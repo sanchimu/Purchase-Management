@@ -12,48 +12,44 @@ import com.purchase.vo.SupplierInfo;
 
 import mvc.command.CommandHandler;
 
-/**
- * 仕入先情報一覧を表示するハンドラークラス。
- * SupplierInfoService を利用してデータを取得し、
- * 条件に応じてフィルタリングを行った上で JSP に渡す。
- */
+// 공급업체 목록 화면을 처리하는 핸들러 클래스
 public class ListSupplierInfoHandler implements CommandHandler {
 
-    // サービス層のインスタンスを生成
     private final SupplierInfoService supplierService = new SupplierInfoService();
+    // DB에서 공급업체 데이터 가져오기 위한 서비스 객체 생성
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        // パラメータ取得
-        // includeHidden=1 の場合は非表示（中断状態を含む）データも表示
-        // デフォルトでは false（= "A" のみ表示）
+    	// 웹 요청이 들어왔을 때 실행되는 메서드
+
         boolean includeHidden = "1".equals(req.getParameter("includeHidden"));
+        // URL 파라미터 중 "includeHidden=1"이 있으면 true, 없으면 false
+        // 중단된 공급업체도 보여줄지 여부를 판단하는 것
 
-        // 全件取得
-        // SupplierInfoService 経由で全仕入先データを取得
+        String supplierName = req.getParameter("supplier_name");
+        // 검색 파라미터: 공급업체 이름 (공백 또는 null일 수 있음)
+
         List<SupplierInfo> all = supplierService.getSupplierList();
+        // DB에서 모든 공급업체 정보 가져와서 all 이라는 리스트에 저장
 
-        // フィルタリング処理
-        // デフォルト: row_status が "A" または null のデータのみを表示
-        // includeHidden=1 が指定された場合はフィルタリングせず全件表示
-        List<SupplierInfo> viewList = includeHidden
-                ? all
-                : all.stream()
-                     .filter(s -> s.getRow_status() == null || "A".equalsIgnoreCase(s.getRow_status()))
-                     .collect(Collectors.toList());
+        List<SupplierInfo> viewList = all.stream()
+            .filter(s -> includeHidden || s.getRow_status() == null || "A".equalsIgnoreCase(s.getRow_status()))
+            // includeHidden == true 면 모든 항목 허용, 아니면 A 상태 또는 null만 허용
+            .filter(s -> supplierName == null || supplierName.trim().isEmpty()
+                      || s.getSupplier_name().contains(supplierName.trim()))
+            // supplier_name 파라미터가 있는 경우, 이름에 해당 문자열이 포함되는 항목만 필터링
+            .collect(Collectors.toList());
 
-        // リクエスト属性にバインド
-        // JSP 側で一覧表示に利用するデータをセット
         req.setAttribute("supplierList", viewList);
-        req.setAttribute("includeHidden", includeHidden);
+        // 목록에 표시할 공급업체 데이터를 JSP 에 전달
 
-        // 業務状態ドロップダウン用リスト
-        // JSP 側でセレクトボックスを生成するための選択肢を提供
+        req.setAttribute("includeHidden", includeHidden);
+        // 체크박스를 유지할 수 있게 JSP에 넘겨줌
+
         req.setAttribute("supplierStatusList",
                 Arrays.asList("有効", "取引停止", "廃業", "休眠"));
+        // 상태 선택용 드롭다운 리스트를 JSP에 넘겨줌
 
-        // 遷移先 JSP
-        // 仕入先一覧を表示する JSP のパスを返す
         return "/WEB-INF/view/supplierInfoList.jsp";
     }
 }
