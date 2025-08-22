@@ -84,12 +84,15 @@ th {
 		<a class="btn" href="<c:url value='/requestList.do'/>">목록으로 돌아가기</a>
 	</div>
 
+	<!-- 메세지 값이 있으면 표시
+	メッセージがある場合は表示 -->
 	<c:if test="${not empty message}">
 		<div class="msg">${message}</div>
 	</c:if>
 
+		<!-- 상품이 없을 때 안내
+		商品リストが空いてる場合 -->
 	<c:choose>
-		<%-- 상품이 없을 때 안내 --%>
 		<c:when test="${empty productList}">
 			<div class="msg">등록된 상품이 없습니다. 먼저 상품을 등록해 주세요.</div>
 			<p>
@@ -98,7 +101,8 @@ th {
 			</p>
 		</c:when>
 
-		<%-- 상품이 있을 때 폼 표시 --%>
+		<%-- 상품이 있을 때 폼 표시
+		それ以外の場合（品がある場合）--%>
 		<c:otherwise>
 			<form action="<c:url value='/insertpurchaserequest.do'/>"
 				method="post">
@@ -106,6 +110,11 @@ th {
 					<label for="product_id">상품 선택</label><br> <select
 						id="product_id" name="product_id" required>
 						<option value="">-- 상품을 선택하세요 --</option>
+						
+						<!-- productList를 반복하여 각 상품을 표시
+						productList をループして商品を表示 -->
+						<!-- 선택된 상품이면 'selected' 로 변경
+						選択された商品は’selected’ に変更-->
 						<c:forEach var="p" items="${productList}">
 							<option value="${p.product_id}"
 								<c:if test="${p.product_id == selectedProductId}">selected</c:if>>
@@ -119,6 +128,7 @@ th {
 				<div class="muted">※ 더 정확히 선택하려면 상품명/카테고리/가격을 참고하세요.</div>
 				</p>
 
+				<!-- 수량 입력 필드 (기본값 1, 최소 1) // 数量入力フィールド (デフォルト1, 最小1) -->
 				<p>
 					<label for="quantity">수량</label><br> <input type="number"
 						id="quantity" name="quantity" placeholder="1" min="1" step="1"
@@ -135,6 +145,8 @@ th {
 					<div class="msg">${formError}</div>
 				</c:if>
 
+				<!-- 등록 후 목록 페이지로 이동
+				登録後、リストページに移動-->
 				<p>
 					<input type="submit" value="등록"> <a class="btn"
 						href="<c:url value='/requestList.do'/>">목록</a>

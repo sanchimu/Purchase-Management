@@ -20,6 +20,8 @@ public class ListPurchaseRequestHandler implements CommandHandler {
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
         boolean includeHidden = "1".equals(req.getParameter("includeHidden"));
 
+        // product와 JOIN된 전체 목록을 서비스에서 조회 
+        // productとJOINされた全件一覧をサービスで照会
         List<PurchaseRequest> all = service.getJoinedRequestList();
         List<PurchaseRequest> view = includeHidden
                 ? all
@@ -32,7 +34,6 @@ public class ListPurchaseRequestHandler implements CommandHandler {
         req.setAttribute("requestStatusList",
                 Arrays.asList("受付","検討中","承認","差し戻し","取り消し","完了"));
 
-        // ★ 여기!
         return "/WEB-INF/view/purchaseRequestList.jsp";
     }
 }

@@ -9,7 +9,8 @@
 <title>購買リクエストリスト</title>
 <style>
 
-/* ページのデザイン */
+/* 페이지 디자인
+ページのデザイン  */
 html, body {
 	height: 100%;
 }
@@ -42,7 +43,8 @@ h2 {
 	margin: 6px 0 12px;
 }
 
-/* 検索 フォーム */
+/* 검색 폼 
+検索 フォーム */
 .searchbar {
 	display: flex;
 	gap: 8px;
@@ -115,14 +117,25 @@ a:hover {
 }
 </style>
 <script>
+
+//name="ids"인 모든 체크박스를 찾아서 클릭된 체크박스(src)의 상태와 동일하게 설정
+//name="ids" の全チェックボックスを探してクリックされたチェックボックス(src)と同じ状態に設定
   function toggleAll(src){
     document.querySelectorAll('input[name="ids"]').forEach(cb => cb.checked = src.checked);
   }
+  //체크된 체크박스들을 배열로 변환하고, 각각의 value 값을 추출하여 반환
+  // チェックされたチェックボックスを配列に変換し、それぞれのvalue値を返す
   function getCheckedIds(){
     return Array.from(document.querySelectorAll('input[name="ids"]:checked')).map(cb=>cb.value);
   }
+  
+//선택된 항목들을 hidden input으로 준비
+// 選択された項目をhidden inputとして準備
   function prepStatus(){
     const ids = getCheckedIds();
+    
+ // 아무것도 선택되지 않았다면 알림 띄우고 false 반환 
+ // 何も選択されていなければアラートを出してfalseを返す
     if(!ids.length){alert('選択された項目がありません。'); return false;}
     const box = document.getElementById('idsContainer');
     box.innerHTML = '';
@@ -133,6 +146,9 @@ a:hover {
     });
     return true;
   }
+  
+  //선택 항목이 있는지 확인
+  //選択項目があるか確認
   function validateSave(){
     const ids = getCheckedIds();
     if(!ids.length){alert('選択された項目がありません。'); return false;}
@@ -217,7 +233,7 @@ a:hover {
 					</tr>
 
 					<!-- 데이터가 없을 때만 메세지 출력
-					データがない場合のみ出るメッセージ -->
+					データがない場合のみメッセージを出す -->
 					<c:if test="${empty requestList}">
 						<tr>
 							<td colspan="9">データがありません。</td>

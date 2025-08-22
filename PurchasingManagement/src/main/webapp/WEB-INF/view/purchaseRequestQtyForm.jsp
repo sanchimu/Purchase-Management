@@ -31,7 +31,6 @@ h2 {
 	color: #333;
 }
 
-/* 폼 카드 */
 .form-card {
 	width: 100%;
 	max-width: 600px;
@@ -42,7 +41,6 @@ h2 {
 	background: #fff;
 }
 
-/* 필드 라인 */
 .form-row {
 	display: flex;
 	align-items: center;
@@ -64,7 +62,6 @@ h2 {
 	font-size: 14px;
 }
 
-/* 액션 버튼: 리스트의 초록 버튼 톤과 맞춤 */
 .actions {
 	display: flex;
 	gap: 10px;
@@ -83,7 +80,7 @@ h2 {
 }
 
 .btn-primary {
-	background-color: #4CAF50; /* 리스트 top-menu와 동일 톤 */
+	background-color: #4CAF50;
 	color: #fff;
 }
 
@@ -96,7 +93,6 @@ h2 {
 	color: #333;
 }
 
-/* 보조 정보 박스 */
 .meta {
 	width: 100%;
 	max-width: 600px;
@@ -118,9 +114,15 @@ h2 {
 			<form action="<c:url value='/purchaserequestqty.do'/>" method="post"
 				class="form-card">
 				<div class="form-row">
+
+					<!-- 요청 ID 입력 필드 (읽기 전용)
+				リクエストID入力フィールド (読み取り専用) -->
 					<label>リクエストID</label> <input type="text" name="request_id"
 						value="${req.request_id}" readonly>
 				</div>
+
+				<!-- 수량 입력 필드 (기존 값 표시)
+				数量入力フィールド (既存の値を表示) -->
 				<div class="form-row">
 					<label>数量</label> <input type="number" name="quantity"
 						value="${req.quantity}">
@@ -143,7 +145,9 @@ h2 {
 			</div>
 		</div>
 	</div>
-	
+
+	<!-- successMsg 값이 있을 경우 알림으로 표시하고 목록으로 이동 
+	 successMsg 値があればアラートで表示してリスト画面へ移動-->
 	<c:if test="${not empty successMsg}">
 		<script>
 			alert("${successMsg}");
@@ -151,6 +155,8 @@ h2 {
 		</script>
 	</c:if>
 
+	<!-- successMsg는 비어있지만 success 플래그가 true일 경우　기본 성공 메시지를 알림으로 표시하고 목록으로 이동
+	 successMsg が空だが success フラグが true の場合にデフォルト成功メッセージをアラートで表示してリスト画面へ移動-->
 	<c:if test="${empty successMsg and success}">
 		<script>
 			alert("数量を修正しました。");

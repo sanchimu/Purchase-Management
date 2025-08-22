@@ -26,11 +26,18 @@ public class SearchPurchaseRequestHandler implements CommandHandler {
         String productId     = trim(req.getParameter("product_id"));
         String requesterName = trim(req.getParameter("requester_name"));
 
+        // WHERE 조건을 담을 맵 
+        // WHERE条件を格納するマップ
         Map<String,String> cond = new HashMap<>();
+        
+        //값이 있으면 조건에 추가 
+        //値があれば条件に追加
         putIf(cond, "request_id", requestId);
         putIf(cond, "product_id", productId);
         putIf(cond, "requester_name", requesterName);
 
+        // 조건 맵을 기반으로 서비스에서 검색 실행 
+        // 条件マップに基づきサービスで検索を実行
         List<PurchaseRequest> list = service.getByConditions(cond);
         List<PurchaseRequest> view = includeHidden
                 ? list
@@ -43,7 +50,6 @@ public class SearchPurchaseRequestHandler implements CommandHandler {
         req.setAttribute("requestStatusList",
                 Arrays.asList("접수","검토중","승인","반려","취소","종결"));
 
-        // ★ 여기!
         return "/WEB-INF/view/purchaseRequestList.jsp";
     }
 
