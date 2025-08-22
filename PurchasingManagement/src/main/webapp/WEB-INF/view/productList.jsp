@@ -119,7 +119,7 @@ function validateForm(){
             if(productList != null){
                 for (Product p : productList) {
         %>
-        <tr class="<%= "단종".equals(p.getProduct_status()) ? "muted" : "" %>">
+        <tr class="<%= "販売終了".equals(p.getProduct_status()) ? "muted" : "" %>">
             <td><%= p.getProduct_id() %></td>
             <td><a href="modifyProduct.do?product_id=<%= p.getProduct_id() %>"><%= p.getProduct_name() %></a></td>
             <td><%= p.getCategory() %></td>
