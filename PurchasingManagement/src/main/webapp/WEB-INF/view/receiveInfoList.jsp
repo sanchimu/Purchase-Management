@@ -73,8 +73,7 @@ body {
 <div class="toolbar">
   <!-- 新規入庫登録 / 신규 입고 등록 -->
   <a class="btn" href="<c:url value='/addReceiveInfo.do'/>">入庫登録</a>
-  <!-- ページ再読み込み / 페이지 새로고침 -->
-  <a class="btn" href="<c:url value='/listReceiveInfos.do'/>">再読み込み</a>
+
 
   <!-- 簡易検索フォーム / 간단 검색 폼 -->
   <form action="<c:url value='/listReceiveInfos.do'/>" method="get">
