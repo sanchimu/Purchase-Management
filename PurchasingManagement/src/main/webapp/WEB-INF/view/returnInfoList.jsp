@@ -96,7 +96,7 @@ function validateForm() {
             <th>선택</th>
             <th>반품 고유 번호</th>
             <th>입고 고유 번호</th>
-            <th>상품 고유 번호</th>
+            <th>상품명 (상품 번호)</th>
             <th>반품 수량</th>
             <th>반품 사유</th>
             <th>반품 날짜</th>

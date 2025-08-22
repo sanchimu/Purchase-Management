@@ -21,7 +21,8 @@ public class DeleteReturnInfoHandler implements CommandHandler {
 	        if (returnInfoIds != null && returnInfoIds.length > 0) {
 	        	returnInfoService.deleteReturnInfo(returnInfoIds);
 	            req.setAttribute("deletedCount", returnInfoIds.length);
-	            return "/WEB-INF/view/deleteSuccess.jsp";
+	            res.sendRedirect(req.getContextPath() + "/returnInfoList.do");
+	    	    return null;
 	        } else {
 	            req.setAttribute("error", "삭제할 상품을 선택하세요.");
 	            return "/WEB-INF/view/deleteFail.jsp";

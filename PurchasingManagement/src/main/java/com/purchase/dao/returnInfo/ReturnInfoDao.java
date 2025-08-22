@@ -94,18 +94,18 @@ public class ReturnInfoDao {
 		List<Object> params = new ArrayList<>();
 
 		if (conditions.get("return_id") != null) {
-			sql.append(" AND UPPER (return_id) LIKE UPPER(?)");
+			sql.append(" AND UPPER (r.return_id) LIKE UPPER(?)");
 			params.add("%" + conditions.get("return_id") + "%");
 		}
 		if (conditions.get("receive_id") != null) {
-			sql.append(" AND UPPER (receive_id) LIKE UPPER(?)");
+			sql.append(" AND UPPER (r.receive_id) LIKE UPPER(?)");
 			params.add("%" + conditions.get("receive_id") + "%");
 		}
 		if (conditions.get("product_id") != null) {
-			sql.append(" AND UPPER (product_id) LIKE UPPER(?)");
+			sql.append(" AND UPPER (r.product_id) LIKE UPPER(?)");
 			params.add("%" + conditions.get("product_id") + "%");
 		}
-		sql.append(" ORDER BY return_id");
+		sql.append(" ORDER BY r.return_id");
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 			for (int i = 0; i < params.size(); i++) {
