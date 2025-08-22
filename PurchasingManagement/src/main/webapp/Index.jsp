@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>구매 관리 시스템</title>
+<title>購買管理システム</title>
 <style>
   body { margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f9f9f9; }
   .header { position:fixed; top:0; width:100%; background:#fff; z-index:1000; padding:15px 0; border-bottom:2px solid #e0e0e0; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
@@ -17,15 +17,15 @@
 <body>
 
 <div class="header">
-  <div class="BigTitle">🎶😊 구 매 관 리 😊🎶</div>
+  <div class="BigTitle">🎶😊 購 買 管 理 😊🎶</div>
 
   <!-- 컨트롤러(.do)로 이동하도록 모두 c:url 사용 -->
-  <a href="<c:url value='/listProducts.do'/>"        class="Menu" target="mainFrame">❤️ 상품 관리</a>
-  <a href="<c:url value='/listsupplier.do'/>"        class="Menu" target="mainFrame">😉 공급 업체</a>
-  <a href="<c:url value='/requestList.do'/>"         class="Menu" target="mainFrame">👺 구매 요청</a>
-  <a href="<c:url value='/orderSheetList.do'/>"      class="Menu" target="mainFrame">😎 발주서</a>
-  <a href="<c:url value='/listReceiveInfos.do'/>"    class="Menu" target="mainFrame">😢 입고 관리</a> <!-- ← 여기 핵심 수정 -->
-  <a href="<c:url value='/returnInfoList.do'/>"      class="Menu" target="mainFrame">🥱 반품 관리</a>
+  <a href="<c:url value='/listProducts.do'/>"        class="Menu" target="mainFrame">❤️ 商品管理</a>
+  <a href="<c:url value='/listsupplier.do'/>"        class="Menu" target="mainFrame">😉 供給会社</a>
+  <a href="<c:url value='/requestList.do'/>"         class="Menu" target="mainFrame">👺 購入要請</a>
+  <a href="<c:url value='/orderSheetList.do'/>"      class="Menu" target="mainFrame">😎 発注書</a>
+  <a href="<c:url value='/listReceiveInfos.do'/>"    class="Menu" target="mainFrame">😢 入庫管理</a> <!-- ← 여기 핵심 수정 -->
+  <a href="<c:url value='/returnInfoList.do'/>"      class="Menu" target="mainFrame">🥱 返品管理</a>
 </div>
 
 <!-- 아래 콘텐츠 영역 -->

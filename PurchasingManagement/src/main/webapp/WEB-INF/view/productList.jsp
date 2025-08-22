@@ -94,7 +94,7 @@ function validateForm(){
     商品名 : <input type="text" name="product_name" value="${param.product_name}" style="margin-right:10px; padding:4px;">
     分類 :
     <select name="category" style="margin-right:10px; padding:4px;">
-        <option value="">-- 선택 --</option>
+        <option value="">-- 選択 --</option>
         <c:forEach items="${categoryList}" var="cat">
             <option value="${cat}" <c:if test="${param.category == cat}">selected</c:if>>${cat}</option>
         </c:forEach>
@@ -127,11 +127,11 @@ function validateForm(){
             <td><%= p.getSupplier_name() %> (<%= p.getSupplier_id() %>)</td>
             <td>
                 <select name="<%= p.getProduct_id() %>">
-                    <option value="정상판매" <%= "정상판매".equals(p.getProduct_status()) ? "selected" : "" %>>정상판매</option>
-                    <option value="일시품절" <%= "일시품절".equals(p.getProduct_status()) ? "selected" : "" %>>일시품절</option>
-                    <option value="예약판매" <%= "예약판매".equals(p.getProduct_status()) ? "selected" : "" %>>예약판매</option>
-                    <option value="판매보류" <%= "판매보류".equals(p.getProduct_status()) ? "selected" : "" %>>판매보류</option>
-                    <option value="단종" <%= "단종".equals(p.getProduct_status()) ? "selected" : "" %>>단종</option>
+                    <option value="販売中" <%= "販売中".equals(p.getProduct_status()) ? "selected" : "" %>>販売中</option>
+                    <option value="一時欠品" <%= "一時欠品".equals(p.getProduct_status()) ? "selected" : "" %>>一時欠品</option>
+                    <option value="予約販売" <%= "予約販売".equals(p.getProduct_status()) ? "selected" : "" %>>予約販売</option>
+                    <option value="販売停止" <%= "販売停止".equals(p.getProduct_status()) ? "selected" : "" %>>販売停止</option>
+                    <option value="販売終了" <%= "販売終了".equals(p.getProduct_status()) ? "selected" : "" %>>販売終了</option>
                 </select>
             </td>
         </tr>
