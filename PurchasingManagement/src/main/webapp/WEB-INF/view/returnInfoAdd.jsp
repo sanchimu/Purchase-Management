@@ -29,6 +29,7 @@ th, td {
     border: 1px solid #ccc;
     padding: 8px;
     text-align: center;
+    white-space: nowrap; /* 줄바꿈 없이 글자 크기에 맞춤 */
 }
 
 th {
@@ -90,9 +91,9 @@ window.onload = function() {
 <table>
     <tr>
         <th>選択</th>
-        <th>入庫番号</th>
-        <th>注文番号</th>
-        <th>商品名(商品番号)</th>
+        <th>入庫ID</th>
+        <th>発注ID</th>
+        <th>商品名(商品ID)</th>
         <th>入庫数量</th>
         <th>返品可能数量</th>
         <th>入庫日</th>

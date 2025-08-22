@@ -111,7 +111,7 @@ function validateForm(){
             <th>商品名</th>
             <th>分類</th>
             <th>価格</th>
-            <th>仕入先</th>
+            <th>仕入先(仕入先ID)</th>
             <th>状態</th>
         </tr>
         <%

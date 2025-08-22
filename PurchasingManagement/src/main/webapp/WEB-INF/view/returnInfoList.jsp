@@ -94,8 +94,8 @@ function validateForm() {
     <table>
         <tr>
             <th>選択</th>
-            <th>返品番号</th>
-            <th>入庫番号</th>
+            <th>返品ID</th>
+            <th>入庫ID</th>
             <th>商品名 (商品番号)</th>
             <th>返品数量</th>
             <th>返品事由</th>
