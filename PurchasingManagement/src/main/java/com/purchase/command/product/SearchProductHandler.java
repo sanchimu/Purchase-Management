@@ -41,7 +41,14 @@ public class SearchProductHandler implements CommandHandler {
 
         // 3. 서비스 호출 → 조건에 맞는 상품 리스트 조회
         List<Product> productList = productService.getProductsByConditions(searchParams);
-
+		 productList.sort((p1, p2) -> {
+			    boolean p1Discontinued = "단종".equals(p1.getProduct_status());
+			    boolean p2Discontinued = "단종".equals(p2.getProduct_status());
+			    if (p1Discontinued && !p2Discontinued) return 1;
+			    if (!p1Discontinued && p2Discontinued) return -1;
+			    return 0;
+			});
+        
         if (productList == null || productList.isEmpty()) {
             // 검색 실패 → 전체 리스트 조회
         	req.setAttribute("NoSearchProductResult", true);

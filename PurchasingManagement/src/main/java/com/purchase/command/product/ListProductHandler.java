@@ -24,6 +24,16 @@ public class ListProductHandler implements CommandHandler {
 		
 		
 		 List<Product> productList = productService.getAllProducts();
+		 productList.sort((p1, p2) -> {
+			    boolean p1Discontinued = "단종".equals(p1.getProduct_status());
+			    boolean p2Discontinued = "단종".equals(p2.getProduct_status());
+			    if (p1Discontinued && !p2Discontinued) return 1;
+			    if (!p1Discontinued && p2Discontinued) return -1;
+			    return 0;
+			});
+		 
+		 
+		 
 		 List<String> categoryList =productService.getCategoryList(); 
 		 
 		 
@@ -35,10 +45,10 @@ public class ListProductHandler implements CommandHandler {
 		 
 		 req.setAttribute("productStatusList", productStatusList);
 		 
-        RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/view/productList.jsp");
-        rd.forward(req, res);
+         RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/view/productList.jsp");
+         rd.forward(req, res);
         
-		/* return "/WEB-INF/view/productList.jsp"; */
-        return null;
+		 /* return "/WEB-INF/view/productList.jsp"; */
+         return null;
 	}
 }
