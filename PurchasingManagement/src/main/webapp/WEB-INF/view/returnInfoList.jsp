@@ -122,7 +122,9 @@ function validateForm() {
         <% } %>
     </table>
     <br>
-    <input type="submit" class="btn" value="選択項目 返品キャンセル">
+    <div style="width:80%; margin:0 auto; text-align:left;">
+    	<input type="submit" class="btn" value="選択項目 返品キャンセル">
+    </div>
 </form>
 
 </body>

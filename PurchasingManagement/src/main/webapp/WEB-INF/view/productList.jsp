@@ -140,7 +140,9 @@ function validateForm(){
         <% } %>
     </table>
     <br>
+    <div style="width:80%; margin:0 auto; text-align:left;">
     <input type="submit" class="btn" value="状態変更保存">
+</div>
 </form>
 </body>
 </html>
