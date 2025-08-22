@@ -9,6 +9,7 @@ public class ReceiveInfo {
     private int    quantity;     // 入庫数量 / 입고 수량
     private Date   receive_date; // 入庫日 / 입고 일자
 
+   ;
     // 業務ステータス（検収中 / 正常 / 入庫キャンセル / 返品処理 など）
     // 업무 상태 (검수중 / 정상 / 입고 취소 / 반품 처리 등)
     private String receive_status;
@@ -21,6 +22,9 @@ public class ReceiveInfo {
     // JOIN 조회 시 추가로 가져오는 표시용 필드
     private String product_name;   // 商品名 / 상품명
     private String supplier_name;  // 仕入先名 / 공급업체명
+    
+    private String note;
+
 
     // === コンストラクタ / 생성자 ===
     public ReceiveInfo() {}
@@ -63,4 +67,11 @@ public class ReceiveInfo {
 
     public String getSupplier_name() { return supplier_name; }
     public void setSupplier_name(String supplier_name) { this.supplier_name = supplier_name; }
+    public String getNote() {
+        return note;
+    }
+    public void setNote(String note) {
+        this.note = note;
+    }
 }
+

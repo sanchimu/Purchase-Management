@@ -2,117 +2,91 @@ package com.purchase.command.ReceiveInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 import com.purchase.service.ReceiveInfo.ReceiveInfoService;
-import com.purchase.service.order.OrderSheetService;
-import com.purchase.service.product.ProductService;
 import com.purchase.vo.ReceiveInfo;
-
 import mvc.command.CommandHandler;
 
-// 入庫情報を追加するためのハンドラー (入庫登録処理)
-// 입고 정보를 추가하기 위한 핸들러 (입고 등록 처리)
+/**
+ * 入庫情報の新規登録を受け付けるハンドラー
+ * - フォームから送られてきた値を取得 → 検証 → 登録 → 成功時は一覧へリダイレクト
+ *
+ * 입고 정보 신규 등록을 처리하는 핸들러
+ * - 폼 파라미터 수집 → 검증 → 저장 → 성공 시 목록으로 리다이렉트
+ */
 public class AddReceiveInfoHandler implements CommandHandler {
 
-    // サービスクラスのインスタンス / 서비스 클래스 인스턴스
+    // ビジネスロジック層。検証・DB登録などはサービスへ委譲。
+    // 비즈니스 로직 레이어. 검증/DB 저장은 서비스에 위임.
     private final ReceiveInfoService service = new ReceiveInfoService();
-
-    // 入庫登録フォームのパス / 입고 등록 폼 경로
-    private static final String FORM = "/WEB-INF/view/receiveInfoForm.jsp";
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
+        // 文字化け防止のためのエンコーディング指定（UTF-8）
+        // 한글/일본어 깨짐 방지를 위한 요청 인코딩 설정(UTF-8)
+        req.setCharacterEncoding("UTF-8");
 
-        // === GETリクエストの場合 ===
-        // GET 요청 → 입고 등록 폼을 표시
-        if ("GET".equalsIgnoreCase(req.getMethod())) {
-            // ステータスリストをセット (検収中/正常/入庫取消/返品処理など)
-            // 상태 리스트 설정 (검수중/정상/입고취소/반품처리 등)
-            req.setAttribute("receiveStatusList", service.getReceiveStatusList());
+        // 1) パラメータ収集（フォームのname属性と合わせる）
+        // 1) 파라미터 수집 (폼의 name과 일치해야 함)
+        String orderId   = req.getParameter("order_id");
+        String productId = req.getParameter("product_id");
+        String qtyStr    = req.getParameter("quantity");
+        String dateStr   = req.getParameter("receive_date"); // 期待形式: yyyy-MM-dd / 기대 형식: yyyy-MM-dd
+        String status    = req.getParameter("receive_status"); // 画面側で既定値「検収中」を設定 / 프론트에서 기본값 '검수중' 세팅
+        String note      = req.getParameter("note");
 
-            // 商品一覧をセット（ドロップダウン用）
-            // 상품 목록 설정 (드롭다운용)
-            req.setAttribute("productList", new ProductService().getAllProducts());
+        try {
+            // 2) サービスへ委譲：入力検証＋登録（例外はサービス側で投げられる想定）
+            // 2) 서비스 위임: 입력 검증 + 저장 (검증 실패 시 서비스에서 예외 발생)
+            ReceiveInfo created = service.addReceiveInfo(orderId, productId, qtyStr, dateStr, status, note);
 
-            // 注文一覧をセット（ドロップダウン用）
-            // 주문 목록 설정 (드롭다운용)
-            req.setAttribute("orderList", new OrderSheetService().getRequestOptions());
+            // 3) 成功時：一覧画面へリダイレクト + トースト用メッセージをクエリに載せる
+            // 3) 성공 시: 목록 화면으로 리다이렉트 + 토스트 메시지를 쿼리스트링으로 전달
+            res.sendRedirect(req.getContextPath() + "/listReceiveInfos.do?msg=" +
+                    java.net.URLEncoder.encode("登録に成功しました", "UTF-8")); // URLに日本語を含めるためエンコード / 한글/일본어 포함 시 URL 인코딩
+            return null; // リダイレクト済みのためビューは不要 / 이미 리다이렉트했으므로 뷰 반환 없음
 
-            return FORM; // JSP 폼 페이지로 이동
-        }
+        } catch (IllegalArgumentException be) {
+            // 入力検証エラー：フォームへ戻してエラーメッセージを表示
+            // 입력 검증 실패: 폼으로 되돌리며 에러 메시지 표시
+            req.setAttribute("errorMsg", be.getMessage());
 
-        // === POSTリクエストの場合 ===
-        // POST 요청 → 입고 데이터 등록
-        if ("POST".equalsIgnoreCase(req.getMethod())) {
-            req.setCharacterEncoding("UTF-8");
+            // フォーム選択肢などの再セット（プルダウン等がある場合）
+            // 폼 선택 리스트 재세팅(드롭다운 등 사용 시)
+            service.prepareFormLists(req);
 
-            // フォームからパラメータ取得 / 폼에서 파라미터 값 가져오기
-            String orderId        = req.getParameter("order_id");        // 注文ID / 주문ID
-            String productId      = req.getParameter("product_id");      // 商品ID / 상품ID
-            String quantityStr    = req.getParameter("quantity");        // 数量 / 수량
-            String receiveDateStr = req.getParameter("receive_date");    // 入庫日 / 입고일
-            String statusParam    = req.getParameter("receive_status");  // 入庫ステータス / 입고 상태
-
-            // 数量を数値に変換（未入力の場合は0）
-            // 수량을 숫자로 변환 (미입력 시 0)
-            int quantity = (quantityStr != null && !quantityStr.isEmpty())
-                    ? Integer.parseInt(quantityStr) : 0;
-
-            // VOオブジェクトにセット / VO 객체에 값 세팅
-            ReceiveInfo vo = new ReceiveInfo();
-            vo.setOrder_id(orderId);
-            vo.setProduct_id(productId);
-            vo.setQuantity(quantity);
-
-            // 入庫日をDate型に変換してセット
-            // 입고일을 Date 타입으로 변환 후 세팅
-            if (receiveDateStr != null && !receiveDateStr.isEmpty()) {
-                java.util.Date parsedDate = null;
-                try {
-                    // 1) 日本語形式 (例: 2025年08月07日) を試す
-                    // 일본식 날짜 포맷 시도
-                    SimpleDateFormat sdfJP = new SimpleDateFormat("yyyy年MM月dd日");
-                    parsedDate = sdfJP.parse(receiveDateStr);
-                } catch (java.text.ParseException e1) {
-                    try {
-                        // 2) 標準形式 (例: 2025-08-07) を試す
-                        // 표준 날짜 포맷 시도
-                        SimpleDateFormat sdfStd = new SimpleDateFormat("yyyy-MM-dd");
-                        parsedDate = sdfStd.parse(receiveDateStr);
-                    } catch (java.text.ParseException e2) {
-                        // 対応できない形式の場合エラー / 처리 불가능한 경우 예외 발생
-                        throw new RuntimeException("対応できない日付形式です: " + receiveDateStr, e2);
-                    }
-                }
-                vo.setReceive_date(parsedDate);
+            // ユーザーが入力した値をできるだけ復元（入力の手戻りを減らす）
+            // 사용자가 입력한 값 복원(재입력 최소화)
+            ReceiveInfo ri = new ReceiveInfo();
+            ri.setOrder_id(orderId);
+            ri.setProduct_id(productId);
+            try { 
+                ri.setQuantity(Integer.parseInt(qtyStr)); 
+            } catch(Exception ignore){
+                // 数値変換に失敗しても無視（フォーム側で再入力してもらう）
+                // 숫자 변환 실패 시 무시(폼에서 다시 입력)
             }
+            ri.setReceive_status(status);
+            // receive_dateは文字列のままJSPのvalueへ渡すので、ここではDate変換しない
+            // receive_date는 JSP에서 value로 그대로 쓰므로 여기서는 Date 변환 생략
+            req.setAttribute("ri", ri);
 
-            // ステータスは許可されたもののみセット
-            // 상태는 허용된 값만 세팅
-            List<String> allowed = service.getReceiveStatusList();
-            if (statusParam != null && allowed.contains(statusParam)) {
-                vo.setReceive_status(statusParam);
-            } else {
-                // DAO側でデフォルト「検収中」を適用
-                // DAO 쪽에서 기본값 "검수중" 적용
-                vo.setReceive_status(null);
-            }
+            // 元の登録フォームを再表示
+            // 기존 등록 폼으로 돌아감
+            return "/WEB-INF/view/receiveInfoForm.jsp";
 
-            // 登録処理（DAOで新しい receive_id を採番）
-            // 등록 처리 (DAO에서 새 receive_id 채번)
-            service.addReceiveInfo(vo);
+        } catch (Exception e) {
+            // サーバ側の想定外エラー：一般的なメッセージを表示してフォームに戻す
+            // 예기치 않은 서버 오류: 일반 메시지 노출 후 폼으로 복귀
+            req.setAttribute("errorMsg", "サーバーエラーが発生しました。（登録失敗）");
 
-            // 登録完了後、入庫一覧画面へリダイレクト
-            // 등록 완료 후, 입고 목록 화면으로 리다이렉트
-            res.sendRedirect(req.getContextPath() + "/listReceiveInfos.do");
-            return null;
+            // フォーム選択肢の再セット
+            // 폼 선택 리스트 재세팅
+            service.prepareFormLists(req);
+
+            // 再度フォーム表示
+            // 폼 재표시
+            return "/WEB-INF/view/receiveInfoForm.jsp";
         }
-
-        // その他のHTTPメソッド → 405エラー
-        // 그 외의 HTTP 메소드 → 405 에러 반환
-        res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-        return null;
     }
 }
