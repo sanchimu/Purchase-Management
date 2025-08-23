@@ -216,14 +216,17 @@ public class ReceiveInfoDao {
      * 반품 수량을 고려한 입고정보 조회(반품 가능 수량 > 0만)
      */
     public List<ReceiveInfo> selectReceiveInfoWithReturnQty(Connection conn) throws SQLException {
-        String sql = "SELECT ri.receive_id, ri.order_id, ri.product_id, ri.quantity AS received_quantity, ri.receive_date, "
-                   + "       NVL(SUM(rti.quantity), 0) AS returned_quantity, "
-                   + "       ri.quantity - NVL(SUM(rti.quantity), 0) AS available_to_return "
-                   + "FROM receive_info ri "
-                   + "LEFT JOIN return_info rti ON ri.receive_id = rti.receive_id "
-                   + "GROUP BY ri.receive_id, ri.order_id, ri.product_id, ri.quantity, ri.receive_date "
-                   + "HAVING ri.quantity - NVL(SUM(rti.quantity), 0) > 0 "
-                   + "ORDER BY ri.receive_date DESC";
+        String sql = "SELECT ri.receive_id, ri.order_id, ri.product_id, p.product_name,\r\n"
+        		+ "       ri.quantity AS received_quantity,\r\n"
+        		+ "       NVL(SUM(rti.quantity), 0) AS returned_quantity,\r\n"
+        		+ "       ri.quantity - NVL(SUM(rti.quantity), 0) AS available_to_return,\r\n"
+        		+ "       ri.receive_date\r\n"
+        		+ "FROM receive_info ri\r\n"
+        		+ "JOIN product p ON ri.product_id = p.product_id\r\n"
+        		+ "LEFT JOIN return_info rti ON ri.receive_id = rti.receive_id\r\n"
+        		+ "GROUP BY ri.receive_id, ri.order_id, ri.product_id, p.product_name, ri.quantity, ri.receive_date\r\n"
+        		+ "HAVING ri.quantity - NVL(SUM(rti.quantity), 0) > 0\r\n"
+        		+ "ORDER BY ri.receive_date DESC";
 
         List<ReceiveInfo> list = new ArrayList<>();
         try (PreparedStatement pstmt = conn.prepareStatement(sql);

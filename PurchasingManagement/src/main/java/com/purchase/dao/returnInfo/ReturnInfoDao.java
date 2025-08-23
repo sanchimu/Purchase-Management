@@ -121,24 +121,7 @@ public class ReturnInfoDao {
 		}
 	}
 	
-	public ReceiveInfo selectWithProductNameByReceiveId(Connection conn, String receiveId) throws SQLException {
-	    String sql = "SELECT ri.receive_id, ri.product_id, p.product_name " +
-	                 "FROM receive_info ri " +
-	                 "JOIN product p ON ri.product_id = p.product_id " +
-	                 "WHERE ri.receive_id = ?";
-	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-	        ps.setString(1, receiveId);
-	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) {
-	                ReceiveInfo ri = new ReceiveInfo();
-	                ri.setReceive_id(rs.getString("receive_id"));
-	                ri.setProduct_id(rs.getString("product_id"));
-	                ri.setProduct_name(rs.getString("product_name")); // 여기서 product_name 가져옴
-	                return ri;
-	            }
-	            return null;
-	        }
-	    }
-	}
+	    
+	
 
 }

@@ -13,7 +13,7 @@ public class UpdateReturnInfoHandler implements CommandHandler {
     private final ReturnInfoService service = new ReturnInfoService();
 
     @Override
-    public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {// 반품의 경우 삭제 기능이 있는데다 삭제가 쉽고 수정할 요소가 거의 없어서 수정 기능을 제거 
 
         if (!"POST".equalsIgnoreCase(req.getMethod())) {
             res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);

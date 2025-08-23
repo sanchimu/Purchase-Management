@@ -20,7 +20,7 @@ public class AddReturnInfoHandler implements CommandHandler {
 		// TODO Auto-generated method stub
 		
 		  //List<ReceiveInfo> receiveInfoList = receicveInfoService.getAllReceiveInfos();
-		  List<ReceiveInfo> receiveInfoList = receiveInfoService.getReceiveInfoWithReturnQty();
+		  List<ReceiveInfo> receiveInfoList = receiveInfoService.getReceiveInfoWithReturnQty(); // 반품 수량 - 입고 수량 결과 값 반영
 		  req.setAttribute("receiveInfoList", receiveInfoList);
 		 
 		 
