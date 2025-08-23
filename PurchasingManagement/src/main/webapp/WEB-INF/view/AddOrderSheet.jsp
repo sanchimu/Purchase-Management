@@ -4,8 +4,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>발주서 등록</title>
+<title>発注書登録</title>
 <style>
+  /* 画面全体のデザイン / 화면 전체 디자인 */
   body{font-family:Arial,Helvetica,sans-serif;margin:20px;}
   .row{margin:10px 0;}
   label{display:inline-block;width:130px}
@@ -14,6 +15,7 @@
   .msg{margin:8px 0;padding:8px 10px;border:1px solid #eedc82;background:#fff8d6}
 </style>
 <script>
+  // 요청ID 선택 시 공급업체ID 자동 채움 / 申請ID選択時に供給業者IDを自動入力
   function onReqChange(sel){
     const opt = sel.options[sel.selectedIndex];
     document.getElementById('supplier_id').value = opt.getAttribute('data-supplier') || '';
@@ -22,33 +24,43 @@
 </head>
 <body>
 
-<h2>발주서 등록</h2>
+<!-- 
+     発注書登録フォーム / 발주서 등록 폼
+     - requestOptions : 구매요청 목록
+     - orderStatusList: 발주서 상태 선택
+    -->
+<h2>発注書登録</h2>
 
+<!-- エラーメッセージ表示 / 오류 메시지 출력 -->
 <c:if test="${not empty error}">
   <div class="msg">${error}</div>
 </c:if>
 
 <form method="post" action="<c:url value='/addOrderSheet.do'/>">
+  <!-- 요청ID 드롭다운 / 申請IDドロップダウン -->
   <div class="row">
-    <label>요청 ID</label>
+    <label>申請ID</label>
     <select name="request_id" id="request_id" onchange="onReqChange(this)" required>
-      <option value="">-- 선택 --</option>
+      <option value="">選択</option>
       <c:forEach var="o" items="${requestOptions}">
         <option value="${o.request_id}" data-supplier="${o.supplier_id}">
-          ${o.request_id} / ${o.product_id} - ${o.product_name} (요청자:${o.requester_name}, 수량:${o.request_quantity})
+          ${o.request_id} / ${o.product_id} - ${o.product_name} 
+          (申請者:${o.requester_name}, 数量:${o.request_quantity})
         </option>
       </c:forEach>
     </select>
   </div>
 
+  <!-- 공급업체 ID 자동 채움 / 供給業者ID自動入力 -->
   <div class="row">
-    <label>공급업체 ID</label>
+    <label>供給業者ID</label>
     <input type="text" id="supplier_id" value="" readonly />
-    <span style="color:#999;font-size:12px">* 자동 채움(서버에서도 검증)</span>
+    <span style="color:#999;font-size:12px">* 自動入力（サーバ側でも検証）</span>
   </div>
 
+  <!-- 상태 선택 / 状態選択 -->
   <div class="row">
-    <label>업무 상태</label>
+    <label>業務状態</label>
     <select name="order_status">
       <c:forEach var="st" items="${orderStatusList}">
         <option value="${st}">${st}</option>
@@ -56,9 +68,10 @@
     </select>
   </div>
 
+  <!-- 버튼 그룹 / ボタングループ -->
   <div class="row">
-    <button type="submit" class="btn">등록</button>
-    <a class="btn" href="<c:url value='/orderSheetList.do'/>">목록</a>
+    <button type="submit" class="btn">登録</button>
+    <a class="btn" href="<c:url value='/orderSheetList.do'/>">一覧</a>
   </div>
 </form>
 

@@ -2,27 +2,56 @@ package com.purchase.dto;
 
 import java.util.Date;
 
+/**
+ * 발주서 DTO (조인 결과용) / 発注書DTO（結合結果用）
+ *
+ *   order_sheet (기본) / 発注書（基本）
+ *   purchase_request (구매요청) / 購買申請
+ *   product (상품) / 商品
+ *   supplier_info (공급업체) / 供給業者
+ *
+ * 화면 표시를 위해 여러 테이블의 필드를 통합 / 画面表示のために複数テーブルの項目を統合
+ */
 public class OrderSheetDTO {
-    // order_sheet
+
+    /** 발주 ID / 発注ID */
     private String order_id;
-    private Date   order_date;
+
+    /** 발주일 / 発注日 */
+    private Date order_date;
+
+    /** 업무상태 (発注依頼/承認/発注/一部入荷/完了/取消/保留) */
     private String order_status;
+
+    /** 표시상태 (A=진행, X=중단) / 表示状態（A=進行中, X=停止） */
     private String row_status;
 
-    // join keys
+    // ===== Join Key =====
+    /** 구매요청 ID / 購買申請ID */
     private String request_id;
+
+    /** 공급업체 ID / 供給業者ID */
     private String supplier_id;
 
-    // purchase_request
+    //  purchase_request 
+    /** 상품 ID / 商品ID */
     private String product_id;
-    private int    request_quantity;
+
+    /** 요청수량 / 申請数量 */
+    private int request_quantity;
+
+    /** 요청자 / 申請者 */
     private String requester_name;
 
-    // product / supplier_info
+    //  product & supplier_info 
+    /** 상품명 / 商品名 */
     private String product_name;
+
+    /** 공급업체명 / 供給業者名 */
     private String supplier_name;
 
-    // getters & setters
+
+    //  Getter/Setter 
     public String getOrder_id() { return order_id; }
     public void setOrder_id(String order_id) { this.order_id = order_id; }
 
