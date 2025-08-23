@@ -11,20 +11,22 @@ import com.purchase.vo.Product;
 
 import jdbc.connection.ConnectionProvider;
 
-public class ProductService {
+public class ProductService {//사실 service는 DB와의 커넥팅을 담당하는중 dao - service - handler순으로 가야 제대로 작동됨
 	private ProductDao productDao = new ProductDao();
 
-	public void addProduct(Product product) {
-		try (Connection conn = ConnectionProvider.getConnection()) {
-			productDao.insert(conn, product);
+	public void addProduct(Product product) { 	// 상품 생성용 메서드
+		try (Connection conn = ConnectionProvider.getConnection()) { //DB에 연결할 Connection 객체를 생성
+			productDao.insert(conn, product);	//상품 생성에 필요한 productDao의 메서드
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e);		//에러 발생 시 예외 처리
 		}
 	}
 
-	public void deleteProduct(String[] productIds) {
+	//이하 부분도 위와 같이 Connection을 위해 생성된 메서드들이 전체여서 각 메서드들의 역할만 간단히 기재
+	
+	public void deleteProduct(String[] productIds) { // 상품 삭제용 메서드
 		try (Connection conn = ConnectionProvider.getConnection()) {
-			for (String id : productIds) {
+			for (String id : productIds) {//이거 요즘 많이 쓰는 새로운 for문인데 앞쪽이 id값, 뒤쪽에 List로 해서 List에 있는 변수를 id에 다 넣을때까지 반복되는 for문임 이거 쓰면 꽤 유용할수 있음
 				productDao.delete(conn, id);
 			}
 		} catch (SQLException e) {
@@ -32,7 +34,7 @@ public class ProductService {
 		}
 	}
 
-	public List<Product> getAllProducts() {
+	public List<Product> getAllProducts() { // 모든 상품 정보를 들고오는 메서드
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			return productDao.selectAll(conn);
 		} catch (SQLException e) {
@@ -40,7 +42,7 @@ public class ProductService {
 		}
 	}
 
-	public List<Product> getProductsByConditions(Map<String, String> conditions) {
+	public List<Product> getProductsByConditions(Map<String, String> conditions) { //상품 상태 정보를 가져오는 메서드
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			return productDao.selectByConditions(conn, conditions);
 		} catch (SQLException e) {
@@ -48,7 +50,7 @@ public class ProductService {
 		}
 	}
 
-	public List<String> getCategoryList() {
+	public List<String> getCategoryList() { //상품의 카테고리 정보들을 가져오는 메서드
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			return productDao.getCategoryList(conn);
 		} catch (SQLException e) {
@@ -56,7 +58,7 @@ public class ProductService {
 		}
 	}
 	
-	public List<String> getSupplierList() {
+	public List<String> getSupplierList() { //상품의 공급업체 ID 정보를 가져오는 메서드
 		try (Connection conn = ConnectionProvider.getConnection()) {
 			return productDao.getSupplierList(conn);
 		} catch (SQLException e) {
@@ -64,7 +66,7 @@ public class ProductService {
 		}
 	}
 	
-	public void updateProductStatus(Product product) {
+	public void updateProductStatus(Product product) { // 상품 정보를 수정 및 갱신하는 메서드
 	    try (Connection conn = ConnectionProvider.getConnection()) {
 	        productDao.updateProductStatus(conn, product); // DAO에 conn 전달
 	    } catch (SQLException e) {
@@ -72,19 +74,16 @@ public class ProductService {
 	    }
 	}
 	
-    /** 조건조회(+includeHidden) */
-    public List<Product> getProductsByConditions(Map<String, String> conditions, boolean includeHidden) {
+    
+    public List<Product> getProductsByConditions(Map<String, String> conditions, boolean includeHidden) { // 조건에 맞는 상품을 찾는 메서드
         try (Connection conn = ConnectionProvider.getConnection()) {
-            Map<String,String> cond = new HashMap<>();
-            if (conditions != null) cond.putAll(conditions);
-            cond.put("includeHidden", includeHidden ? "1" : "0");
-            return productDao.selectByConditions(conn, cond);
+            return productDao.selectByConditions(conn, conditions);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Product getProductById(String productId) {
+    public Product getProductById(String productId) { //product_Id로 상품정보를 가져오는 메서드
     	try (Connection conn = ConnectionProvider.getConnection()) {
 	        return productDao.getProductById(conn, productId); // DAO에 conn 전달
 	    } catch (SQLException e) {
@@ -92,7 +91,7 @@ public class ProductService {
 	    }
     }
     
-    public int modifyProduct(Product product) {
+    public int modifyProduct(Product product) { // 상품 정보를 수정하는 메서드
     	try (Connection conn = ConnectionProvider.getConnection()) {
     		return productDao.modifyProduct(conn, product); // DAO에 conn 전달
     	} catch (SQLException e) {

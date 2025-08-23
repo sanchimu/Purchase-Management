@@ -7,7 +7,7 @@ import com.purchase.service.product.ProductService;
 
 import mvc.command.CommandHandler;
 
-public class DeleteProductHandler implements CommandHandler {
+public class DeleteProductHandler implements CommandHandler { // 삭제 기능 제거로 사용 x 하지만 추후 삭제 기능 원복 가능성을 고려해 남겨둠
 
 	private ProductService productService = new ProductService();
 	

@@ -63,10 +63,9 @@ form input[type="button"]:hover {
 <script>
 window.onload = function() {
     // 서버에서 전달된 success 플래그가 true일 경우 alert 띄우기
-    <% if (request.getAttribute("success") != null) { %>
-        alert("商品追加完了");
-        document.querySelector("form").reset();
-    <% } %>
+    <% if (request.getAttribute("noPriceError") != null){ %>
+    	alert("価格情報がありません。");
+    	<%}%>
 }
 </script>
 </head>
@@ -74,7 +73,7 @@ window.onload = function() {
 
 <h1>商品追加</h1>
 
-<form action="addProduct.do" method="post">
+<form action="addProduct.do" method="post"> <!-- submit 시 실행 handler와 데이터 전달 방식 -->
     <p>
         商品名 :<br/>
         <input type="text" name="product_name">
@@ -90,7 +89,7 @@ window.onload = function() {
     <p>
         仕入先ID :<br/>
         <select name="supplier_id">
-            <option value="">-- 選択 --</option>
+            <option value="">-- 選択 --</option> <!-- 조회 때와 마찬가지로 supplierList 값을 반복해서 foreach로 체크하며 sup에 suppliser_id를 넣고 드롭박스에 값 생성 -->
             <c:forEach items="${supplierList}" var="sup">
                 <option value="${sup}" <c:if test="${product.supplier_id == sup}">selected</c:if>>
                     ${sup}
@@ -100,7 +99,7 @@ window.onload = function() {
     </p>
     <p>
         <input type="submit" value="商品追加">
-        <input type="button" value="戻る" onclick="location.href='listProducts.do'">
+        <input type="button" value="戻る" onclick="location.href='listProducts.do'"><!-- 버튼 두개를 넣기위해 submit이 아닌 button으로 type을 정함 -->
     </p>
 </form>
 
