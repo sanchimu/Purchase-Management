@@ -78,10 +78,10 @@ th {
 </head>
 <body>
 
-	<h2>구매요청 등록</h2>
+	<h2>購買要請登録</h2>
 
 	<div class="toolbar">
-		<a class="btn" href="<c:url value='/requestList.do'/>">목록으로 돌아가기</a>
+		<a class="btn" href="<c:url value='/requestList.do'/>">リストに戻る</a>
 	</div>
 
 	<!-- 메세지 값이 있으면 표시
@@ -94,10 +94,10 @@ th {
 		商品リストが空いてる場合 -->
 	<c:choose>
 		<c:when test="${empty productList}">
-			<div class="msg">등록된 상품이 없습니다. 먼저 상품을 등록해 주세요.</div>
+			<div class="msg">商品が登録されていません。先に商品をご登録ください。</div>
 			<p>
-				<a class="btn" href="<c:url value='/product/new.do'/>">상품 등록</a> <a
-					class="btn" href="<c:url value='/requestList.do'/>">목록</a>
+				<a class="btn" href="<c:url value='/product/new.do'/>">商品登録</a> <a
+					class="btn" href="<c:url value='/requestList.do'/>">リスト</a>
 			</p>
 		</c:when>
 
@@ -107,9 +107,9 @@ th {
 			<form action="<c:url value='/insertpurchaserequest.do'/>"
 				method="post">
 				<p>
-					<label for="product_id">상품 선택</label><br> <select
+					<label for="product_id">商品選択</label><br> <select
 						id="product_id" name="product_id" required>
-						<option value="">-- 상품을 선택하세요 --</option>
+						<option value="">-- 商品を選んでください --</option>
 						
 						<!-- productList를 반복하여 각 상품을 표시
 						productList をループして商品を表示 -->
@@ -125,18 +125,18 @@ th {
 							</option>
 						</c:forEach>
 					</select>
-				<div class="muted">※ 더 정확히 선택하려면 상품명/카테고리/가격을 참고하세요.</div>
+				<div class="muted">※ より正確にお選びいただくために、商品名・カテゴリ・価格をご確認ください。</div>
 				</p>
 
 				<!-- 수량 입력 필드 (기본값 1, 최소 1) // 数量入力フィールド (デフォルト1, 最小1) -->
 				<p>
-					<label for="quantity">수량</label><br> <input type="number"
+					<label for="quantity">数量</label><br> <input type="number"
 						id="quantity" name="quantity" placeholder="1" min="1" step="1"
 						required value="<c:out value='${param.quantity}'/>">
 				</p>
 
 				<p>
-					<label for="requester_name">요청자</label><br> <input type="text"
+					<label for="requester_name">要請者</label><br> <input type="text"
 						id="requester_name" name="requester_name" maxlength="50" required
 						value="<c:out value='${param.requester_name}'/>">
 				</p>
@@ -148,8 +148,8 @@ th {
 				<!-- 등록 후 목록 페이지로 이동
 				登録後、リストページに移動-->
 				<p>
-					<input type="submit" value="등록"> <a class="btn"
-						href="<c:url value='/requestList.do'/>">목록</a>
+					<input type="submit" value="登録"> <a class="btn"
+						href="<c:url value='/requestList.do'/>">リストに戻る</a>
 				</p>
 			</form>
 		</c:otherwise>

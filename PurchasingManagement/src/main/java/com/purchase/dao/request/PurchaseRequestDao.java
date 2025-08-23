@@ -68,7 +68,8 @@ public class PurchaseRequestDao {
 	// 全購買リクエスト照会 (request_status, row_statusを含む)
 	public List<PurchaseRequest> selectAll(Connection conn) throws SQLException {
 		String sql = "SELECT request_id, product_id, quantity, request_date, requester_name, "
-				+ "       request_status, row_status " + "  FROM purchase_request " + " ORDER BY request_date DESC, TO_NUMBER(SUBSTR(request_id,3)) DESC";
+				+ "       request_status, row_status " + "  FROM purchase_request " + " ORDER BY TO_NUMBER(SUBSTR(request_id,3)) ASC"
+						+ "";
 
 		List<PurchaseRequest> list = new ArrayList<>();
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
@@ -128,9 +129,9 @@ public class PurchaseRequestDao {
 			}
 		}
 
-		// 정렬: 최신 요청일, ID 기준 내림차순 
+		// 정렬: 최신 요청일, ID 기준 오름차순 
 		// 並び替え: 最新要請日とID基準で
-		sql.append(" ORDER BY r.request_date DESC, r.request_id DESC");
+		sql.append(" ORDER BY r.request_date ASC, r.request_id ASC");
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 			for (int i = 0; i < params.size(); i++) {
@@ -167,7 +168,7 @@ public class PurchaseRequestDao {
 																												// 라벨 고정
 				"       r.quantity, r.request_date, r.requester_name, " + "       r.request_status, r.row_status "
 				+ "  FROM purchase_request r " + "  JOIN product p ON p.product_id = r.product_id "
-				+ " ORDER BY r.request_date DESC, r.request_id DESC";
+				+ " ORDER BY r.request_id ASC";
 
 		try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
