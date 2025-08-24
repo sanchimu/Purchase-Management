@@ -79,7 +79,15 @@ window.onload = function() { //경고창을 띄우기 위한 함수 (警告ウ�
     <% if (request.getAttribute("success") != null) { %> //success값이 있을경우 경고창 발생 (alert) (success値がある場合、警告ウィンドウが発生(alert))
         alert("返品要請完了");
         document.querySelector("form").reset();
-    <% } %>
+        <% } %>
+        //아래는 error뜰때 키값 가져와서 경고창 띄우는건데 productList에는 이런거 안쓰고 여기만 쓰는 이유는
+        //returnInfoAdd는 특이하게 갱신때마다 입고 리스트를 가져와서 갱신해줘야함 그래서 redirect가 불가피했기 때문에 (현재 내 수준에서) 해당 부분을 참고하여 사용
+        const urlParams = new URLSearchParams(window.location.search); 	//URLSearchParams는 괄호안의 쿼리스트링을 파싱해줌 /  현재 페이지의 URL 쿼리스트링을 찾음 (Returnprocesshandler의 ?error" + errorMsg)
+        																//URL Search Paramsは括弧内のクエリーストリングを解析する / 現在ページのURLクエリーストリングを探す (Returnprocesshandlerの?error" + error Msg)
+        const error = urlParams.get("error"); // error의 파라미터 값을 가져옴 (errorのパラメータ値を取得)
+        if (error) {
+            alert(error);
+        }
 }
 </script>
 </head>

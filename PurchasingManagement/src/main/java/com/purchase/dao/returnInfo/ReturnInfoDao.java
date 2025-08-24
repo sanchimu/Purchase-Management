@@ -34,8 +34,8 @@ public class ReturnInfoDao {
 			JdbcUtil.close(pstmt); 	// ResultSet과 PreparedStatement를 사용했으니 close 처리로 마감 (안해도 기능 문제는 없지만 메모리 누수 등의 손해 발생)
 									// ResultSetとPreparedStatementを使ったので、close処理で終了（やらなくても機能には問題ないが、メモリリークなどの損失が発生）
 			
-			String returnId = String.format("RI%02d", seqNum); 	// returnInfo_id 만들기: "RI" + 3자리 숫자 (ex. RI001)
-																// returnInfo_id作成: "RI" + 3桁の数字（例 RI001）
+			String returnId = String.format("RE%03d", seqNum); 	// returnInfo_id 만들기: "RE" + 3자리 숫자 (ex. RI001)
+																// returnInfo_id作成: "RE" + 3桁の数字（例 RI001）
 			returnInfo.setReturn_id(returnId);;					// 생성된 returnInfo_id를 세팅 (作成されたreturnInfo_idを設定)
 			
 			

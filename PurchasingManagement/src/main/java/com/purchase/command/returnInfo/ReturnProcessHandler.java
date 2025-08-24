@@ -1,11 +1,11 @@
 package com.purchase.command.returnInfo;
 
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.purchase.service.ReceiveInfo.ReceiveInfoService;
 import com.purchase.service.returnInfo.ReturnInfoService;
 import com.purchase.vo.ReturnInfo;
 
@@ -30,23 +30,33 @@ public class ReturnProcessHandler implements CommandHandler {
 		
 		if(receive_id == null || receive_id.length() == 0) { 	// 선택된 반품 항목이 없을 경우 
 																// 選択された返品項目がない場合
-			req.setAttribute("error",	"반품할 항목을 선택하세요");//에러 키값 갱신 (エラー用キー値を更新)
-			return "/WEB-INF/view/returnInfoAdd.jsp";
+			
+			String errorMsg = URLEncoder.encode("반품할 항목을 선택하세요", "UTF-8");
+			res.sendRedirect(req.getContextPath() + "/addReturnInfos.do?error=" + errorMsg);//에러 키값 갱신 (エラー用キー値を更新)
+			return null;
 		}else if (quantityStr == null || quantityStr.trim().isEmpty()) { 	//반품 이유를 적지 않았을 경우
 																			// 返品理由が入力されていない場合
-			req.setAttribute("error",	"반품 이유를 입력하세요"); // 에러 키값 갱신 (エラー用キー値を更新)
-			return "/WEB-INF/view/returnInfoAdd.jsp";
+			
+			String errorMsg = URLEncoder.encode("반품 이유를 입력하세요", "UTF-8");
+			res.sendRedirect(req.getContextPath() + "/addReturnInfos.do?error=" + errorMsg);// 에러 키값 갱신 (エラー用キー値を更新)
+			return null;
 		}
 		
 		int quantity;
 		
 		try {
-			quantity = Integer.parseInt(quantityStr);	// String 형태로 서버에 전달했던 수량값을 다시 int형으로 형변환
-														// サーバーにString型で渡された数量値をint型に変換
+			quantity = Integer.parseInt(quantityStr.trim());	// String 형태로 서버에 전달했던 수량값을 다시 int형으로 형변환
+																// サーバーにString型で渡された数量値をint型に変換
+		    if (quantity <= 0) {
+		        throw new NumberFormatException(); // 0 이하도 에러 처리
+		    }
 		}catch(NumberFormatException e) { 	// 변화 실패 시 (즉, 우린 수량을 글자로 적거나 공백이면 int 형으로 못바뀜
 											// 変換失敗時（つまり数量を文字で入力した場合や空白の場合はint型に変換できない）
-			req.setAttribute("error",	"정확한 반품 수량을 기재해주세요"); // 에러 키값 갱신 (エラー用キー値を更新)
-			return "/WEB-INF/view/returnInfoAdd.jsp";
+			
+			//req.getRequestDispatcher("/WEB-INF/view/returnInfoAdd.jsp").forward(req, res);
+			String errorMsg = URLEncoder.encode("정확한 반품 수량을 기재해주세요", "UTF-8");
+			res.sendRedirect(req.getContextPath() + "/addReturnInfos.do?error=" + errorMsg);// 에러 키값 갱신 (エラー用キー値を更新)
+			return null;
 		}
 		
 		ReturnInfo returnInfo = new ReturnInfo(null, receive_id, product_id, quantity, reason, return_date); 	// 위 변수 값을 모아 객체선언
