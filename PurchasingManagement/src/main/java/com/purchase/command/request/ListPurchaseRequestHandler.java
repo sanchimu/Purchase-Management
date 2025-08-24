@@ -32,7 +32,7 @@ public class ListPurchaseRequestHandler implements CommandHandler {
         req.setAttribute("requestList", view);
         req.setAttribute("includeHidden", includeHidden);
         req.setAttribute("requestStatusList",
-                Arrays.asList("受付","検討中","承認","差し戻し","取り消し","完了"));
+                Arrays.asList("受付","審査中","承認","差戻し","取消","完了"));
 
         return "/WEB-INF/view/purchaseRequestList.jsp";
     }

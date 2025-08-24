@@ -17,7 +17,7 @@ public class UpdatePurchaseRequestHandler implements CommandHandler {
     private final PurchaseRequestService service = new PurchaseRequestService();
 
     private static final List<String> ALLOWED =
-            Arrays.asList("受付","検討中","承認","差し戻し","取り消し","完了");
+            Arrays.asList("受付","審査中","承認","差戻し","取消","完了");
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {

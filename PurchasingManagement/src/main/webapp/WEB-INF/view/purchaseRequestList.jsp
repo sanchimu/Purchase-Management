@@ -214,7 +214,7 @@ a:hover {
 				サーバーからステータスリストを受けないとデフォルトを入れる -->
 				<c:if test="${empty requestStatusList}">
 					<c:set var="requestStatusList"
-						value="${fn:split('受付,検討中,承認,差し戻し,取り消し,完了', ',')}" />
+   							 value="${fn:split('受付,審査中,承認,差戻し,取消,完了', ',')}" />
 				</c:if>
 
 				<table>
