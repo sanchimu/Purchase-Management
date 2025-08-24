@@ -17,8 +17,10 @@ public class ListReturnInfoHandler implements CommandHandler {
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
-        List<ReturnInfo> returnInfoList = returnInfoService.getAllReturnInfo();//단순히 반품 정보 리스트를 띄우는 것이어서 List형식의 returnInfoList에 반품 정보를 넣고 
+        List<ReturnInfo> returnInfoList = returnInfoService.getAllReturnInfo();	//단순히 반품 정보 리스트를 띄우는 것이어서 List형식의 returnInfoList에 반품 정보를 넣고 
+        																		//単純に返品情報リストを表示するものなので、List形式のreturnInfoListに返品情報を入れて
         req.setAttribute("returnInfoList", returnInfoList); // 키값을 세팅
+        													// キー値設定
         return "/WEB-INF/view/returnInfoList.jsp";
 	}
 }
