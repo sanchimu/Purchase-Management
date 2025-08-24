@@ -4,7 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <title>仕入先登録</title>
-<style>  /* デザイン指定 */
+<style>
+    /* 화면 기본 스타일 */
     body { font-family: Arial, sans-serif; margin: 20px; }
     h2 { color: #333; }
     form { width: 400px; }
@@ -15,60 +16,47 @@
         margin-top: 4px;
         box-sizing: border-box;
     }
-    .btn-area {
-        margin-top: 15px;
-    }
+    .btn-area { margin-top: 15px; }
     input[type="submit"], input[type="button"] {
         padding: 8px 15px;
         border: none;
         cursor: pointer;
         margin-right: 5px;
     }
-    input[type="submit"] {
-        background-color: #4CAF50;
-        color: white;
-    }
-    input[type="button"] {
-        background-color: #ccc;
-    }
+    input[type="submit"] { background-color: #4CAF50; color: white; }
+    input[type="button"] { background-color: #ccc; }
 </style>
 </head>
-<body> <!-- 画面に表示される本文 -->
+<body>
 
 <h2>仕入先登録</h2>
 
+<!-- 신규 공급업체 등록 폼. /insertsupplier.do 로 POST 전송 -->
 <form action="<%=request.getContextPath()%>/insertsupplier.do" method="post">
-<%-- formタグ : ブラウザで入力したデータをサーバーに送信するためのタグ
-ここでは insertsupplier.do に POST方式でデータを送信
-<%=request.getContextPath()%> は <%= %> 内のコード実行結果をHTMLに出力
-request.getContextPathは現在のWebアプリケーションのコンテキストパスを返す。ここでは /PurchasingManagement を返す --%>
-    <label for="supplier_id">仕入先ID</label>
-<%-- labelタグ : 入力フィールドの説明を付けるタグ
-for="supplier_id": このlabelがどのinputと結びつくかを指定
-"仕入先ID"をクリックしても入力欄が選択される --%>
-    <input type="text" id="supplier_id" name="supplier_id" required>
-<%-- HTML入力フィールド。type="text" : 1行テキスト入力欄
-id="supplier_id" : HTML文書内での識別名
-name="supplier_id" : サーバーに送信するときのパラメータ名。サーバーはこのname値を使ってデータを読み取る
-required : 未入力で送信しようとするとブラウザが警告を出す --%>
 
-	<%--仕入先名入力欄、必須 --%>
+    <!-- 공급업체 ID (필수 입력) -->
+    <label for="supplier_id">仕入先ID</label>
+    <input type="text" id="supplier_id" name="supplier_id" required>
+
+    <!-- 공급업체명 (필수 입력) -->
     <label for="supplier_name">仕入先名</label>
     <input type="text" id="supplier_name" name="supplier_name" required>
-	<%--連絡先入力欄、任意 --%>
+
+    <!-- 연락처 (선택 입력) -->
     <label for="contact_number">連絡先</label>
     <input type="text" id="contact_number" name="contact_number">
-	<%--住所入力欄、任意 --%>
+
+    <!-- 주소 (선택 입력) -->
     <label for="address">住所</label>
     <input type="text" id="address" name="address">
 
+    <!-- 버튼 영역 -->
     <div class="btn-area">
+        <!-- 제출 버튼: 폼 입력값을 서버로 전송 -->
         <input type="submit" value="登録">
-        <%-- type="submit" : form内のボタンクリックでデータ送信
-        value="登録" : ボタンに表示される文字 --%>
+
+        <!-- 목록 이동 버튼: listsupplier.do 로 이동 -->
         <input type="button" value="一覧へ" onclick="location.href='<%=request.getContextPath()%>/listsupplier.do'">
-        <%-- type="button" : 通常のボタン。フォーム送信機能なし
-        onclick="location.href='...'" : ボタンクリック時にブラウザのURLを指定値に変更 --%>
     </div>
 </form>
 

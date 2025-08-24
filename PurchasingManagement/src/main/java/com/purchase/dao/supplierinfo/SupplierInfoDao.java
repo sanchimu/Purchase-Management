@@ -205,6 +205,7 @@ public class SupplierInfoDao {
         }
     }
     
+    // 공급업체 ID 기준으로 상태만 변경하는 메서드
     public void updateStatus(Connection conn, String supplierId, String newStatus) throws SQLException {
         String sql = "UPDATE supplier_info SET supplier_status = ? WHERE supplier_id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -214,6 +215,7 @@ public class SupplierInfoDao {
         }
     }
     
+    // 공급업체 ID와 이름만 가져와서 리스트로 반환하는 메서드
 	public List<SupplierInfo> getSupplierIdNameList(Connection conn) throws SQLException {
 		List<SupplierInfo> list = new ArrayList<>();
 		String sql = "SELECT supplier_id, supplier_name FROM supplier_info ORDER BY supplier_id";

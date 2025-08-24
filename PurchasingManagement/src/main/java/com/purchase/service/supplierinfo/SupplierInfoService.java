@@ -129,6 +129,7 @@ public class SupplierInfoService {
         }
     }
     
+    // 특정 공급업체의 상태만 수정하는 메서드
     public void updateStatus(String supplierId, String newStatus) {
         Connection conn = null;
         try {
@@ -141,6 +142,7 @@ public class SupplierInfoService {
         }
     }
 
+    // 공급업체 ID와 이름만 리스트로 가져오는 메서드
     public List<SupplierInfo> getSupplierIdNameList() {
         try (Connection conn = ConnectionProvider.getConnection()) {
             return supplierDao.getSupplierIdNameList(conn);
