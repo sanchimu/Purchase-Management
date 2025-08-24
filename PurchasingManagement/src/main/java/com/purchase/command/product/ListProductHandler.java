@@ -19,7 +19,7 @@ public class ListProductHandler implements CommandHandler { // 상품 리스트�
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
 		
-		
+		 List<String> categoryList = productService.getCategoryList();
 		 List<Product> productList = productService.getAllProducts();
 		 productList.sort((p1, p2) -> {	//정렬을 위한 sort메서드인데 리스트 정렬을 위해 자주 사용하는 메서드라고 함, 이게 알아보니 좋은게 while, for 이런거 안써도 알아서 반복해주는 메서드라고함
 			 							// ソート用のsortメソッドで、リストを並び替える際によく使われるメソッド。whileやforを使わなくても自動で繰り返してくれるメソッド
@@ -37,7 +37,9 @@ public class ListProductHandler implements CommandHandler { // 상품 리스트�
 
          req.setAttribute("productList", productList);	//getAllProduct에서 생성한 product의 리스트를 productList라는 키값에 부여
          												// getAllProductsで取得したproductリストをproductListというキーにセット
-
+         req.setAttribute("categoryList", categoryList);//categoryList라는 키와 categoryList 값을 반환
+														// categoryListというキーとcategoryList値を渡す
+         
          req.getRequestDispatcher("/WEB-INF/view/productList.jsp").forward(req, res); 	//원래 req에 저장되어 있던 값들을 유지하며 경로의 jsp를 실행
          																				// 元のreqに保存されている値を保持しつつ、指定のjspを実行
          																				//redirect와의 다른점은 req에 값을 유지하느냐 리셋하느냐의 느낌이 큰것으로 보임
