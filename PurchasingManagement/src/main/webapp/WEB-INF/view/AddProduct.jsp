@@ -62,7 +62,7 @@ form input[type="button"]:hover {
 </style>
 <script>
 window.onload = function() {
-    // 서버에서 아래 if문의 각 키값이 전달 됐을 경우 띄우기
+    // 서버에서 아래 if문의 각 키값이 전달 됐을 경우 띄우기 (サーバーから以下のif文の各キー値が伝達された場合に表示する)
     <% if (request.getAttribute("noProductNameError") != null){ %>
     	alert("<%= request.getAttribute("noProductNameError") %>");
     <%}else if (request.getAttribute("noCategoryError") != null){ %>
@@ -79,7 +79,7 @@ window.onload = function() {
 
 <h1>商品追加</h1>
 
-<form action="addProduct.do" method="post"> <!-- submit 시 실행 handler와 데이터 전달 방식 -->
+<form action="addProduct.do" method="post"> <!-- submit 시 실행 handler와 데이터 전달 방식 (submit時実行handlerとデータ伝達方式) -->
     <p>
         商品名 :<br/>
         <input type="text" name="product_name">
@@ -105,7 +105,8 @@ window.onload = function() {
 		</p>
     <p>
         <input type="submit" value="商品追加">
-        <input type="button" value="戻る" onclick="location.href='listProducts.do'"><!-- 버튼 두개를 넣기위해 submit이 아닌 button으로 type을 정함 -->
+        <input type="button" value="戻る" onclick="location.href='listProducts.do'">	<!-- 버튼 두개를 넣기위해 submit이 아닌 button으로 type을 정함 -->
+        																			<!-- 2つのボタンを入れるためにsubmitではなくbuttonでタイプを決める -->
     </p>
 </form>
 

@@ -75,8 +75,8 @@ input[type="button"]:hover {
 }
 </style>
 <script>
-window.onload = function() { //경고창을 띄우기 위한 함수
-    <% if (request.getAttribute("success") != null) { %> //success값이 있을경우 경고창 발생 (alert)
+window.onload = function() { //경고창을 띄우기 위한 함수 (警告ウィンドウを出すための関数)
+    <% if (request.getAttribute("success") != null) { %> //success값이 있을경우 경고창 발생 (alert) (success値がある場合、警告ウィンドウが発生(alert))
         alert("返品要請完了");
         document.querySelector("form").reset();
     <% } %>
@@ -99,19 +99,22 @@ window.onload = function() { //경고창을 띄우기 위한 함수
         <th>入庫日</th>
     </tr>
 <%
-List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList"); // receiveInfoList 키에 저장된 값을 가져와서 List<ReceiveInfo>형으로 변환해서 receiveInfoList 객체에 저장 */
-SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // 날짜 형태의 포맷으로 변환하기 위한 객체 선언
+List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList");// receiveInfoList 키에 저장된 값을 가져와서 List<ReceiveInfo>형으로 변환해서 receiveInfoList 객체에 저장
+																								//receiveInfoListキーに保存された値を取得し、List<ReceiveInfo>型に変換してreceiveInfoListオブジェクトに保存
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // 날짜 형태의 포맷으로 변환하기 위한 객체 선언 (日付形式のフォーマットに変換するためのオブジェクト宣言)
 
-if (receiveInfoList != null && !receiveInfoList.isEmpty()) { //receiveInfoList가 있을 경우 (입고 리스트가 있을 경우)
-    for (ReceiveInfo info : receiveInfoList) { // List 수만큼 for문 반복
-        int available = info.getAvailable_to_return();//List에 넘어온 데이터의 getAvailable_to_return()값을 available에 대입
+if (receiveInfoList != null && !receiveInfoList.isEmpty()) { //receiveInfoList가 있을 경우 (입고 리스트가 있을 경우) (receiveInfoListがある場合(入庫リストがある場合))
+    for (ReceiveInfo info : receiveInfoList) { // List 수만큼 for문 반복 (List数までにfor文繰り返し)
+        int available = info.getAvailable_to_return();	//List에 넘어온 데이터의 getAvailable_to_return()값을 available에 대입
+        												//Listに渡ってきたデータのgetAvailable_to_return()値をabailableに代入
 %>
 <tr>
     <td>
         <% if (available > 0) { %>
-            <input type="radio" name="receiveId" value="<%= info.getReceive_id() %>"> <!-- 각 id마다 라디오버튼을 세팅 -->
+            <input type="radio" name="receiveId" value="<%= info.getReceive_id() %>"> <!-- 각 id마다 라디오버튼을 세팅 (各idごとにラジオボタンをセット) -->
         <% } else { %>
-            <input type="radio" disabled> <!-- id가 없을 경우 세팅하지 않는데 이는 id가 있는곳에만 라디오 버튼이 생긴다는것 -->
+            <input type="radio" disabled> 	<!-- id가 없을 경우 세팅하지 않는데 이는 id가 있는곳에만 라디오 버튼이 생긴다는것 -->
+            								<!-- idがない場合はセットしないが、これはidがあるところにだけラジオボタンができるということ -->
         <% } %>
     </td>
     <td><%= info.getReceive_id() %></td>
@@ -119,7 +122,7 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) { //receiveInfoList�
     <td><%= info.getProduct_name() %>(<%= info.getProduct_id() %>)</td>
     <td><%= info.getQuantity() %></td>
     <td><%= available %></td>
-    <td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td> <!-- 날짜 형태로 나타내기 위한 변환 위의 sdf 참고 -->
+    <td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td> <!-- 날짜 형태로 나타내기 위한 변환 위의 sdf 참고 (日付の形で表すための変換上のsdf参考) -->
 </tr>
 <%
     }

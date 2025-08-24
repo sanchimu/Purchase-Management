@@ -52,10 +52,10 @@ th {
 }
 </style>
 <script>
-// 체크박스 선택 확인
+// 체크박스 선택 확인 (チェックボックス選択確認)
 function validateForm() {
     const checkboxes = document.querySelectorAll('input[name="returnInfoIds"]:checked');
-    if (checkboxes.length === 0) { // 체크된 체크박스 없을경우
+    if (checkboxes.length === 0) { // 체크된 체크박스 없을경우 (チェックされたチェックボックスがない場合)
         alert("キャンセルする返品リクエストを選択してください。");
         return false;
     }
@@ -75,8 +75,8 @@ function validateForm() {
 
 
 <!-- 검색 폼: 한 줄로 정리 -->
-<form action="searchReturnInfo.do" method="get" style="width:80%; margin:20px auto; text-align:center;" onsubmit="return LastSearchResult();"><!-- submit 시 실행된 action과 데이터 전달 방식 (get,post)세팅 -->
-<!-- submit 시 실행된 action과 데이터 전달 방식 (get,post)세팅 -->
+<form action="searchReturnInfo.do" method="get" style="width:80%; margin:20px auto; text-align:center;" onsubmit="return LastSearchResult();">	<!-- submit 시 실행된 action과 데이터 전달 방식 (get,post)세팅 -->
+																																				<!-- submit時に実行されたactionとデータ伝達方式(get,post)セッティング -->
     返品番号 : <input type="text" name="return_id" value="${param.return_id}" style="margin-right:10px; padding:4px;">
     入庫番号 : <input type="text" name="receive_id" value="${param.receive_id}" style="margin-right:10px; padding:4px;">
     商品番号 : <input type="text" name="product_id" value="${param.product_id}" style="margin-right:10px; padding:4px;">
@@ -86,7 +86,7 @@ function validateForm() {
 <h2 style="text-align:center;">返品要請リスト</h2>
 
 <form action="deleteReturnInfos.do" method="post" style="width:80%; margin:auto;" onsubmit="return validateForm();"><!-- submit 시 실행된 action과 데이터 전달 방식 (get,post)세팅 -->
-
+																													<!-- submit時に実行されたactionとデータ伝達方式(get,post)セッティング -->
 
     <table>
         <tr>
@@ -99,12 +99,13 @@ function validateForm() {
             <th>返品日</th>
         </tr>
         <%
-            List<ReturnInfo> returnInfoList = (List<ReturnInfo>) request.getAttribute("returnInfoList");  // receiveInfoList 키에 저장된 값을 가져와서 List<ReceiveInfo>형으로 변환해서 receiveInfoList 객체에 저장 */
-            if (returnInfoList != null && !returnInfoList.isEmpty()) { //returnInfo 데이터가 있을 경우
-                for (ReturnInfo r : returnInfoList) { // 데이터 있는 수만큼 for문 반복
+            List<ReturnInfo> returnInfoList = (List<ReturnInfo>) request.getAttribute("returnInfoList");  	//receiveInfoList 키에 저장된 값을 가져와서 List<ReceiveInfo>형으로 변환해서 receiveInfoList 객체에 저장
+            																								//receiveInfoListキーに保存された値を取得し、List<ReceiveInfo>型に変換してreceiveInfoListオブジェクトに保存
+            if (returnInfoList != null && !returnInfoList.isEmpty()) { //returnInfo 데이터가 있을 경우 (returnInfo データがある場合)
+                for (ReturnInfo r : returnInfoList) { // 데이터 있는 수만큼 for문 반복 (データがある数だけfor文を繰り返す)
         %>
         <tr>
-            <td><input type="checkbox" name="returnInfoIds" value="<%= r.getReturn_id() %>"></td>  <!-- 각 id마다 체크박스를 세팅 -->
+            <td><input type="checkbox" name="returnInfoIds" value="<%= r.getReturn_id() %>"></td>  <!-- 각 id마다 체크박스를 세팅 (IDごとにチェックボックスをセット) -->
             <td><%= r.getReturn_id() %></td>
             <td><%= r.getReceive_id() %></td>
             <td><%= r.getProduct_name() %> (<%= r.getProduct_id() %>)</td>
@@ -112,7 +113,7 @@ function validateForm() {
             <td><%= r.getReason() %></td>
             <td><%= r.getReturn_date() %></td>
         </tr>
-        <% } } else { %> <!-- returnInfo 데이터가 없을 경우 -->
+        <% } } else { %> <!-- returnInfo 데이터가 없을 경우 (returnInfo データがない場合) -->
         <tr>
             <td colspan="7" style="text-align:center;">条件に合う返品リクエストはありません。</td>
         </tr>
