@@ -6,21 +6,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.purchase.service.product.ProductService;
+import com.purchase.service.supplierinfo.SupplierInfoService;
 import com.purchase.vo.Product;
+import com.purchase.vo.SupplierInfo;
 
 import mvc.command.CommandHandler;
 
 public class AddProductHandler implements CommandHandler {
 
 	private ProductService productService = new ProductService(); //ProductService에 있는 메서드 사용을 위해 productSerivce라는 객체를 생성한다.
+	private SupplierInfoService supplierInfoService = new SupplierInfoService(); //ProductService에 있는 메서드 사용을 위해 productSerivce라는 객체를 생성한다.
 
 	@Override
 	public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// TODO Auto-generated method stub
 	    
 		if(req.getMethod().equalsIgnoreCase("GET")) {
-			List<String> supplierList =productService.getSupplierList(); // String 형태의 배열로 supplierList라는 List객체 생성 후 productService의 getSupplierList 메서드의 return값을 부여받는다.
-			//System.out.println("Handler - supplierList: " + supplierList);
+			List<SupplierInfo> supplierList =supplierInfoService.getSupplierIdNameList(); 
+			// String 형태의 배열로 supplierList라는 List객체 생성 후 productService의 getSupplierList 메서드의 return값을 부여받는다.
+			
 			req.setAttribute("supplierList", supplierList);  // req: 서버가 받는 값, 즉 서버가 parameter값을 받아 세팅(set이니까)한다. supplierList라는 키에(첫번째 인자값) supplierList의 정보를(두번째 인자) 
 			return "/WEB-INF/view/AddProduct.jsp"; // 이후 AddProduct.jsp 창을 다시 띄워준다. 
 		} else if(req.getMethod().equalsIgnoreCase("POST")) {

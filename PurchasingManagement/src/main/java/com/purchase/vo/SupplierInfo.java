@@ -38,7 +38,15 @@ public class SupplierInfo {
         this.row_status = row_status;
     }
 
-    public String getSupplier_id() { return supplier_id; }
+    
+    // 商品追加時にサプライヤーIDと会社名を表示するためのオーバーロードメソッド
+    public SupplierInfo(String supplier_id, String supplier_name) {
+		super();
+		this.supplier_id = supplier_id;
+		this.supplier_name = supplier_name;
+	}
+
+	public String getSupplier_id() { return supplier_id; }
     public void setSupplier_id(String supplier_id) { this.supplier_id = supplier_id; }
 
     public String getSupplier_name() { return supplier_name; }

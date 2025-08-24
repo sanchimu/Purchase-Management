@@ -93,16 +93,16 @@ window.onload = function() {
         <input type="text" name="price">
     </p>
     <p>
-        仕入先ID :<br/>
+        仕入先ID :<br/> 
         <select name="supplier_id">
-            <option value="">-- 選択 --</option> <!-- 조회 때와 마찬가지로 supplierList 값을 반복해서 foreach로 체크하며 sup에 suppliser_id를 넣고 드롭박스에 값 생성 -->
-            <c:forEach items="${supplierList}" var="sup">
-                <option value="${sup}" <c:if test="${product.supplier_id == sup}">selected</c:if>>
-                    ${sup}
-                </option>
-            </c:forEach>
-        </select>
-    </p>
+				<option value="">-- 選択 --</option>
+				<c:forEach items="${supplierList}" var="sup">
+					<option value="${sup.supplier_id}"
+						<c:if test="${product.supplier_id == sup.supplier_id}">selected</c:if>>
+						${sup.supplier_name}</option>
+				</c:forEach>
+			</select>
+		</p>
     <p>
         <input type="submit" value="商品追加">
         <input type="button" value="戻る" onclick="location.href='listProducts.do'"><!-- 버튼 두개를 넣기위해 submit이 아닌 button으로 type을 정함 -->

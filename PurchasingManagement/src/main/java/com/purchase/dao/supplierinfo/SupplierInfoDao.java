@@ -213,4 +213,29 @@ public class SupplierInfoDao {
             pstmt.executeUpdate();
         }
     }
+    
+	public List<SupplierInfo> getSupplierIdNameList(Connection conn) throws SQLException {
+		List<SupplierInfo> list = new ArrayList<>();
+		String sql = "SELECT supplier_id, supplier_name FROM supplier_info ORDER BY supplier_id";
+
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				SupplierInfo sup = new SupplierInfo();
+				sup.setSupplier_id(rs.getString("supplier_id"));
+				sup.setSupplier_name(rs.getString("supplier_name"));
+				list.add(sup);
+			}
+		} finally {
+			JdbcUtil.close(rs);
+			JdbcUtil.close(pstmt);
+		}
+
+		return list;
+	}
 }

@@ -141,5 +141,12 @@ public class SupplierInfoService {
         }
     }
 
+    public List<SupplierInfo> getSupplierIdNameList() {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+            return supplierDao.getSupplierIdNameList(conn);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
