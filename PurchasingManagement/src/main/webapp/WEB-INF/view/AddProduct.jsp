@@ -62,10 +62,16 @@ form input[type="button"]:hover {
 </style>
 <script>
 window.onload = function() {
-    // 서버에서 전달된 success 플래그가 true일 경우 alert 띄우기
-    <% if (request.getAttribute("noPriceError") != null){ %>
-    	alert("価格情報がありません。");
-    	<%}%>
+    // 서버에서 아래 if문의 각 키값이 전달 됐을 경우 띄우기
+    <% if (request.getAttribute("noProductNameError") != null){ %>
+    	alert("<%= request.getAttribute("noProductNameError") %>");
+    <%}else if (request.getAttribute("noCategoryError") != null){ %>
+    	alert("<%= request.getAttribute("noCategoryError") %>");
+    <%}else if (request.getAttribute("noPriceError") != null){ %>
+		alert("<%= request.getAttribute("noPriceError") %>");
+    <%}else if (request.getAttribute("noSupplierIdError") != null){ %>
+		alert("<%= request.getAttribute("noSupplierIdError") %>");
+    <%}%>
 }
 </script>
 </head>

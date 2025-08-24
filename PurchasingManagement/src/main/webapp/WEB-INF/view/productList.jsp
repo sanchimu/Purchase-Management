@@ -86,6 +86,10 @@ window.onload = function() { //경고창을 띄우기 위한 함수
         document.querySelector("form").reset();
     <% } else if (request.getAttribute("NoSearchProductResult") != null) { %>//NoSearchProductResult값이 있을경우 경고창 발생 (alert)
         alert("検索結果がありません。");
+    <% } else if (request.getAttribute("NoSearchProductResult") != null) { %>//NoSearchProductResult값이 있을경우 경고창 발생 (alert)
+        alert("検索結果がありません。");
+    <% } else if (request.getAttribute("NoSearchProductResult") != null) { %>//NoSearchProductResult값이 있을경우 경고창 발생 (alert)
+        alert("検索結果がありません。");
     <% } %>
 }
 </script>

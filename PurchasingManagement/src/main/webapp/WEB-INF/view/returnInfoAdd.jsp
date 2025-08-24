@@ -116,7 +116,7 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) { //receiveInfoList�
     </td>
     <td><%= info.getReceive_id() %></td>
     <td><%= info.getOrder_id() %></td>
-    <td><%= info.getProduct_id() %></td>
+    <td><%= info.getProduct_name() %>(<%= info.getProduct_id() %>)</td>
     <td><%= info.getQuantity() %></td>
     <td><%= available %></td>
     <td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td> <!-- 날짜 형태로 나타내기 위한 변환 위의 sdf 참고 -->

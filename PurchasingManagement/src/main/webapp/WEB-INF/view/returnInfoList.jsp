@@ -56,7 +56,7 @@ th {
 function validateForm() {
     const checkboxes = document.querySelectorAll('input[name="returnInfoIds"]:checked');
     if (checkboxes.length === 0) { // 체크된 체크박스 없을경우
-        alert("삭キャンセルする返品リクエストを選択してください。");
+        alert("キャンセルする返品リクエストを選択してください。");
         return false;
     }
     return true;
