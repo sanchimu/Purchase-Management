@@ -8,48 +8,48 @@ import javax.servlet.http.HttpServletResponse;
 import com.purchase.service.ReceiveInfo.ReceiveInfoService;
 import mvc.command.CommandHandler;
 
-// 入庫情報のステータスを更新するためのハンドラー
-// 입고 정보의 상태를 일괄 업데이트하는 핸들러
+// 入庫ステータスをまとめて更新するハンドラー
+// 입고 상태를 한 번에 바꾸는 핸들러
 public class UpdateReceiveInfoHandler implements CommandHandler {
 
-    // サービスクラスのインスタンス生成
-    // 서비스 클래스 인스턴스 생성
+    // 実処理はサービスへ任せる。ここは受け渡し役
+    // 실제 처리는 서비스에 맡기고, 여기는 값 받아서 넘기는 역할
     private final ReceiveInfoService service = new ReceiveInfoService();
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
         
-        // === 1) POSTリクエスト以外は許可しない ===
-        // POST 요청이 아닌 경우는 허용하지 않음 → 405 에러 반환
+        // 1) POSTだけ許可。GETで来たら 405 を返す
+        // 1) POST 요청만 허용. GET 등으로 오면 405 응답
         if (!"POST".equalsIgnoreCase(req.getMethod())) {
             res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return null;
         }
 
-        // === 2) 選択された入庫IDを取得 ===
-        // 체크박스에서 선택된 입고 ID들을 가져옴
+        // 2) チェックされた入庫IDを取得（name="receiveIds" のチェックボックス）
+        // 2) 체크된 입고 ID 모으기(name="receiveIds" 체크박스)
         String[] ids = req.getParameterValues("receiveIds");
 
-        // ステータス値を格納するリスト
-        // 상태 값들을 담을 리스트
+        // ステータス値を詰める箱
+        // 상태 값 담아둘 리스트
         List<String> statuses = new ArrayList<>();
 
         if (ids != null) {
-            // === 3) 各IDに対応するステータスを取得 ===
-            // 각 ID에 해당하는 상태 값을 파라미터에서 가져옴
+            // 3) 各IDに対するステータスをフォームから取り出す
+            // 3) 각 ID에 대응하는 상태를 폼에서 꺼내기
             for (String id : ids) {
-                // JSP側では name="status_${r.receive_id}" という形式で送信される
-                // JSP 쪽에서는 name="status_${r.receive_id}" 형식으로 전송됨
+                // フロントは name="status_${r.receive_id}" の形で送ってくる
+                // 프론트에서 name="status_${r.receive_id}" 형태로 보냄
                 statuses.add(req.getParameter("status_" + id));
             }
 
-            // === 4) サービスを通じてDBのステータスを一括更新 ===
-            // 서비스 호출 → DB의 상태값들을 일괄 업데이트
+            // 4) サービス経由でDBを一括更新
+            // 4) 서비스 호출로 DB 상태값 일괄 업데이트
             service.updateStatuses(ids, statuses);
         }
 
-        // === 5) 更新後、入庫一覧ページにリダイレクト ===
-        // 업데이트 후 → 입고 목록 페이지로 리다이렉트
+        // 5) 終わったら一覧に戻す（リダイレクト）
+        // 5) 끝나면 목록으로 리다이렉트
         res.sendRedirect(req.getContextPath() + "/listReceiveInfos.do");
         return null;
     }

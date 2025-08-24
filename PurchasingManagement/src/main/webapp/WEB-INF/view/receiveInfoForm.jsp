@@ -11,7 +11,7 @@
 <meta charset="UTF-8">
 <title>入庫登録</title>
 <style>
-  /* ページ全体の基本スタイル / 페이지 전체 기본 스타일 */
+  /* 화면 전반 기본 스타일 / ページ共通の軽いスタイル */
   body{font-family:"Noto Sans JP","Meiryo","Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;margin:20px;}
   h2{margin:0 0 12px;}
   .form{max-width:640px;padding:16px;border:1px solid #ddd;border-radius:8px;}
@@ -23,22 +23,22 @@
   .err{color:#b00020;font-weight:bold;margin-bottom:8px}
 </style>
 
-<!-- 日付入力支援ライブラリ Flatpickr 読み込み / 날짜 입력 보조 라이브러리 Flatpickr 로드 -->
+<!-- 날짜 피커(flatpickr) 로드 / Flatpickr 読み込み -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
 </head>
 <body>
-<h2>入庫登録</h2> <!-- 入庫登録画面タイトル / 입고 등록 화면 제목 -->
+<h2>入庫登録</h2> <!-- 화면 제목 / 画面タイトル -->
 
-<!-- エラーメッセージがある場合表示 / 에러 메시지가 있으면 표시 -->
+<!-- 에러 메시지 있으면 보여주기 / エラーがあれば表示 -->
 <c:if test="${not empty errorMsg}">
   <div class="err">${fn:escapeXml(errorMsg)}</div>
 </c:if>
 
-<!-- 入庫登録フォーム / 입고 등록 폼 -->
+<!-- 입고 등록 폼 / 入庫登録フォーム -->
 <form class="form" action="${ctx}/addReceiveInfo.do" method="post">
-  <!-- 注文番号 選択 / 주문번호 선택 -->
+  <!-- 주문번호 선택 / 注文番号の選択 -->
   <div class="row">
     <label>注文番号</label>
     <select name="order_id" required>
@@ -51,7 +51,7 @@
     </select>
   </div>
 
-  <!-- 商品 選択 / 상품 선택 -->
+  <!-- 상품 선택 / 商品の選択 -->
   <div class="row">
     <label>商品</label>
     <select name="product_id" required>
@@ -64,14 +64,14 @@
     </select>
   </div>
 
-  <!-- 数量入力 (0以上必須) / 수량 입력 (0 이상 필수) -->
+  <!-- 수량 입력(0 이상 필수) / 数量入力(0以上必須) -->
   <div class="row">
     <label>数量</label>
     <input type="number" name="quantity" min="0"
            value="<c:out value='${empty ri ? 0 : ri.quantity}'/>" required />
   </div>
 
-  <!-- 入庫日入力 (未来禁止) / 입고일 입력 (미래 불가) -->
+  <!-- 입고일 입력(미래 불가) / 入庫日入力(未来不可) -->
   <c:if test="${not empty ri && not empty ri.receive_date}">
     <fmt:formatDate value="${ri.receive_date}" pattern="yyyy-MM-dd" var="recvDate"/>
   </c:if>
@@ -83,7 +83,7 @@
            value="${not empty recvDate ? recvDate : (not empty today ? today : todayStr)}" required />
   </div>
 
-  <!-- 業務状態選択 (初期値=検収中) / 업무 상태 선택 (기본값=검수중) -->
+  <!-- 업무 상태(기본=検収中) / 業務状態(初期=検収中) -->
   <div class="row">
     <label>業務状態</label>
     <select name="receive_status">
@@ -95,14 +95,14 @@
     </select>
   </div>
 
-  <!-- ボタンエリア / 버튼 영역 -->
+  <!-- 버튼 영역 / ボタンエリア -->
   <div class="actions">
-    <button type="submit" class="btn">登録</button> <!-- 登録ボタン / 등록 버튼 -->
-    <a class="btn" href="${ctx}/listReceiveInfos.do">入庫リストに戻る</a> <!-- 入庫リストへ戻るリンク / 입고 리스트로 돌아가기 -->
+    <button type="submit" class="btn">登録</button> <!-- 등록 -->
+    <a class="btn" href="${ctx}/listReceiveInfos.do">入庫リストに戻る</a> <!-- 목록으로 -->
   </div>
 </form>
 
-<!-- Flatpickr 初期化スクリプト / Flatpickr 초기화 스크립트 -->
+<!-- 날짜 피커 초기화 / Flatpickr 初期化 -->
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   var el = document.getElementById('receive_date');
@@ -111,13 +111,12 @@ document.addEventListener('DOMContentLoaded', function(){
   flatpickr.localize(flatpickr.l10ns.ja);
   flatpickr(el, {
     locale: 'ja',
-    dateFormat: 'Y-m-d',   // サーバ送信形式 / 서버 전송 형식
-    altInput: true,
-    altFormat: 'Y年m月d日', // 画面表示形式 / 화면 표시 형식
-    maxDate: 'today'       // 未来日禁止 / 미래일 금지
+    dateFormat: 'Y-m-d',   // 서버로 보낼 값의 형식 / サーバ送信用フォーマット
+    altInput: true,        // 사용자에겐 보기 좋은 표시용 입력 생성 / 表示用の別入力を出す
+    altFormat: 'Y年m月d日', // 화면 표시 형식 / 画面表示フォーマット
+    maxDate: 'today'       // 미래 선택 막기 / 未来日を選べないように
   });
 });
 </script>
 </body>
 </html>
-

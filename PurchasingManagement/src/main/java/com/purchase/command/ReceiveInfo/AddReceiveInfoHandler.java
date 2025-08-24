@@ -8,84 +8,86 @@ import com.purchase.vo.ReceiveInfo;
 import mvc.command.CommandHandler;
 
 /**
- * 入庫情報の新規登録を受け付けるハンドラー
- * - フォームから送られてきた値を取得 → 検証 → 登録 → 成功時は一覧へリダイレクト
+ * 入庫の新規登録を受け取るハンドラー
+ * フォームの値を集めて → ざっとチェック → 登録 → できたら一覧へリダイレクト
  *
- * 입고 정보 신규 등록을 처리하는 핸들러
- * - 폼 파라미터 수집 → 검증 → 저장 → 성공 시 목록으로 리다이렉트
+ * 입고 신규 등록 처리용 핸들러
+ * 폼 값 모아서 → 간단히 검증 → 저장 → 성공하면 목록으로 리다이렉트
+ *
+ * 화면에서 온 데이터를 서비스에 넘겨서 처리. 성공이면 목록으로, 실패면 폼으로 다시.
  */
 public class AddReceiveInfoHandler implements CommandHandler {
 
-    // ビジネスロジック層。検証・DB登録などはサービスへ委譲。
-    // 비즈니스 로직 레이어. 검증/DB 저장은 서비스에 위임.
+    // 비즈니스 로직은 서비스에게 맡긴다. 핸들러는 전달·결과만 챙긴다
+    // 検証やDB登録はサービス層に任せる。ここは橋渡し役
     private final ReceiveInfoService service = new ReceiveInfoService();
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        // 文字化け防止のためのエンコーディング指定（UTF-8）
-        // 한글/일본어 깨짐 방지를 위한 요청 인코딩 설정(UTF-8)
+        // 요청 본문을 UTF-8로 읽기. 한글,일본어 깨짐 방지
+        // リクエストの文字コードをUTF-8に。文字化けしないように
         req.setCharacterEncoding("UTF-8");
 
-        // 1) パラメータ収集（フォームのname属性と合わせる）
-        // 1) 파라미터 수집 (폼의 name과 일치해야 함)
+        // 폼에서 넘어온 값 모으기. getParameter의 키는 input name과 같아야 한다
+        // フォームのnameと同じキーでパラメータ取得
         String orderId   = req.getParameter("order_id");
         String productId = req.getParameter("product_id");
         String qtyStr    = req.getParameter("quantity");
-        String dateStr   = req.getParameter("receive_date"); // 期待形式: yyyy-MM-dd / 기대 형식: yyyy-MM-dd
-        String status    = req.getParameter("receive_status"); // 画面側で既定値「検収中」を設定 / 프론트에서 기본값 '검수중' 세팅
+        String dateStr   = req.getParameter("receive_date"); // 기대/想定: yyyy-MM-dd
+        String status    = req.getParameter("receive_status"); // 화면에서 기본값을 "検収中"로 줄 수 있음
         String note      = req.getParameter("note");
 
         try {
-            // 2) サービスへ委譲：入力検証＋登録（例外はサービス側で投げられる想定）
-            // 2) 서비스 위임: 입력 검증 + 저장 (검증 실패 시 서비스에서 예외 발생)
+            // 검증 + 등록은 서비스로. 여기서는 결과만 받는다
+            // 入力チェックと登録はサービスに任せる。ここは投げて受け取るだけ
             ReceiveInfo created = service.addReceiveInfo(orderId, productId, qtyStr, dateStr, status, note);
 
-            // 3) 成功時：一覧画面へリダイレクト + トースト用メッセージをクエリに載せる
-            // 3) 성공 시: 목록 화면으로 리다이렉트 + 토스트 메시지를 쿼리스트링으로 전달
+            // 성공하면 목록으로 보낸다. 메시지는 쿼리스트링에 얹어서 토스트 등으로 쓰면 편함
+            // 成功時は一覧へリダイレクト。メッセージはクエリに載せてトースト表示などに使う
             res.sendRedirect(req.getContextPath() + "/listReceiveInfos.do?msg=" +
-                    java.net.URLEncoder.encode("登録に成功しました", "UTF-8")); // URLに日本語を含めるためエンコード / 한글/일본어 포함 시 URL 인코딩
-            return null; // リダイレクト済みのためビューは不要 / 이미 리다이렉트했으므로 뷰 반환 없음
+                    java.net.URLEncoder.encode("登録に成功しました", "UTF-8")); // 다국어는 URL 인코딩 필요
+            return null; // 리다이렉트 했으니 뷰 반환 없음。ここでJSPを返さない
 
         } catch (IllegalArgumentException be) {
-            // 入力検証エラー：フォームへ戻してエラーメッセージを表示
-            // 입력 검증 실패: 폼으로 되돌리며 에러 메시지 표시
+            // 입력값에 문제가 있을 때. 에러 메시지 보여주고 폼으로 다시
+            // 入力不正のとき。メッセージを出してフォーム再表示
             req.setAttribute("errorMsg", be.getMessage());
 
-            // フォーム選択肢などの再セット（プルダウン等がある場合）
-            // 폼 선택 리스트 재세팅(드롭다운 등 사용 시)
+            // 셀렉트박스 같은 옵션 리스트 다시 채우기
+            // セレクトなどの選択肢を詰め直す
             service.prepareFormLists(req);
 
-            // ユーザーが入力した値をできるだけ復元（入力の手戻りを減らす）
-            // 사용자가 입력한 값 복원(재입력 최소화)
+            // 사용자가 쓴 값 최대한 복구. 다시 타이핑 줄이자
+            // 入力値をできるだけ復元して手戻りを減らす
             ReceiveInfo ri = new ReceiveInfo();
             ri.setOrder_id(orderId);
             ri.setProduct_id(productId);
-            try { 
-                ri.setQuantity(Integer.parseInt(qtyStr)); 
+            try {
+                ri.setQuantity(Integer.parseInt(qtyStr));
             } catch(Exception ignore){
-                // 数値変換に失敗しても無視（フォーム側で再入力してもらう）
-                // 숫자 변환 실패 시 무시(폼에서 다시 입력)
+                // 숫자 변환 실패해도 그냥 둔다. 폼에서 다시 입력하면 된다
+                // 数値変換に失敗しても落とさない。フォームで再入力してもらう
             }
             ri.setReceive_status(status);
-            // receive_dateは文字列のままJSPのvalueへ渡すので、ここではDate変換しない
-            // receive_date는 JSP에서 value로 그대로 쓰므로 여기서는 Date 변환 생략
+            // 날짜는 문자열 그대로 JSP value에 넘긴다. 여기서 Date로 바꾸지 않는다
+            // 日付は文字列のままJSPへ渡す。ここでDate変換しない
             req.setAttribute("ri", ri);
 
-            // 元の登録フォームを再表示
-            // 기존 등록 폼으로 돌아감
+            // 등록 폼 다시 보여주기
+            // 元のフォームに戻す
             return "/WEB-INF/view/receiveInfoForm.jsp";
 
         } catch (Exception e) {
-            // サーバ側の想定外エラー：一般的なメッセージを表示してフォームに戻す
-            // 예기치 않은 서버 오류: 일반 메시지 노출 후 폼으로 복귀
+            // 서버 쪽 예기치 않은 에러. 너무 세세한 내용은 화면에 안 보이고, 부드러운 문구만
+            // 想定外のサーバエラー。詳細はログへ、画面はやさしいメッセージだけ
             req.setAttribute("errorMsg", "サーバーエラーが発生しました。（登録失敗）");
 
-            // フォーム選択肢の再セット
-            // 폼 선택 리스트 재세팅
+            // 옵션 리스트 다시 세팅
+            // フォームの選択肢を再セット
             service.prepareFormLists(req);
 
-            // 再度フォーム表示
-            // 폼 재표시
+            // 폼 다시 띄우기. 사용자가 바로 고쳐서 보낼 수 있게
+            // フォーム再表示。すぐ直して送れるように
             return "/WEB-INF/view/receiveInfoForm.jsp";
         }
     }

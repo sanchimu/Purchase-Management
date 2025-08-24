@@ -9,84 +9,92 @@ import com.purchase.vo.ReceiveInfo;
 import mvc.command.CommandHandler;
 
 /**
- * 入庫情報一覧の表示／検索を担当するハンドラー
- * - 検索条件の取得 → 必要に応じて整形（期間の前後入替など）→ サービス呼び出し → 一覧JSPへ
+ * 入庫一覧の表示と検索を受け持つハンドラー
+ * 条件を拾って整えたらサービスに渡す → 結果をJSPへ
  *
- * 입고 정보 목록 표시/검색을 담당하는 핸들러
- * - 검색 조건 수집 → 필요 시 정리(기간 역전 시 교체 등) → 서비스 호출 → 목록 JSP로 포워드
+ * 입고 목록 보여주기 + 검색 담당
+ * 조건 모아서 다듬고 서비스 호출 → 결과를 JSP로 전달
  */
 public class ListReceiveInfoHandler implements CommandHandler {
 
-    // サービス層：実データ取得・ビジネスロジックはここへ委譲
-    // 서비스 레이어: 실제 데이터 조회/비즈니스 로직은 서비스에 위임
+    // 実処理はサービスに任せる。ここは橋渡し
+    // 실제 처리는 서비스에 맡기고, 여기는 중간다리 역할
     private final ReceiveInfoService service = new ReceiveInfoService();
 
     @Override
     public String process(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-        // 1) 返品可能分のみ表示するモードを取得（mode=avail のとき true）
-        // 1) 반품 가능 건만 표시하는 모드 확인(mode=avail이면 true)
+        // 1) 返品可能だけ見るモードかどうか（mode=avail なら true）
+        // 1) 반품 가능만 볼 건지 확인(mode=avail이면 true)
         String mode = req.getParameter("mode");
         boolean onlyAvailable = "avail".equalsIgnoreCase(mode);
 
-        // 2) 検索パラメータ取得（JSPのname属性と1:1対応）
-        // 2) 검색 파라미터 수집(JSP name과 1:1 매칭)
+        // 2) 検索パラメータを受け取る（JSPのnameと1:1）
+        // 2) 검색 파라미터 받기(JSP name과 1:1 매칭)
         String productName  = t(req.getParameter("productName"));
         String supplierName = t(req.getParameter("supplierName"));
-        String fromDate     = t(req.getParameter("fromDate")); // 期待形式: YYYY-MM-DD / 기대 형식: YYYY-MM-DD
-        String toDate       = t(req.getParameter("toDate"));   // 期待形式: YYYY-MM-DD / 기대 형식: YYYY-MM-DD
+        String fromDate     = t(req.getParameter("fromDate")); // 形式: YYYY-MM-DD
+        String toDate       = t(req.getParameter("toDate"));   // 形式: YYYY-MM-DD
 
-        // 2-1) 期間の前後が逆（from > to）の場合は入れ替え
-        // 2-1) 기간 역전(from > to) 시 값 교체로 보정
+        // 2-1) 期間が逆（from > to）なら入れ替え。とりあえず使える形に直す
+        // 2-1) 기간이 거꾸로면(from > to) 값 교체해서 사용 가능하게
         if (fromDate != null && toDate != null && fromDate.compareTo(toDate) > 0) {
             String tmp = fromDate;
             fromDate = toDate;
             toDate = tmp;
         }
 
-        // 3) 非表示データを含めるか（現行仕様を踏襲）
-        // 3) 숨김 데이터 포함 여부(현 규격 유지)
+        // 3) 非表示データも含めるか（現状仕様そのまま）
+        // 3) 숨김 데이터 포함할지(현재 사양 유지)
         boolean includeHidden = true;
 
-        // 4) サービス呼び出し：フィルタ有無で取得方法を分岐
-        // 4) 서비스 호출: 필터 여부에 따라 조회 방식 분기
+        // 4) サービス呼び出し。フィルタの有無で取り方を分ける
+        // 4) 서비스 호출. 필터 존재 여부에 따라 조회 방식 분기
         List<ReceiveInfo> receiveList;
 
-        // [最適化] 条件が全く無く、かつ「返品可能モード」でもない場合は、
-        // 既存の全件JOINメソッドでショートカット（パフォーマンス面の利点）
-        //
-        // [최적화] 조건이 전혀 없고 ‘반품가능 모드’도 아니면
-        // 기존 전체 JOIN 메서드로 우회(성능상 이점)
-        boolean noFilters = (productName == null && supplierName == null && fromDate == null && toDate == null);
-        if (noFilters && !onlyAvailable) {
+        boolean noFilters =
+                (productName == null && supplierName == null && fromDate == null && toDate == null);
+
+        if (onlyAvailable && noFilters) {
+            // 返品可能のみ + 条件なし → 返品数を考慮した専用取得
+            // 반품 가능 전용 + 무필터 → 반품 수량 고려 전용 목록
+            receiveList = service.getReceiveInfoWithReturnQty();
+        } else if (noFilters) {
+            // 条件なし → 全件JOIN（商品名/仕入先名つき）
+            // 무필터 → 전체 조인(상품명/공급업체명 포함)
             receiveList = service.getReceiveListJoin(false, includeHidden);
         } else {
+            // 条件あり → 条件検索（onlyAvailableなら HAVING で絞る）
+            // 필터 있음 → 조건 검색(onlyAvailable면 HAVING로 좁힘)
             receiveList = service.findWithFilter(
-                productName, supplierName, fromDate, toDate, onlyAvailable, includeHidden
+                    productName, supplierName, fromDate, toDate, onlyAvailable, includeHidden
             );
         }
 
-        // 5) JSPへ受け渡し（一覧データ／状態プルダウン／モード値）
-        // 5) JSP로 전달(목록 데이터/상태 드롭다운/모드 값)
+        // 5) JSPへ渡すものをセット（一覧 / 状態リスト / モード / 入力値）
+        // 5) JSP에 넘길 값 세팅(목록 / 상태리스트 / 모드 / 입력값 유지)
         req.setAttribute("receiveList", receiveList);
         req.setAttribute("receiveStatusList", service.getReceiveStatusList());
         req.setAttribute("mode", mode);
 
-        // 一覧画面へフォワード
+        // 検索フォームの入力値はそのまま戻しておく
+        // 검색 폼 입력값 유지
+        req.setAttribute("productName",  productName);
+        req.setAttribute("supplierName", supplierName);
+        req.setAttribute("fromDate",     fromDate);
+        req.setAttribute("toDate",       toDate);
+
+        // 一覧JSPへフォワード
         // 목록 화면으로 포워드
         return "/WEB-INF/view/receiveInfoList.jsp";
     }
 
     /**
-     * 文字列ユーティリティ：null/空文字を正規化して扱いやすくする
-     * - null → null
-     * - "  "（空白のみ）→ null
-     * - それ以外 → trimした文字列
+     * 文字列ユーティリティ
+     * null / 空白だけ を nullに寄せる。その他はtrimで余計なスペース削る
      *
-     * 문자열 유틸: null/빈문자 정규화
-     * - null → null
-     * - "  " (공백만) → null
-     * - 그 외 → trim 결과 반환
+     * 문자열 유틸
+     * null / 공백뿐인 문자열은 null로, 그 외는 trim해서 반환
      */
     private String t(String s) {
         if (s == null) return null;
@@ -94,3 +102,4 @@ public class ListReceiveInfoHandler implements CommandHandler {
         return s.isEmpty() ? null : s;
     }
 }
+
