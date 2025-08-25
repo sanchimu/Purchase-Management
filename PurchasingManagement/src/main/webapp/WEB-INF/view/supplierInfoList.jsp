@@ -9,6 +9,7 @@
 <title>仕入先一覧</title>
 <style>
 /* 테이블 및 버튼 스타일 */
+/* テーブルおよびボタンのスタイル */
 table { width: 80%; border-collapse: collapse; margin: 20px auto; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
 th { background-color: #f2f2f2; }
@@ -23,14 +24,17 @@ th { background-color: #f2f2f2; }
 
 <script>
 /* 전체 체크박스 토글 */
+/* 全体チェックボックス切り替え */
 function toggleAll(src){
   document.querySelectorAll('input[name="supplier_id"]').forEach(cb => cb.checked = src.checked);
 }
 /* 체크된 ID 배열로 수집 */
+/* チェックされたIDを配列として収集 */
 function getCheckedIds(){
   return Array.from(document.querySelectorAll('input[name="supplier_id"]:checked')).map(cb => cb.value);
 }
 /* 선택된 항목을 hidden input으로 form에 담기 */
+/* 選択された項目をhidden inputとしてフォームに格納 */
 function prepStatus(){
   const ids = getCheckedIds();
   if(ids.length === 0){ alert('対象を選択してください。'); return false; }
@@ -44,6 +48,7 @@ function prepStatus(){
   return true;
 }
 /* 저장 버튼 클릭 시 선택 여부 확인 */
+/* 保存ボタン押下時に選択有無を確認 */
 function validateSave(){
   const ids = getCheckedIds();
   if(ids.length === 0){ alert('対象を選択してください。'); return false; }
@@ -54,6 +59,7 @@ function validateSave(){
 <body>
 
 <!-- 상단 메뉴: 등록, 새로고침 -->
+<!-- 上部メニュー: 登録、再読み込み -->
 <div class="top-menu">
   <a href="<c:url value='/insertsupplier.do'/>" class="btn">仕入先登録</a>
   <a href="javascript:location.reload();" class="btn">再読み込み</a>
@@ -62,6 +68,7 @@ function validateSave(){
 <h2 style="text-align: center;">仕入先一覧</h2>
 
 <!-- 검색폼: 공급업체명으로 검색 -->
+<!-- 検索フォーム: 仕入先名で検索 -->
 <form action="<c:url value='/listsupplier.do'/>" method="get" style="text-align:center; margin-bottom: 20px;">
   仕入先名：
   <input type="text" name="supplier_name" value="${param.supplier_name}" />
@@ -69,12 +76,14 @@ function validateSave(){
 </form>
 
 <!-- 상태 변경 및 리스트 테이블 -->
+<!-- 状態変更および一覧テーブル -->
 <form method="post">
   <input type="hidden" name="table" value="supplier_info" />
   <input type="hidden" name="idColumn" value="supplier_id" />
   <div id="idsContainer"></div>
 
   <!-- 툴바: 상태 저장/중단/재개/중단포함 체크 -->
+  <!-- ツールバー: 状態保存／中断／再開／中断を含むチェック -->
   <div class="toolbar">
     <button class="btn" formaction="${pageContext.request.contextPath}/updatestatus.do" onclick="return validateSave();">選択項目 業務状態保存</button>
     <button class="btn" formaction="${pageContext.request.contextPath}/status/bulk.do" name="to" value="X" onclick="return prepStatus() && confirm('選択項目を中断しますか？');">選択項目 中断</button>
@@ -87,11 +96,13 @@ function validateSave(){
   </div>
 
   <!-- 상태값 리스트 준비 (없으면 기본값 사용) -->
+  <!-- 状態リスト準備（なければデフォルト使用） -->
   <c:if test="${empty supplierStatusList}">
     <c:set var="supplierStatusList" value="${fn:split('有効,取引停止,廃業,休眠', ',')}" />
   </c:if>
 
   <!-- 공급업체 테이블 -->
+  <!-- 仕入先テーブル -->
   <table>
     <tr>
       <th><input type="checkbox" onclick="toggleAll(this)"></th>
@@ -104,12 +115,15 @@ function validateSave(){
     </tr>
 
     <!-- 공급업체 리스트 출력 -->
+    <!-- 仕入先リスト出力 -->
     <c:forEach var="supplier" items="${supplierList}">
       <!-- includeHidden 이 체크되었거나 row_status=='A' 인 경우만 표시 -->
+      <!-- includeHidden がチェックされているか row_status=='A' の場合のみ表示 -->
       <c:if test="${param.includeHidden=='1' || includeHidden || empty supplier.row_status || supplier.row_status=='A'}">
         <tr class="<c:if test='${supplier.row_status=="X"}'>muted</c:if>">
           <td><input type="checkbox" name="supplier_id" value="${supplier.supplier_id}"></td>
           <!-- ID 클릭 시 수정 페이지로 이동 -->
+          <!-- IDクリック時に修正ページへ移動 -->
           <td>
             <a href="<c:url value='/editsupplier.do'><c:param name='supplier_id' value='${supplier.supplier_id}'/></c:url>">
               ${supplier.supplier_id}
@@ -119,6 +133,7 @@ function validateSave(){
           <td>${supplier.contact_number}</td>
           <td>${supplier.address}</td>
           <!-- 상태 선택 박스 -->
+          <!-- 状態選択ボックス -->
           <td>
             <select name="${supplier.supplier_id}">
               <c:forEach var="st" items="${supplierStatusList}">
@@ -127,6 +142,7 @@ function validateSave(){
             </select>
           </td>
           <!-- 표시 상태 뱃지 -->
+          <!-- 表示状態バッジ -->
           <td>
             <c:choose>
               <c:when test="${empty supplier.row_status || supplier.row_status=='A'}">
@@ -142,6 +158,7 @@ function validateSave(){
     </c:forEach>
 
     <!-- 리스트가 비었을 경우 메시지 -->
+    <!-- リストが空の場合のメッセージ -->
     <c:if test="${empty supplierList}">
       <tr>
         <td colspan="7">登録された仕入先はありません。</td>
