@@ -37,7 +37,11 @@ public class ReturnProcessHandler implements CommandHandler {
 		}else if (quantityStr == null || quantityStr.trim().isEmpty()) { 	//반품 이유를 적지 않았을 경우
 																			// 返品理由が入力されていない場合
 			
-			String errorMsg = URLEncoder.encode("반품 이유를 입력하세요", "UTF-8");
+			String errorMsg = URLEncoder.encode("반품 수량을 입력하세요", "UTF-8");
+			res.sendRedirect(req.getContextPath() + "/addReturnInfos.do?error=" + errorMsg);// 에러 키값 갱신 (エラー用キー値を更新)
+			return null;
+		}else if (reason == null || reason.trim().isEmpty()) {
+			String errorMsg = URLEncoder.encode("반품 사유을 입력하세요", "UTF-8");
 			res.sendRedirect(req.getContextPath() + "/addReturnInfos.do?error=" + errorMsg);// 에러 키값 갱신 (エラー用キー値を更新)
 			return null;
 		}

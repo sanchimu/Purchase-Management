@@ -88,8 +88,26 @@ window.onload = function() { //경고창을 띄우기 위한 함수 (警告ウ�
         if (error) {
             alert(error);
         }
+        
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function(e) {
+            const selected = document.querySelector("input[name='receiveId']:checked");
+            if (!selected) return; // 선택 안 하면 Handler에서 alert 처리
+
+            const receiveId = selected.value;
+            const qty = document.querySelector("input[name='quantity']").value.trim();
+            const available = document.querySelector("input[name='available_" + receiveId + "']").value;
+
+            if (qty !== "" && !isNaN(qty) && parseInt(qty, 10) > parseInt(available, 10)) {
+                alert("반품 가능 수량(" + available + ")을 초과할 수 없습니다.");
+                e.preventDefault(); // submit 막기
+            }
+        });
 }
 </script>
+
+
+
 </head>
 <body>
 
@@ -129,7 +147,10 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) { //receiveInfoList�
     <td><%= info.getOrder_id() %></td>
     <td><%= info.getProduct_name() %>(<%= info.getProduct_id() %>)</td>
     <td><%= info.getQuantity() %></td>
-    <td><%= available %></td>
+    <td>
+    	<%= available %>
+    	<input type="hidden" name="available_<%= info.getReceive_id() %>" value="<%= available %>">
+    </td>
     <td><%= info.getReceive_date() != null ? sdf.format(info.getReceive_date()) : "" %></td> <!-- 날짜 형태로 나타내기 위한 변환 위의 sdf 참고 (日付の形で表すための変換上のsdf参考) -->
 </tr>
 <%
