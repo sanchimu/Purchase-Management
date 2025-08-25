@@ -5,9 +5,9 @@
    발주서 목록 화면 (DB 일본어 상태값과 일치)
    発注書一覧画面（DBの日本語ステータスと一致）
 
-    orderList         : OrderSheetDTO 목록 / 一覧
-    includeHidden     : 중단(X) 포함 여부 / 停止(X)の表示有無
-    orderStatusList   : 업무상태 드롭다운 목록 (DB CHECKと一致: 発注依頼/承認/発注/一部入荷/完了/取消/保留)
+    orderList : OrderSheetDTO 목록 / 一覧
+    includeHidden : 중단(X) 포함 여부 / 停止(X)の表示有無
+    orderStatusList : 업무상태 드롭다운 목록 (DB CHECKと一致: 発注依頼/承認/発注/一部入荷/完了/取消/保留)
 --%>
 <!DOCTYPE html>
 <html>
@@ -41,22 +41,20 @@
 <h2>発注書一覧</h2>
 
 <div class="toolbar">
-  <%-- 
-     중단(X) 포함 체크박스 + 적용 버튼
-         includeHidden=true(1) 이면 WHERE절에서 row_status 필터 제외
-     停止(X)を含めるチェック＋適用ボタン
-         includeHidden=true(1) の場合、WHERE句で row_status フィルタを外す
+  <%--
+      '停止含む' 체크 시 즉시 자동 제출되어 목록이 갱신됨
+      '停止含む' チェック時に即時自動送信し一覧を更新
   --%>
-  <form method="get" action="<c:url value='/orderSheetList.do'/>" style="display:flex;align-items:center;gap:6px">
+  <form method="get" action="<c:url value='/orderSheetList.do'/>"
+        style="display:flex;align-items:center;gap:6px">
     <label>
-      <input type="checkbox" name="includeHidden" value="1" <c:if test="${includeHidden}">checked</c:if> />
+      <input type="checkbox"
+             name="includeHidden"
+             value="1"
+             onchange="this.form.submit()"
+             <c:if test="${includeHidden}">checked</c:if> />
       停止含む
     </label>
-    <button type="submit" class="btn">適用</button>
-  </form>
-
-  <%--  새로고침 / 更新 --%>
-  <a class="btn" href="<c:url value='/orderSheetList.do'/>?includeHidden=${includeHidden ? 1 : 0}">更新</a>
 
   <%--  발주서 등록 화면으로 이동 /  発注書登録画面へ遷移 --%>
   <a class="btn" href="<c:url value='/addOrderSheet.do'/>">発注書登録</a>
@@ -165,14 +163,14 @@
             class="btn"
             formaction="<c:url value='/orderSheetStopAX.do'/>"
             formmethod="post">
-      選択項目を停止(A/X)
+      選択項目を停止
     </button>
 
     <button type="submit"
             class="btn"
             formaction="<c:url value='/orderSheetResumeAX.do'/>"
             formmethod="post">
-      選択項目を再開(A/X)
+      選択項目を再開
     </button>
   </div>
 </form>
