@@ -11,11 +11,13 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 발주서 서비스 / 発注書サービス
- * - 목록/옵션 조회, 등록/상태변경 트랜잭ション管理
- * - 화면/DB 상태값 표준화(日本語) 유지
+ * 목록/옵션 조회, 등록/상태변경 트랜잭ション管理
+ * 화면/DB 상태값 표준화(日本語) 유지
  *
  * 모든 공개 메서드는 SQLException을 직접 던지지 않고 RuntimeException으로 래핑합니다.
  * すべての公開メソッドは SQLException を投げず、RuntimeException にラップします。
@@ -119,4 +121,62 @@ public class OrderSheetService {
             Arrays.asList("発注依頼","承認","発注","一部入荷","完了","取消","保留")
         );
     }
+    
+    /** 검색(조인뷰) – 파라미터 Map 입력 / 検索（結合ビュー） パラメータMap */
+    public List<OrderSheetDTO> searchView(Map<String, String> params) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+            Map<String, String> p = normalize(params);
+            List<OrderSheetDTO> list = dao.selectViewByConditions(conn, p);
+            if (list == null || list.isEmpty()) {
+                boolean includeHidden = "1".equals(p.getOrDefault("includeHidden", "0"));
+                return dao.selectAllView(conn, includeHidden); // 결과 없으면 전체
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** 검색(조인뷰) – 편의 오버로드 / 検索（結合ビュー） 便利オーバーロード */
+    public List<OrderSheetDTO> searchView(
+            String orderId,
+            String requestId,
+            String supplierId,
+            String orderStatus,
+            String fromDate,   // yyyy-MM-dd
+            String toDate,     // yyyy-MM-dd
+            boolean includeHidden
+    ) {
+        Map<String, String> params = new HashMap<>();
+        putIfNotBlank(params, "order_id", orderId);
+        putIfNotBlank(params, "request_id", requestId);
+        putIfNotBlank(params, "supplier_id", supplierId);
+        putIfNotBlank(params, "order_status", orderStatus);
+        putIfNotBlank(params, "from_date", fromDate);
+        putIfNotBlank(params, "to_date", toDate);
+        params.put("includeHidden", includeHidden ? "1" : "0");
+        return searchView(params);
+    }
+
+    /* 내부 유틸 / 内部ユーティリティ */
+
+    private Map<String, String> normalize(Map<String, String> in) {
+        Map<String, String> out = new HashMap<>();
+        if (in == null) return out;
+        in.forEach((k, v) -> {
+            if (v != null) {
+                String t = v.trim();
+                if (!t.isEmpty()) out.put(k, t);
+            }
+        });
+        if (!out.containsKey("includeHidden")) out.put("includeHidden", "0");
+        return out;
+    }
+
+    private void putIfNotBlank(Map<String, String> m, String key, String val) {
+        if (val == null) return;
+        String t = val.trim();
+        if (!t.isEmpty()) m.put(key, t);
+    }
+
 }

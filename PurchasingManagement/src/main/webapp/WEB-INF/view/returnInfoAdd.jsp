@@ -173,8 +173,8 @@ if (receiveInfoList != null && !receiveInfoList.isEmpty()) { //receiveInfoList�
     返品事由 : <input type="text" name="reason"/>
 </p>
 <p>
-    <input type="submit" value="반품 요청">
-    <input type="button" value="뒤로 가기" onclick="location.href='returnInfoList.do'">
+    <input type="submit" value="返品申請">
+    <input type="button" value="戻る" onclick="location.href='returnInfoList.do'">
 </p>
 </form>
 

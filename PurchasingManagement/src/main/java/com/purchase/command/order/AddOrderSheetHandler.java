@@ -23,7 +23,7 @@ public class AddOrderSheetHandler implements CommandHandler {
 
     private static final String FORM_VIEW = "/WEB-INF/view/AddOrderSheet.jsp";
 
-    /** 기본 업무상태(일본 실무 표기) / 既定の業務状態（日本の表記） */
+    /** 기본 업무상태 / 既定の業務状態 */
     private static final String DEFAULT_ORDER_STATUS = "発注依頼";
 
     private final OrderSheetService service = new OrderSheetService();
@@ -41,11 +41,11 @@ public class AddOrderSheetHandler implements CommandHandler {
         if ("POST".equalsIgnoreCase(req.getMethod())) {
             req.setCharacterEncoding("UTF-8");
 
-            // ===== 파라미터 수집 / パラメータ収集 =====
+            // 파라미터 수집 / パラメータ収集 
             String requestId   = trim(req.getParameter("request_id"));
             String orderStatus = trim(req.getParameter("order_status"));
 
-            // ===== 필수값 검증 / 必須チェック =====
+            // 필수값 검증 / 必須チェック 
             if (isEmpty(requestId)) {
                 // 요청ID는 필수 / 申請IDは必須
                 setFormAttrsWithError(req,
@@ -129,22 +129,22 @@ public class AddOrderSheetHandler implements CommandHandler {
     private String mapOracleError(RuntimeException e) {
         String m = String.valueOf(e.getMessage());
 
-        // CHECK制約違反（状態値ミスマッチ）
+        // 체크 제약 위반 / CHECK制約違反（状態値ミスマッチ）
         if (m.contains("ORA-02290")) {
             return "상태값이 테이블의 CHECK 제약을 위반했습니다(허용된 상태만 입력). / テーブルのCHECK制約に違反（許容された状態のみ可）";
         }
-        // 文字列長オーバー
+        // 문자열 길이 초과 / 文字列長オーバー
         if (m.contains("ORA-12899")) {
             return "입력값 길이가 컬럼 최대 길이를 초과했습니다. / 入力値がカラムの最大長を超過しました。";
         }
-        // NOT NULLなど
+        // 낫 널 / NOT NULLなど
         if (m.contains("ORA-01400") || m.contains("ORA-01407")) {
             return "필수 컬럼이 비어있습니다(널 금지). / 必須カラムがNULLです（NULL禁止）。";
         }
-        return m; // 기타는 원문 유지 / その他は原文
+        return m;
     }
 
-    //  유틸 / ユーティリティ 
+    
     private static String trim(String s){ return s==null?null:s.trim(); }
     private static boolean isEmpty(String s){ return s==null || s.trim().isEmpty(); }
 }

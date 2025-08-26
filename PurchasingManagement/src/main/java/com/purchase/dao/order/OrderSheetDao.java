@@ -6,6 +6,7 @@ import com.purchase.vo.OrderSheet;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 발주서 DAO / 発注書DAO
@@ -66,8 +67,7 @@ public class OrderSheetDao {
             }
         }
     }
-    // endregion
-
+    
     // region 발주 등록용 드롭다운(구매요청) / 発注登録用ドロップダウン（購買申請）
     /**
      * 발주 등록 시 선택용 데이터 / 発注登録時の選択データ
@@ -106,7 +106,6 @@ public class OrderSheetDao {
             return list;
         }
     }
-    // endregion
 
     // region 유틸: request_id → supplier_id / ユーティリティ: request_id → supplier_id
     /**
@@ -126,7 +125,6 @@ public class OrderSheetDao {
             }
         }
     }
-    // endregion
 
     // region 다음 발주ID 생성 / 次の発注ID生成
     /**
@@ -147,7 +145,6 @@ public class OrderSheetDao {
         }
         throw new SQLException("order_sheet_seq.NEXTVAL 조회 실패 / 取得失敗");
     }
-    // endregion
 
     // region INSERT / 発注登録
     /**
@@ -174,7 +171,6 @@ public class OrderSheetDao {
             ps.executeUpdate();
         }
     }
-    // endregion
 
     // region 상태 변경 / 業務状態変更
     /**
@@ -189,7 +185,6 @@ public class OrderSheetDao {
             ps.executeUpdate();
         }
     }
-    // endregion
 
     // region 표시상태(A/X) 변경 / 表示状態(A/X)変更
     /**
@@ -203,7 +198,7 @@ public class OrderSheetDao {
             ps.executeUpdate();
         }
     }
-    // endregion
+    // 
 
     // region 내부 유틸 / 内部ユーティリティ
     private static String trimOrNull(String s) {
@@ -214,5 +209,98 @@ public class OrderSheetDao {
     private static String safe(String s) {
         return s == null ? null : s.trim();
     }
-    // endregion
+    
+ // region 검색(조인) 조건 / 検索（JOIN）条件
+    /**
+     * 조건 검색(조인뷰) / 条件検索（JOINビュー）
+     * params:
+     *   order_id, request_id, supplier_id → LIKE
+     *   order_status → =
+     *   from_date, to_date → order_date 範囲 (yyyy-MM-dd)
+     *   includeHidden: "1"이면 A/X 모두, 아니면 A만
+     */
+    public List<OrderSheetDTO> selectViewByConditions(Connection conn, Map<String,String> params) throws SQLException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ")
+           .append("  os.order_id, os.order_date, os.order_status, os.row_status, ")
+           .append("  os.request_id, os.supplier_id, ")
+           .append("  pr.product_id, pr.quantity AS request_quantity, pr.requester_name, ")
+           .append("  p.product_name, ")
+           .append("  si.supplier_name ")
+           .append("FROM order_sheet os ")
+           .append("JOIN purchase_request pr ON pr.request_id = os.request_id ")
+           .append("JOIN product p           ON p.product_id  = pr.product_id ")
+           .append("JOIN supplier_info si    ON si.supplier_id = os.supplier_id ")
+           .append("WHERE 1=1 ");
+
+        List<Object> bind = new ArrayList<>();
+
+        String orderId    = trimOrNull(params.get("order_id"));
+        String requestId  = trimOrNull(params.get("request_id"));
+        String supplierId = trimOrNull(params.get("supplier_id"));
+        String status     = trimOrNull(params.get("order_status"));
+        String fromDate   = trimOrNull(params.get("from_date"));
+        String toDate     = trimOrNull(params.get("to_date"));
+        boolean includeHidden = "1".equals(trimOrNull(params.get("includeHidden")));
+
+        if (!includeHidden) {
+            sql.append("AND NVL(os.row_status,'A')='A' ");
+        }
+        if (orderId != null) {
+            sql.append("AND os.order_id LIKE ? ");
+            bind.add("%" + orderId + "%");
+        }
+        if (requestId != null) {
+            sql.append("AND os.request_id LIKE ? ");
+            bind.add("%" + requestId + "%");
+        }
+        if (supplierId != null) {
+            sql.append("AND os.supplier_id LIKE ? ");
+            bind.add("%" + supplierId + "%");
+        }
+        if (status != null) {
+            sql.append("AND os.order_status = ? ");
+            bind.add(status);
+        }
+        if (fromDate != null) {
+            sql.append("AND os.order_date >= ? ");
+            bind.add(Date.valueOf(fromDate)); // yyyy-MM-dd
+        }
+        if (toDate != null) {
+            sql.append("AND os.order_date < ? + 1 ");
+            bind.add(Date.valueOf(toDate));   // 종료일 포함
+        }
+
+        sql.append("ORDER BY os.order_id");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            for (Object o : bind) ps.setObject(idx++, o);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<OrderSheetDTO> list = new ArrayList<>();
+                while (rs.next()) {
+                    OrderSheetDTO dto = new OrderSheetDTO();
+                    dto.setOrder_id(rs.getString("order_id"));
+                    dto.setOrder_date(rs.getDate("order_date"));
+                    dto.setOrder_status(rs.getString("order_status"));
+                    dto.setRow_status(rs.getString("row_status"));
+
+                    dto.setRequest_id(rs.getString("request_id"));
+                    dto.setSupplier_id(rs.getString("supplier_id"));
+
+                    dto.setProduct_id(rs.getString("product_id"));
+                    dto.setRequest_quantity(rs.getInt("request_quantity"));
+                    dto.setRequester_name(rs.getString("requester_name"));
+
+                    dto.setProduct_name(rs.getString("product_name"));
+                    dto.setSupplier_name(rs.getString("supplier_name"));
+
+                    list.add(dto);
+                }
+                return list;
+            }
+        }
+    }
+    
+
 }

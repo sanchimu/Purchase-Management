@@ -19,7 +19,7 @@
   /*  화면 기본 스타일 /  画面の基本スタイル */
   body{font-family:Arial,Helvetica,sans-serif;margin:20px;}
   h2{margin:0 0 12px;}
-  .toolbar{display:flex;gap:8px;align-items:center;margin:8px 0 16px;flex-wrap:wrap}
+  .toolbar{display:flex;gap:8px;align-items:center;margin:8px 0 16px;flex-wrap:wrap;justify-content:flex-end}
   .btn{padding:6px 10px;border:1px solid #ccc;background:#f7f7f7;cursor:pointer;text-decoration:none;color:#333;display:inline-block}
   table{border-collapse:collapse;width:100%}
   th,td{border:1px solid #ddd;padding:8px;text-align:center}
@@ -44,7 +44,7 @@
     opacity:.5; cursor:not-allowed;
   }
 </style>
-</style>
+
 
 <script>
   //  전체 체크박스 토글 /  一括チェック切替
@@ -75,7 +75,34 @@
 
   <%--  발주서 등록 화면으로 이동 /  発注書登録画面へ遷移 --%>
   <a class="btn" href="<c:url value='/addOrderSheet.do'/>">発注書登録</a>
+  </form>
 </div>
+
+<!-- 검색 추가 / 検索フォーム追加 -->
+<form method="get" action="<c:url value='/searchOrderSheet.do'/>" style="margin:8px 0 16px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+  <input type="text" name="order_id"    placeholder="発注ID"      value="${searchParams.order_id}"/>
+  <input type="text" name="request_id"  placeholder="購買依頼ID"  value="${searchParams.request_id}"/>
+  <input type="text" name="supplier_id" placeholder="仕入先ID"    value="${searchParams.supplier_id}"/>
+
+  <select name="order_status">
+    <option value="">--状態--</option>
+    <c:forEach var="st" items="${orderStatusList}">
+      <option value="${st}" <c:if test="${searchParams.order_status == st}">selected</c:if>>${st}</option>
+    </c:forEach>
+  </select>
+
+
+  
+  <input type="hidden" name="includeHidden" value="<c:out value='${includeHidden ? 1 : 0}'/>"/>
+
+  <button type="submit" class="btn">検索</button>
+  <a class="btn" href="<c:url value='/orderSheetList.do'/>">リセット</a>
+</form>
+
+<c:if test="${NoSearchOrderResult}">
+  <div style="margin: -8px 0 8px; color:#c62828;">該当なし → 全件を表示</div>
+</c:if>
+
 
 <form method="post">
   <table>

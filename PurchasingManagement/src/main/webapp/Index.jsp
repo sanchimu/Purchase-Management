@@ -92,17 +92,17 @@
 <body>
 
 <!-- 페이지 전체 상단 글귀 -->
-<div class="header">🎶😊 購 買 管 理 😊🎶</div>
+<div class="header">購 買 管 理 ERP</div>
 
 <!-- 좌측 메뉴 + 우측 콘텐츠 영역 -->
 <div class="main">
   <div class="sidebar">
-    <a href="<c:url value='/listProducts.do'/>"        class="Menu" target="mainFrame">❤️ 商品管理</a>
-    <a href="<c:url value='/listsupplier.do'/>"       class="Menu" target="mainFrame">😉 供給会社</a>
-    <a href="<c:url value='/requestList.do'/>"        class="Menu" target="mainFrame">👺 購入要請</a>
-    <a href="<c:url value='/orderSheetList.do'/>"     class="Menu" target="mainFrame">😎 発注書</a>
-    <a href="<c:url value='/listReceiveInfos.do'/>"   class="Menu" target="mainFrame">😢 入庫管理</a>
-    <a href="<c:url value='/returnInfoList.do'/>"     class="Menu" target="mainFrame">🥱 返品管理</a>
+    <a href="<c:url value='/listProducts.do'/>"        class="Menu" target="mainFrame">商品管理</a>
+    <a href="<c:url value='/listsupplier.do'/>"       class="Menu" target="mainFrame">供給会社</a>
+    <a href="<c:url value='/requestList.do'/>"        class="Menu" target="mainFrame">購入要請</a>
+    <a href="<c:url value='/orderSheetList.do'/>"     class="Menu" target="mainFrame">発注書</a>
+    <a href="<c:url value='/listReceiveInfos.do'/>"   class="Menu" target="mainFrame">入庫管理</a>
+    <a href="<c:url value='/returnInfoList.do'/>"     class="Menu" target="mainFrame">返品管理</a>
   </div>
 
   <iframe name="mainFrame" class="content" src="<c:url value='/main.jsp'/>"></iframe>
