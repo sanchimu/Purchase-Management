@@ -27,6 +27,23 @@
   .pill{display:inline-block;min-width:40px;padding:2px 8px;border-radius:999px;font-size:12px}
   .pill-a{background:#e7f6e9;color:#1c7c2c} /*  진행중(A) /  進行中(A) */
   .pill-x{background:#fdeaea;color:#c62828} /*  중단(X)   /  停止(X)   */
+  
+  
+  .btn{
+    padding:6px 12px;
+    background:#4CAF50;      
+    color:#fff;
+    border:1px solid #43a047;  
+    border-radius:4px;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btn:hover{ opacity:.9; }     
+  .btn:disabled{
+    opacity:.5; cursor:not-allowed;
+  }
+</style>
 </style>
 
 <script>

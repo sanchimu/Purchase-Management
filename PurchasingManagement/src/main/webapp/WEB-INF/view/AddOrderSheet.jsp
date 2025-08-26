@@ -13,6 +13,48 @@
   select,input{padding:6px 8px}
   .btn{padding:6px 10px;border:1px solid #ccc;background:#f7f7f7;cursor:pointer;text-decoration:none;color:#333}
   .msg{margin:8px 0;padding:8px 10px;border:1px solid #eedc82;background:#fff8d6}
+  
+ button.btn, input.btn, a.btn {
+  /* 브라우저 기본 버튼 외형 제거 / 既定の外観を無効化 */
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* 박스/폰트/줄간 통일 / ボックス・フォント・行間の統一 */
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.5;
+
+  /* 패딩/높이 통일 / 余白・高さの統一 */
+  padding: 6px 12px;
+  min-height: 36px;           
+
+  /* 공통 색상/테두리 / 共通の色・枠線 */
+  background: #4CAF50;         
+  color: #fff;
+  border: 1px solid #43a047;
+  border-radius: 4px;
+
+  /* 배치 통일 / 配置の統一 */
+  display: inline-flex;        
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+button.btn:hover, input.btn:hover, a.btn:hover { opacity: .9; }
+button.btn:disabled, input.btn:disabled, a.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+
+button.btn.btn-secondary,
+input.btn.btn-secondary,
+a.btn.btn-secondary {
+  background: #cccccc;
+  color: #333;
+  border-color: #bdbdbd;
+}
+
 </style>
 <script>
   // 요청ID 선택 시 공급업체ID 자동 채움 / 申請ID選択時に供給業者IDを自動入力
@@ -71,7 +113,7 @@
   <!-- 버튼 그룹 / ボタングループ -->
   <div class="row">
     <button type="submit" class="btn">登録</button>
-    <a class="btn" href="<c:url value='/orderSheetList.do'/>">一覧</a>
+    <a class="btn btn-secondary" href="<c:url value='/orderSheetList.do'/>">戻る</a>
   </div>
 </form>
 
