@@ -11,7 +11,9 @@
 <style>
 body {
     font-family: Arial, sans-serif;
+    text-align: center;  /* form 박스를 화면 중앙에 정렬 */
 }
+
 
 /* 제목 중앙 정렬 */
 h3 {
@@ -20,11 +22,10 @@ h3 {
 
 /* 테이블 스타일 */
 table {
-    width: 80%;
     border-collapse: collapse;
-    margin: 20px auto;
+    margin: 10px auto;       /* 폼 안에서 중앙 */
+    width: auto;             /* 내용에 맞춰 유동 */
 }
-
 th, td {
     border: 1px solid #ccc;
     padding: 8px;
@@ -38,13 +39,15 @@ th {
 
 /* 폼 스타일 */
 form {
-    width: 50%;
+    display: inline-block;   /* 내부 크기에 맞춰 유동 */
     margin: 20px auto;
     padding: 15px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
+    text-align: left;        /* 폼 내부 기본은 왼쪽 정렬 */
 }
+
 
 /* 입력 필드 */
 input[type="text"] {
