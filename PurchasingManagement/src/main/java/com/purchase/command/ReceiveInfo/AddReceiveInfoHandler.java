@@ -34,8 +34,8 @@ public class AddReceiveInfoHandler implements CommandHandler {
         String productId = req.getParameter("product_id");
         String qtyStr    = req.getParameter("quantity");
         String dateStr   = req.getParameter("receive_date"); // 기대/想定: yyyy-MM-dd
-        String status    = req.getParameter("receive_status"); // 화면에서 기본값을 "検収中"로 줄 수 있음
-        String note      = req.getParameter("note");
+        String status    = req.getParameter("receive_status"); // 화면에서 기본값을 "受入済"로 줄 수 있음
+        String note      = req.getParameter("note");//구현 필요 DB 미반영
 
         try {
             // 검증 + 등록은 서비스로. 여기서는 결과만 받는다
