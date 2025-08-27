@@ -114,18 +114,18 @@ window.onload = function() { //경고창을 띄우기 위한 함수 (警告ウ�
 </head>
 <body>
 
-<h3>入庫現況</h3>
+<h3>入荷現況</h3>
 
 <form action="returnProcess.do" method="post">
 <table>
     <tr>
         <th>選択</th>
-        <th>入庫ID</th>
+        <th>入荷ID</th>
         <th>発注ID</th>
         <th>商品名(商品ID)</th>
-        <th>入庫数量</th>
+        <th>入荷数量</th>
         <th>返品可能数量</th>
-        <th>入庫日</th>
+        <th>入荷日</th>
     </tr>
 <%
 List<ReceiveInfo> receiveInfoList = (List<ReceiveInfo>) request.getAttribute("receiveInfoList");// receiveInfoList 키에 저장된 값을 가져와서 List<ReceiveInfo>형으로 변환해서 receiveInfoList 객체에 저장
