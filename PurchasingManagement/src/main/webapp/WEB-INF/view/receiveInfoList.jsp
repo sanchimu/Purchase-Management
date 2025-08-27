@@ -135,9 +135,9 @@
                   </c:when>
                   <c:otherwise>
                     <%-- 예비 값: 상태 목록이 없을 때 대비 / フォールバック --%>
-                    <option value="検収中"  <c:if test="${r.receive_status == '検収中'}">selected</c:if>>検収中</option>
+                    <option value="受入済"  <c:if test="${r.receive_status == '受入済'}">selected</c:if>>受入済</option>
                     <option value="正常"    <c:if test="${r.receive_status == '正常'}">selected</c:if>>正常</option>
-                    <option value="入庫取消" <c:if test="${r.receive_status == '入庫取消'}">selected</c:if>>入庫取消</option>
+                    <option value="入荷取消" <c:if test="${r.receive_status == '入荷取消'}">selected</c:if>>入荷取消</option>
                     <option value="返品処理" <c:if test="${r.receive_status == '返品処理'}">selected</c:if>>返品処理</option>
                   </c:otherwise>
                 </c:choose>

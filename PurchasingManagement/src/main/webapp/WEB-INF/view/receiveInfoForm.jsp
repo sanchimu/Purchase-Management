@@ -83,14 +83,14 @@
            value="${not empty recvDate ? recvDate : (not empty today ? today : todayStr)}" required />
   </div>
 
-  <!-- 업무 상태(기본=検収中) / 業務状態(初期=検収中) -->
+  <!-- 업무 상태(기본=受入済) / 業務状態(初期=受入済) -->
   <div class="row">
     <label>業務状態</label>
     <select name="receive_status">
-      <c:set var="sv" value="${empty ri || empty ri.receive_status ? '検収中' : ri.receive_status}"/>
-      <option value="検収中"   <c:if test="${sv=='検収中'}">selected</c:if>>検収中</option>
+      <c:set var="sv" value="${empty ri || empty ri.receive_status ? '受入済' : ri.receive_status}"/>
+      <option value="受入済"   <c:if test="${sv=='受入済'}">selected</c:if>>受入済</option>
       <option value="正常"     <c:if test="${sv=='正常'}">selected</c:if>>正常</option>
-      <option value="入庫取消" <c:if test="${sv=='入庫取消'}">selected</c:if>>入庫取消</option>
+      <option value="入荷取消" <c:if test="${sv=='入荷取消'}">selected</c:if>>入荷取消</option>
       <option value="返品処理" <c:if test="${sv=='返品処理'}">selected</c:if>>返品処理</option>
     </select>
   </div>

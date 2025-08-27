@@ -106,7 +106,7 @@ public class ReceiveInfoService {
         vo.setOrder_id(orderId);
         vo.setProduct_id(productId);
         vo.setQuantity(qty);
-        vo.setReceive_status(isBlank(status) ? "検収中" : status); // 필요하면 null로 두고 DBデフォルトでもOK
+        vo.setReceive_status(isBlank(status) ? "受入済" : status); // 필요하면 null로 두고 DBデフォルトでもOK
         vo.setNote(note);
         Date recvDate = Date.from(recvLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         vo.setReceive_date(recvDate);
@@ -220,8 +220,8 @@ public class ReceiveInfoService {
     /** 상태 선택지 (UI용)
      *  画面のセレクト用ステータス */
     public List<String> getReceiveStatusList() {
-        return Arrays.asList("検収中", "正常", "入庫取消", "返品処理");
-        // 통일안 예시: Arrays.asList("検収中", "受入済", "入荷取消", "返品処理");
+        return Arrays.asList("受入済", "正常", "入荷取消", "返品処理");
+       
     }
 
     // ========= 폼 준비 =========
